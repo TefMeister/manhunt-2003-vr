@@ -10,6 +10,7 @@ write-up in `topics/`. Status tags:
 
 | Date | Topic | Status | Summary |
 | --- | --- | --- | --- |
+| 2026-08-25 | [SecuROM unpacking/OEP technique + ScyllaHide](topics/2026-08-25-securom-unpacking-oep-technique-and-scyllahide.md) | 🆕 new | A legitimate SecuROM 7 dissection gives real OEP-finding methodology, a 12+-minute CRC-timing data point (directly relevant to the "how long to wait before scanning live memory" unknown), and an anti-debug mechanism family — clearly caveated as a different (later) SecuROM version than Manhunt's confirmed v5.03.03.0191, technique-family reference only. |
 | 2026-08-25 | [Native debug menu, camera effects (unverified)](topics/2026-08-25-native-debug-menu-camera-effects.md) | 👀 reviewed | Independently corroborated by our own static-recon strings (`FOVX+/-`, `CFovX`, `FovY`, `Camera pos.=...`, `* Camera modes`) — see `ENGINE-DOSSIER.md` §6/§9. Debug menu itself not yet activated live. |
 | 2026-08-25 | [Steam SecuROM bug + testapp.exe fix](topics/2026-08-25-steam-securom-bug-testapp-fix.md) | ✅ incorporated | Live-tested 2026-08-25: `testapp.exe` itself crashes at its own broken entry point (unrelated to our tooling) — reverted to original `manhunt.exe`, which hits the documented gate bug as expected. See `ENGINE-DOSSIER.md` §4/§11. |
 | 2026-08-25 | [ASI-loader injection + OpenRW context](topics/2026-08-25-asi-loader-injection-and-openrw-context.md) | 👀 reviewed | Noted as a legitimate alternative in `ENGINE-DOSSIER.md` §4; going with this portfolio's own direct d3d8.dll proxy pattern instead for our own probing. |

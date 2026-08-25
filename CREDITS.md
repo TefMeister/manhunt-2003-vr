@@ -28,6 +28,9 @@ notes, and tools we wrote ourselves.
 | OpenRW (RenderWare/GTA III open-source reimplementation) | rwengine contributors | https://github.com/rwengine/openrw |
 | librw (RenderWare Graphics reimplementation) | aap and contributors | https://github.com/aap/librw |
 | PCGamingWiki (Manhunt technical notes) | PCGamingWiki community | https://www.pcgamingwiki.com/wiki/Manhunt |
+| "Breaking SecuROM 7 - A Dissection" | lostfilearchives | https://lostfilearchives.github.io/08/28/Dissection/ |
+| ScyllaHide (x64dbg/x32dbg anti-anti-debug plugin) | x64dbg / NtQuery (ScyllaHide) contributors | https://github.com/x64dbg/ScyllaHide |
+| SecuROMLoader (version-identification database, cited for version data only) | nckstwrt | https://github.com/nckstwrt/SecuROMLoader |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
