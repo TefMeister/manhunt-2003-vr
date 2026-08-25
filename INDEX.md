@@ -11,7 +11,7 @@ write-up in `topics/`. Status tags:
 | Date | Topic | Status | Summary |
 | --- | --- | --- | --- |
 | 2026-08-25 | [Native debug menu, camera effects (unverified)](topics/2026-08-25-native-debug-menu-camera-effects.md) | 👀 reviewed | Independently corroborated by our own static-recon strings (`FOVX+/-`, `CFovX`, `FovY`, `Camera pos.=...`, `* Camera modes`) — see `ENGINE-DOSSIER.md` §6/§9. Debug menu itself not yet activated live. |
-| 2026-08-25 | [Steam SecuROM bug + testapp.exe fix](topics/2026-08-25-steam-securom-bug-testapp-fix.md) | ✅ incorporated | Applied 2026-08-25: `manhunt.exe` backed up to `manhunt.exe.orig`, `testapp.exe` content copied over `manhunt.exe`. See `ENGINE-DOSSIER.md` §4. Not yet live-tested. |
+| 2026-08-25 | [Steam SecuROM bug + testapp.exe fix](topics/2026-08-25-steam-securom-bug-testapp-fix.md) | ✅ incorporated | Live-tested 2026-08-25: `testapp.exe` itself crashes at its own broken entry point (unrelated to our tooling) — reverted to original `manhunt.exe`, which hits the documented gate bug as expected. See `ENGINE-DOSSIER.md` §4/§11. |
 | 2026-08-25 | [ASI-loader injection + OpenRW context](topics/2026-08-25-asi-loader-injection-and-openrw-context.md) | 👀 reviewed | Noted as a legitimate alternative in `ENGINE-DOSSIER.md` §4; going with this portfolio's own direct d3d8.dll proxy pattern instead for our own probing. |
 
 ## How to add a topic
