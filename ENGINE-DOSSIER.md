@@ -5,10 +5,11 @@
 > `-dev-archive` / `-modding-notes` repos; this file is the *distilled current
 > truth*. Update it whenever a fact changes; correct false leads in place.
 
-**Status:** M0 blocked — first live test done (proxy loads clean, but hits a known gate/hang bug before
-Direct3D init); a still-active SecuROM code-packing layer discovered (§4) blocks both static-file fixes
-and debugger attach; next step is a live in-process memory scan, needs another launch to test ·
-**VR-readiness verdict:** TBD
+**Status:** M0 blocked — second live test done: diagnostic memory scan found 37 real candidate call
+sites (§4), gate bug did NOT recur this run (confirmed nondeterministic, not fixed), a second crash
+(item-swap via Tab) hit the same bug family from a different angle. Still-active SecuROM code-packing
+layer (§4) blocks both static-file fixes and debugger attach. Next step: narrow the 37 candidates down
+to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
 
 ## 1. Identity
 - Game / build / version: Manhunt (2003), Rockstar North, published by Rockstar Games. Steam release.
@@ -137,15 +138,33 @@ and debugger attach; next step is a live in-process memory scan, needs another l
     injected in-process via a normal static import — `DLL_PROCESS_ATTACH` fires before the exe's own
     entry point runs, meaning code inside our DLL has full read/write access to the process's own memory
     at any point afterward, with none of the anti-attach restrictions that block an external debugger.
-    A short delay after `DLL_PROCESS_ATTACH` (to let the protector's own unpacking stub finish — exact
-    timing not yet measured, needs live testing) followed by scanning live memory for
-    `FF 15 <IAT-slot-VA>` would sidestep both the packing problem and the attach-block at once. **Caveat**:
-    can't wait for `Direct3DCreate8` as the "safe to scan" signal — the gate-bug/hang happens before that
-    point too, per the first live test. A diagnostic (logs candidates only, does not blindly patch
-    anything) draft of this scanner is at
-    `manhunt-2003-vr-staging/proxy-d3d8/src/drm-scan-DRAFT.c` — not wired into the live proxy yet, needs
-    review + live-test timing data before it's trustworthy. Full investigation trace:
+    A short delay after `DLL_PROCESS_ATTACH` (to let the protector's own unpacking stub finish) followed
+    by scanning live memory for `FF 15 <IAT-slot-VA>` sidesteps both the packing problem and the
+    attach-block at once. Full investigation trace:
     `manhunt-2003-vr-dev-archive/recon/2026-08-25-drm-call-site-rediscovery/README.md`.
+  - **Live-tested 2026-08-25 (second launch): scanner found real candidates.** Wired the diagnostic
+    scanner into the live proxy (20 passes, 3s apart, ~60s coverage, logs only the first pass an address
+    is seen — dropped the SEH guard from the original draft since 32-bit `__try`/`__except` codegen under
+    clang/mingw failed to link; safety instead comes from only scanning regions `VirtualQuery` already
+    confirmed committed+readable/executable). Result: **all 37 candidates appeared in pass 1** (within
+    3 seconds of `DLL_PROCESS_ATTACH`) — unpacking of this region happens fast, not the 12+-minute
+    worst-case a later SecuROM 7 dissection warned about (see below; that source is a different, later
+    SecuROM version, flagged there as reference-only). 37 total across the 6 target functions — matches
+    the expected pattern of "way more than the real 16," since most calls to these APIs elsewhere in the
+    code are entirely ordinary. **Not yet narrowed down to the real 16** — next step, not yet started.
+  - **External-research cross-check (2026-08-25, reviewed after the second live test)**: a separate
+    research session found a legitimate SecuROM 7 technical dissection
+    (https://lostfilearchives.github.io/08/28/Dissection/, technique description only, no crack/bypass
+    content) — explicitly a different, later SecuROM version than Manhunt's actual **v5.03.03.0191**
+    (2004 retail; cross-referenced via SecuROMLoader's public compatibility database), so treated as
+    technique-family reference only, not verified-applicable specifics. Confirms the packing architecture
+    we independently deduced (stub wraps the real program, decrypts/executes from allocated memory, only
+    reaches real logic after unpacking) matches this whole protection family generally. Also dates the
+    Steam-release leftover-check bug specifically to a **2010-05-22** Steam update (more precise than
+    "at some point"). Suggested ScyllaHide for the attach-block — already a confirmed dead end from
+    mad-max-vr's session this same day (ABI-incompatible with the current x64dbg plugin version); not
+    worth re-attempting here either. Suggested checking for a spawned watcher/child process at launch as
+    a test for a specific anti-debug mechanism — not yet tried.
 
 ## 5. Threading & frame structure
 - Immediate context only, or deferred contexts + command lists?:
@@ -215,6 +234,22 @@ and debugger attach; next step is a live in-process memory scan, needs another l
   unresponsive after a few minutes (confirmed via `Get-Process`'s `Responding: False`), and a graceful
   `CloseMainWindow()` does nothing at that point. A force-kill is the only option once this happens —
   not a sign of anything else going wrong, just this bug's known behavior.
+- **The gate bug is not 100% reproducible — don't treat one clean run as a fix.** Second live test, same
+  day: gate opened fine with zero code changes (the diagnostic scanner never writes to memory). Likely
+  cause: several of the real check sites read raw CPU registers (`ecx`/`edx`/`esi`), not defined
+  parameters — confirmed from studying `Fire-Head/MHNoDRM`'s source — so behavior can vary slightly
+  between runs due to incidental memory-layout/scheduling differences.
+- **A second crash, same bug family, different trigger: holding Tab to swap items crashed the game
+  outright** (`STATUS_ACCESS_VIOLATION` at VA `0x004C9AAD`, which sits directly between two of the 16
+  known call sites — `GetVersion` at `0x4C78A2`, `GetCurrentThread`/"Broken Doors" at `0x4CC48E`). Very
+  likely another entry from the same public bug list (candidates: "Broken Useables", "Broken
+  Interactivities") rather than a new, unrelated bug. Confirmed via Windows' crash log; proxy log showed
+  no `DLL_PROCESS_DETACH`, consistent with an abrupt crash. Process fully exited this time, no
+  force-kill needed.
+- **ScyllaHide is a confirmed dead end for the attach-block problem, portfolio-wide** — already tried
+  and found ABI-incompatible with the current x64dbg plugin version on mad-max-vr, same day. A separate
+  research session suggested it again for this project without knowing that; don't re-attempt without a
+  version change to x64dbg itself.
 
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
