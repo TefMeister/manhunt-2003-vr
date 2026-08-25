@@ -5,7 +5,10 @@
 > `-dev-archive` / `-modding-notes` repos; this file is the *distilled current
 > truth*. Update it whenever a fact changes; correct false leads in place.
 
-**Status:** M0 in progress — static recon done, proxy DLL built and deployed, awaiting first live test · **VR-readiness verdict:** TBD
+**Status:** M0 blocked — first live test done (proxy loads clean, but hits a known gate/hang bug before
+Direct3D init); a still-active SecuROM code-packing layer discovered (§4) blocks both static-file fixes
+and debugger attach; next step is a live in-process memory scan, needs another launch to test ·
+**VR-readiness verdict:** TBD
 
 ## 1. Identity
 - Game / build / version: Manhunt (2003), Rockstar North, published by Rockstar Games. Steam release.
@@ -36,9 +39,16 @@
   menu** is documented (see §4/§9) and independently corroborated by our own static strings (below).
 
 ## 4. DRM / anti-debug & injection foothold
-- DRM (CEG/Denuvo/GOG/none); launch-time-debugger behaviour: **No active DRM.** SecuROM protection was
-  stripped for the Steam release, but `manhunt.exe` (2004 retail build) still runs SecuROM-era leftover
-  anti-tamper checks that misfire on the now-unprotected exe, causing a well-documented cluster of bugs:
+- DRM (CEG/Denuvo/GOG/none); launch-time-debugger behaviour: **Revised 2026-08-25 — not fully inactive
+  after all.** Originally believed fully stripped (Steam removed the online-activation/licensing layer),
+  but a separate finding below (the `.bind`-section/entry-point discovery) indicates SecuROM's **code-
+  level packing/protection layer is still structurally present and active** — a different component from
+  the licensing layer, consistent with `Fire-Head/MHNoDRM`'s own README stating their fix "does not
+  affect Steam copy protection in any way." The licensing/activation check genuinely is gone (that part
+  of the original assessment holds), but treat "no active DRM" as WRONG going forward — there's still a
+  live protector stub at process start. `manhunt.exe` (2004 retail build) also still runs SecuROM-era
+  leftover anti-tamper checks that misfire on the now-unprotected-for-licensing exe, causing a
+  well-documented cluster of bugs:
   broken gates/doors, erratic/aggressive AI, memory leaks (source: PCGamingWiki via search summary + two
   community fixer projects, `Fire-Head/MHNoDRM` and `silentgameplays/Manhunt-Windows-11-Fix`). **This is
   not something our own tooling could cause or be confused with going forward — noted preemptively in
@@ -77,10 +87,11 @@
 - Attach workflow that works: **none yet — attach is currently blocked.** `x32dbg` (needed — this is a
   32-bit process) failed to attach twice (unelevated and elevated/RunAs), both times with x64dbg's own
   log showing `Could not open process 2932!` — the identical failure signature seen on mad-max-vr's
-  confirmed-Denuvo case. Manhunt has no known Denuvo/CEG, so this is more likely Steam's own lightweight
-  executable wrapper (common on older Steamworks titles) rather than a real anti-cheat, but the practical
-  effect is the same: no live debugger access yet. Needs its own investigation before any debugger-driven
-  work (memory scanning, live camera/FOV work) can proceed here.
+  confirmed-Denuvo case. **Revised 2026-08-25**: originally guessed this was Steam's lightweight wrapper
+  rather than real protection; the `.bind`-section/entry-point finding below makes a still-active
+  SecuROM packer/protector stub the more likely explanation instead — a live protector resisting
+  external debugger attach is completely standard behavior, not a Steam-specific quirk. Needs its own
+  investigation before any debugger-driven work (memory scanning, live camera/FOV work) can proceed here.
 - Injection vector that works (proxy DLL name / injector / framework): same-named DLL proxy technique
   (`d3d8.dll` in the game's install dir, app-directory-first search order) — matches this whole
   portfolio's established pattern. Built, deployed, and **live-verified loading correctly** 2026-08-25
@@ -104,17 +115,37 @@
   client installed with a legally purchased copy"* — i.e. this is fixing broken dead code, not
   circumventing any active protection, consistent with the legal reasoning already applied to the
   testapp.exe fix above.
-  - **Attempted to reproduce as a static file patch, addresses don't match on our build.** Computed file
-    offsets for all 16 documented VAs (`.text`: `VirtualAddress=0x1000`, `PointerToRawData=0x400`,
-    verified correct via the MZ-header sanity check) and read the raw bytes at each — none show the
-    expected `FF 15` (indirect call) opcode two bytes before the documented address. Most likely
-    explanation: our exact Steam depot build is a different patch revision than whatever build those
-    addresses were reverse-engineered against; code shifts between game updates. **This means the 16
-    addresses need to be independently rediscovered on our own build** (scan `.text` for indirect calls
-    into the same IAT slots for these 6 APIs) before a working patch — live in-process (via our own
-    proxy DLL's `DllMain`, which already runs inside the process with full memory access, sidestepping
-    the attach-blocked problem entirely) or otherwise — can be built. Real, open-ended static-analysis
-    work; doesn't need the game running.
+  - **Attempted to reproduce as a static file patch — not a simple address mismatch, a structural one
+    (background-fork investigation, 2026-08-25).** First checked file offsets for all 16 documented VAs —
+    none showed the expected `FF 15` opcode. Escalated to a full pattern search across the *entire* file
+    for `FF 15`/`FF 25` + the real KERNEL32 IAT slot VA (computed correctly via
+    `llvm-readobj --coff-imports`, `ImportAddressTableRVA=0x41B364`) for all 6 target functions: **zero
+    hits, everywhere in the file.** Sanity-checked the method against `LoadLibraryA`/`GetProcAddress`/
+    `ExitProcess` (guaranteed to be called somewhere in any working program) — **also zero hits**, ruling
+    out an arithmetic mistake.
+  - **Root cause found: `manhunt.exe`'s own `AddressOfEntryPoint` (`0x4502ED`) lands inside a section
+    named `.bind`, `VirtualAddress=0x450000`, size `0x56000` (352KB — far larger than a normal
+    bound-imports directory)**, alongside an obfuscated-named `.xxxxx` section — signatures of a
+    still-active third-party protector stub, not normal compiled code. Consistent with everything else
+    observed: `.text`'s on-disk bytes reading as high-entropy garbage at known-should-be-code addresses
+    (checked earlier against the file's own entry point specifically), `testapp.exe`'s own crash landing
+    in a same-family `.bind`-section entry point, and the debugger-attach failures above. **Conclusion:
+    the 16 call sites don't exist in readable form anywhere in the file on disk** — they only become real,
+    scannable instructions **after the process unpacks itself in memory** at startup, which a static file
+    read can never see.
+  - **Real next step: scan LIVE process memory, not the file.** Our own `d3d8.dll` proxy is already
+    injected in-process via a normal static import — `DLL_PROCESS_ATTACH` fires before the exe's own
+    entry point runs, meaning code inside our DLL has full read/write access to the process's own memory
+    at any point afterward, with none of the anti-attach restrictions that block an external debugger.
+    A short delay after `DLL_PROCESS_ATTACH` (to let the protector's own unpacking stub finish — exact
+    timing not yet measured, needs live testing) followed by scanning live memory for
+    `FF 15 <IAT-slot-VA>` would sidestep both the packing problem and the attach-block at once. **Caveat**:
+    can't wait for `Direct3DCreate8` as the "safe to scan" signal — the gate-bug/hang happens before that
+    point too, per the first live test. A diagnostic (logs candidates only, does not blindly patch
+    anything) draft of this scanner is at
+    `manhunt-2003-vr-staging/proxy-d3d8/src/drm-scan-DRAFT.c` — not wired into the live proxy yet, needs
+    review + live-test timing data before it's trustworthy. Full investigation trace:
+    `manhunt-2003-vr-dev-archive/recon/2026-08-25-drm-call-site-rediscovery/README.md`.
 
 ## 5. Threading & frame structure
 - Immediate context only, or deferred contexts + command lists?:
