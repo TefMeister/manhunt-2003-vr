@@ -294,6 +294,18 @@ to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
   and found ABI-incompatible with the current x64dbg plugin version on mad-max-vr, same day. A separate
   research session suggested it again for this project without knowing that; don't re-attempt without a
   version change to x64dbg itself.
+- **Windowed-mode `CreateDevice` failures: `BackBufferFormat`-vs-desktop mismatch was NOT the cause,
+  despite being the textbook first guess.** Forcing `Windowed=TRUE` via a `CreateDevice` vtable hook got
+  `D3DERR_INVALIDCALL` back. First theory (format must match the desktop's live display mode) was
+  disproven with direct evidence: a live test confirmed the format already matched (both
+  `D3DFMT_X8R8G8B8`), yet the same error persisted. **Real cause: `SwapEffect = D3DSWAPEFFECT_FLIP`**,
+  which the D3D8/9 docs disallow for windowed swap chains — and `IDirect3D8::CheckDeviceType` does NOT
+  validate `SwapEffect` at all, so it reported success (`hr=0x0`) on the exact call that still failed in
+  `CreateDevice`. Lesson: `CheckDeviceType`'s "valid" answer only covers the format/windowed pairing it
+  actually checks — a green light there doesn't clear other presentation-parameter constraints (swap
+  effect, multisample type, etc.). Fix: override `SwapEffect` to `D3DSWAPEFFECT_DISCARD` whenever forcing
+  windowed mode. See `manhunt-2003-vr-modding-notes/2026-08-25-windowed-mode-three-live-tests.md` for the
+  full three-attempt trace.
 
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
