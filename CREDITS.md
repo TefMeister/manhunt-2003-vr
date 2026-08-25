@@ -18,11 +18,16 @@ notes, and tools we wrote ourselves.
 
 ## Prior art, tools, and research this repo draws on
 
-Research has not started yet — this table will fill in as work progresses.
-
 | Source / Work | Creator(s) | Link |
 |---|---|---|
-| *(none yet — project just started)* | | |
+| Manhunt.SimpleDebugMenu | ermaccer | https://github.com/ermaccer/Manhunt.SimpleDebugMenu |
+| MHNoDRM (SecuROM check remover) | Fire-Head | https://github.com/Fire-Head/MHNoDRM |
+| Manhunt Windows 10/11 compatibility fixes | silentgameplays | https://github.com/silentgameplays/Manhunt-Windows-11-Fix |
+| "Fixer" automated fix guide | Steam Community guide author | https://steamcommunity.com/sharedfiles/filedetails/?id=2166039806 |
+| MHWSF (Manhunt Widescreen Fix) | Fire-Head | https://github.com/Fire-Head/MHWSF |
+| OpenRW (RenderWare/GTA III open-source reimplementation) | rwengine contributors | https://github.com/rwengine/openrw |
+| librw (RenderWare Graphics reimplementation) | aap and contributors | https://github.com/aap/librw |
+| PCGamingWiki (Manhunt technical notes) | PCGamingWiki community | https://www.pcgamingwiki.com/wiki/Manhunt |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
