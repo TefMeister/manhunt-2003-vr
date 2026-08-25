@@ -149,9 +149,49 @@ to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
     confirmed committed+readable/executable). Result: **all 37 candidates appeared in pass 1** (within
     3 seconds of `DLL_PROCESS_ATTACH`) — unpacking of this region happens fast, not the 12+-minute
     worst-case a later SecuROM 7 dissection warned about (see below; that source is a different, later
-    SecuROM version, flagged there as reference-only). 37 total across the 6 target functions — matches
-    the expected pattern of "way more than the real 16," since most calls to these APIs elsewhere in the
-    code are entirely ordinary. **Not yet narrowed down to the real 16** — next step, not yet started.
+    SecuROM version, flagged there as reference-only).
+  - **Correction (2026-08-25, same session): the "different build" theory above was WRONG — the
+    addresses match exactly.** Cross-checked all 16 of `Fire-Head/MHNoDRM`'s documented addresses against
+    the 37 live-scanned candidates directly (script-verified, not eyeballed): **16/16 matched**, once
+    accounting for a 2-byte labeling-convention difference (MHNoDRM's addresses point at the call
+    instruction's 4-byte operand; our scanner logs the `FF 15` opcode's own start, 2 bytes earlier — same
+    physical call site either way). This means the real call sites in this exact build sit at the exact
+    same addresses MHNoDRM documented years ago — the ONLY reason static file analysis failed was the
+    at-rest packing (§4 above), not any build/version difference. The remaining 21 of the 37 candidates
+    are confirmed-ordinary calls to the same 6 APIs elsewhere in the code, unrelated to the DRM-remnant
+    bug. **The real 16, with their function identity, are now known with high confidence**:
+    | call-instr VA | function | note |
+    |---|---|---|
+    | 0x0042BDC3 | GetLastError | |
+    | 0x0043A005 | IsBadReadPtr | "Broken SaveGame EntityData" per MHNoDRM |
+    | 0x004667DC | GetVersion | "DropDeadBody Crash" |
+    | 0x0046D688 | IsBadCodePtr | "More Damage" |
+    | 0x004732AA | GetLastError | "Broken Health 1" |
+    | 0x00474EB7 | GetVersion | "Ignore Control 1" |
+    | 0x0047D05C | IsBadWritePtr | "Help Text Crash" |
+    | 0x004C78A0 | GetVersion | "Drop Item Timer" |
+    | 0x004CC48C | GetCurrentThread | **"Broken Doors" — the gate bug hit live 2026-08-25** |
+    | 0x004D26F4 | GetCurrentThread | "Broken Health 2" |
+    | 0x004D4063 | IsBadReadPtr | "Broken Useables" |
+    | 0x004D7E7A | GetLastError | "Broken Level Initialization 1" |
+    | 0x004D84DE | IsBadCodePtr | "Broken Level Initialization 2" |
+    | 0x004F222E | IsBadWritePtr | "Ignore Control 2" |
+    | 0x004F9B5C | IsBadReadPtr | "Less Ammo" |
+    | 0x005FFCE6 | GetVersion | "Broken SaveGame Button" |
+
+    (The Tab/item-swap crash at `0x004C9AAD` doesn't match any of these 16 exactly — it sits between
+    the GetVersion and GetCurrentThread sites, consistent with being nearby related code, but isn't
+    itself one of the 16 documented redirect points.)
+  - **Next step: build a from-scratch passthrough-logging hook on these 16 confirmed sites** (not a
+    behavior-changing patch yet) — redirect each site's 6-byte `FF 15` call to a small stub that logs the
+    real function's actual return value and relevant register state, then transparently tail-jumps to the
+    real function via the (untouched) shared IAT slot, so behavior is unchanged this iteration. Purpose:
+    get live, empirical data on what the real function actually returns/receives at each of these 16
+    specific sites, to cross-check against MHNoDRM's documented fake-value logic (several of their stubs
+    read raw `ecx`/`edx`/`esi` rather than defined parameters) before committing to an actual behavior
+    patch. Not yet built — real engineering care needed on the byte-level redirect (verified the
+    6-byte-instruction vs 5-byte-redirect length mismatch is absorbed cleanly by a 1-byte NOP pad,
+    keeping return addresses correct) before it's safe to deploy and test live.
   - **External-research cross-check (2026-08-25, reviewed after the second live test)**: a separate
     research session found a legitimate SecuROM 7 technical dissection
     (https://lostfilearchives.github.io/08/28/Dissection/, technique description only, no crack/bypass
@@ -221,10 +261,14 @@ to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
 - **`testapp.exe` is broken on this install, don't retry it as-is.** Its own entry point crashes
   immediately (`STATUS_ACCESS_VIOLATION` at `AddressOfEntryPoint`, which points into a non-code section)
   — confirmed twice live, unrelated to our proxy. See §4 for the full finding.
-- **The 16 hardcoded call-site addresses from `Fire-Head/MHNoDRM`'s public source do NOT transfer to our
-  exact binary** — verified via file-offset math (confirmed correct against the MZ header) against raw
-  bytes at each address; none match the expected `FF 15` opcode. Don't reuse those exact addresses
-  without rediscovering them on our own build first. See §4.
+- **CORRECTED (2026-08-25, same session): the 16 hardcoded addresses from `Fire-Head/MHNoDRM` DO
+  transfer to our exact binary — confirmed 16/16 match live.** The earlier entry here (and the dossier's
+  first pass at §4) concluded they didn't transfer, based on a static file-offset check that came back
+  empty. That check was reading the FILE ON DISK, where `.text` is packed/unreadable — it wasn't a build
+  mismatch at all. Once scanned in LIVE memory instead, all 16 addresses matched exactly (2-byte
+  labeling-convention offset aside). Lesson: a failed static check on a packed binary proves nothing
+  about address validity — don't conclude "different build" from that alone again. See §4 for the full
+  16/16 table.
 - **x32dbg attach is currently blocked** on this game (`Could not open process`, both unelevated and
   elevated) — don't assume live debugger access works here just because it worked on other projects;
   needs its own investigation.
