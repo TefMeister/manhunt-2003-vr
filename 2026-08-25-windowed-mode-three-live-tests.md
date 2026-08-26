@@ -1,9 +1,11 @@
-# 2026-08-25 — Windowed mode: three live tests, root cause found
+# 2026-08-25/26 — Windowed mode: five live tests, root cause found
 
 The in-game video-settings launcher only ever offers `800x600x32 (Fullscreen)` — no windowed
 option — and Alt+Enter doesn't toggle it. Built a `CreateDevice` vtable hook in the proxy
 `d3d8.dll` (see `manhunt-2003-vr-staging/proxy-d3d8`) to force windowed mode from outside the
-game's own code. Took three live-test rounds to actually nail down why it kept failing.
+game's own code. Took five live-test rounds across two sessions to actually nail down why it
+kept failing — the first two guesses (attempts 1-3 below) were both real, documented D3D8
+requirements, and neither was the actual cause.
 
 ## Attempt 1 — hook works, `CreateDevice` itself fails
 
@@ -37,11 +39,41 @@ That's exactly why the diagnostic looked clean while the real call kept failing.
 **Fix:** `Hooked_CreateDevice` now overrides `SwapEffect` from `FLIP` to `DISCARD` whenever it
 sees it, alongside the existing `Windowed=TRUE` force. `DISCARD` is the standard, broadly
 compatible windowed choice and needs no other field changes (`BackBufferCount` is already 1, no
-multisampling to conflict with). Built clean, deployed to the live install. **Not yet
-live-tested — first thing to try next session.**
+multisampling to conflict with). Built clean, deployed to the live install.
+
+## Attempt 4 (next morning) — the FLIP fix alone wasn't enough
+
+Live-tested the `SwapEffect` fix. Log confirmed the override applied (`SwapEffect=1`/`DISCARD`)
+— but `CreateDevice` still returned the identical `D3DERR_INVALIDCALL`. A real fix for a real
+restriction, just not the (or not the only) actual blocker.
+
+## Attempt 5 — stop guessing one field at a time, sweep several at once
+
+Rather than spend a sixth live test on one more single-field guess, built a probe sweep:
+`Hooked_CreateDevice` now creates a **private, hidden, invisible throwaway window** and tries 7
+candidate `D3DPRESENT_PARAMETERS`/`BehaviorFlags` variants against it via `real_CreateDevice`
+directly — each device released immediately, none of it touching the game's real window or the
+real forwarded call — logging every outcome. One live test now answers as many hypotheses as fit
+in the sweep, instead of one per launch.
+
+**Result: clean, unambiguous signal.** Every variant that kept `FullScreen_PresentationInterval`
+at `D3DPRESENT_INTERVAL_IMMEDIATE` (`0x80000000` — the game's own fullscreen setting) failed with
+`D3DERR_INVALIDCALL`, regardless of what else changed (depth-stencil on/off, backbuffer dims,
+software vs. hardware vertex processing). Every variant that switched it to
+`D3DPRESENT_INTERVAL_DEFAULT` succeeded, with nothing else required. **Root cause: this driver
+rejects `D3DPRESENT_INTERVAL_IMMEDIATE` for a windowed device.**
+
+**Final fix:** `Hooked_CreateDevice` overrides `FullScreen_PresentationInterval` from `IMMEDIATE`
+to `DEFAULT` whenever forcing windowed mode, on top of the (real, harmless, worth keeping)
+format-match and `SwapEffect` fixes from attempts 1-3. The probe-sweep scaffolding was removed
+once it had done its job, keeping the hook back to a narrow, minimal size. Built clean, deployed
+to the live install. **The probe sweep itself already proved this exact configuration succeeds
+against a real device on this real driver — the only thing left to confirm is the same result
+through the game's own window on the real forwarded call.**
 
 ## Process note
 
-The user ran out of time for another live test this session. Everything is committed, pushed,
-and deployed so the very next launch can be the confirming test with zero setup — see
-`STATUS.md` §14 in the `claude-memory` brain repo for the full resume point.
+Building a self-contained probe harness (attempt 5) turned what would have been several more
+single-guess live-test round trips into one. Worth reaching for this pattern earlier next time a
+single-field fix doesn't clear an error on the first retest, rather than defaulting to another
+one-guess-per-launch cycle.
