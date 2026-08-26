@@ -18,11 +18,14 @@ notes, and tools we wrote ourselves.
 
 ## Prior art, tools, and research this repo draws on
 
-Research has not started yet — this table will fill in as work progresses.
-
 | Source / Work | Creator(s) | Link |
 |---|---|---|
-| *(none yet — project just started)* | | |
+| MHNoDRM — documented which SecuROM-remnant call sites matter, and that the stubs' return values were faked. Pointed us at the right addresses; our patches are our own, derived from our own disassembly. | Fire-Head | https://github.com/Fire-Head/MHNoDRM |
+| PCGamingWiki — Manhunt technical notes on the known bug cluster (gates, crashes, leaks) | PCGamingWiki community | https://www.pcgamingwiki.com/wiki/Manhunt |
+| Manhunt Windows 10/11 compatibility fixes | silentgameplays | https://github.com/silentgameplays/Manhunt-Windows-11-Fix |
+| Capstone — the disassembler used to read the unpacked image offline | Capstone contributors | https://www.capstone-engine.org/ |
+| Frida — live instrumentation used to identify the vtable owner, the polled input devices, and the transform path, without relaunching the game | Ole André V. Ravnås & Frida contributors, supported by NowSecure | https://frida.re/ |
+| llvm-mingw — the 32-bit toolchain the proxy is built with | Martin Storsjö & contributors | https://github.com/mstorsjo/llvm-mingw |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
