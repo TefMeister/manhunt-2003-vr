@@ -294,18 +294,33 @@ to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
   and found ABI-incompatible with the current x64dbg plugin version on mad-max-vr, same day. A separate
   research session suggested it again for this project without knowing that; don't re-attempt without a
   version change to x64dbg itself.
-- **Windowed-mode `CreateDevice` failures: `BackBufferFormat`-vs-desktop mismatch was NOT the cause,
-  despite being the textbook first guess.** Forcing `Windowed=TRUE` via a `CreateDevice` vtable hook got
-  `D3DERR_INVALIDCALL` back. First theory (format must match the desktop's live display mode) was
-  disproven with direct evidence: a live test confirmed the format already matched (both
-  `D3DFMT_X8R8G8B8`), yet the same error persisted. **Real cause: `SwapEffect = D3DSWAPEFFECT_FLIP`**,
-  which the D3D8/9 docs disallow for windowed swap chains — and `IDirect3D8::CheckDeviceType` does NOT
-  validate `SwapEffect` at all, so it reported success (`hr=0x0`) on the exact call that still failed in
-  `CreateDevice`. Lesson: `CheckDeviceType`'s "valid" answer only covers the format/windowed pairing it
-  actually checks — a green light there doesn't clear other presentation-parameter constraints (swap
-  effect, multisample type, etc.). Fix: override `SwapEffect` to `D3DSWAPEFFECT_DISCARD` whenever forcing
-  windowed mode. See `manhunt-2003-vr-modding-notes/2026-08-25-windowed-mode-three-live-tests.md` for the
-  full three-attempt trace.
+- **Windowed-mode `CreateDevice` failures: two real findings, neither the actual (sole) cause —
+  the real culprit was `FullScreen_PresentationInterval`.** Forcing `Windowed=TRUE` via a
+  `CreateDevice` vtable hook got `D3DERR_INVALIDCALL` back. **Theory 1** (`BackBufferFormat` must
+  match the desktop's live display mode) was disproven with direct evidence: a live test confirmed
+  the format already matched (both `D3DFMT_X8R8G8B8`), yet the same error persisted. **Theory 2**
+  (`SwapEffect = D3DSWAPEFFECT_FLIP`, which the D3D8/9 docs genuinely do disallow for windowed swap
+  chains — and which `IDirect3D8::CheckDeviceType` doesn't validate at all, so it reported success
+  on the exact call that still failed) fixed a real, documented restriction but *still* didn't clear
+  the error on its own. **Root cause, found by a 7-variant probe sweep against a private hidden
+  window (all combinations tried in one live test instead of one guess per launch):
+  `FullScreen_PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE` — the game's own fullscreen
+  setting — is rejected by this driver for a windowed device.** Every probe variant that kept
+  `PresInt=IMMEDIATE` failed identically regardless of what else changed (depth-stencil, backbuffer
+  dims, vertex-processing mode); every variant that switched it to `D3DPRESENT_INTERVAL_DEFAULT`
+  succeeded, with no other change required. Fix: override `FullScreen_PresentationInterval` from
+  `IMMEDIATE` to `DEFAULT` whenever forcing windowed mode (the format-match and `SwapEffect` fixes
+  stay too — both real requirements, harmless to keep, just not what was actually blocking this).
+  **Confirmed via the probe sweep's own live `CreateDevice` calls against a throwaway window
+  (2026-08-26, real driver, not a simulation) — the fix is built and deployed to the real path,
+  but the real forwarded call into the game's own window is still awaiting its first live test.**
+  Lesson for future D3D8/9 windowed-mode retrofits:
+  `CheckDeviceType`'s "valid" answer only covers the format/windowed pairing it actually checks —
+  a green light there doesn't clear every other presentation-parameter constraint, and when a
+  single-field fix doesn't resolve an `INVALIDCALL`, a multi-variant probe sweep against a
+  throwaway window finds the real answer in one live test instead of one guess per session. Full
+  five-attempt trace in `manhunt-2003-vr-modding-notes/2026-08-25-windowed-mode-three-live-tests.md`
+  (title predates the final two attempts, content covers all five).
 
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
