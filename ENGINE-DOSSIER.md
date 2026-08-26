@@ -5,11 +5,12 @@
 > `-dev-archive` / `-modding-notes` repos; this file is the *distilled current
 > truth*. Update it whenever a fact changes; correct false leads in place.
 
-**Status:** M0 blocked — second live test done: diagnostic memory scan found 37 real candidate call
-sites (§4), gate bug did NOT recur this run (confirmed nondeterministic, not fixed), a second crash
-(item-swap via Tab) hit the same bug family from a different angle. Still-active SecuROM code-packing
-layer (§4) blocks both static-file fixes and debugger attach. Next step: narrow the 37 candidates down
-to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
+**Status:** windowed mode CONFIRMED WORKING (§11) after 6 live tests — `CreateDevice` now succeeds
+through the game's real window. New blocker found immediately after: a reproducible hard crash right
+after device creation (§12), crash-diagnostic handler deployed, awaiting its first triggered log. The
+DRM-remnant bug (§4: 16 real call sites identified, root cause understood, not yet patched) and the
+still-active SecuROM code-packing layer (blocks debugger attach) remain separately open. Next step:
+read the crash-diagnostic log from the next live test · **VR-readiness verdict:** TBD
 
 ## 1. Identity
 - Game / build / version: Manhunt (2003), Rockstar North, published by Rockstar Games. Steam release.
@@ -311,10 +312,11 @@ to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
   succeeded, with no other change required. Fix: override `FullScreen_PresentationInterval` from
   `IMMEDIATE` to `DEFAULT` whenever forcing windowed mode (the format-match and `SwapEffect` fixes
   stay too — both real requirements, harmless to keep, just not what was actually blocking this).
-  **Confirmed via the probe sweep's own live `CreateDevice` calls against a throwaway window
-  (2026-08-26, real driver, not a simulation) — the fix is built and deployed to the real path,
-  but the real forwarded call into the game's own window is still awaiting its first live test.**
-  Lesson for future D3D8/9 windowed-mode retrofits:
+  **CONFIRMED WORKING END-TO-END, live test 6 (2026-08-26): `CreateDevice` now succeeds
+  (`hr=0x00000000`, real device pointers) through the game's own real window on two separate
+  launches — the windowed-mode bug itself is fully fixed.** (A new, unrelated crash appears
+  immediately after device creation now succeeds — see the next entry below; that does not
+  reopen this one.) Lesson for future D3D8/9 windowed-mode retrofits:
   `CheckDeviceType`'s "valid" answer only covers the format/windowed pairing it actually checks —
   a green light there doesn't clear every other presentation-parameter constraint, and when a
   single-field fix doesn't resolve an `INVALIDCALL`, a multi-variant probe sweep against a
@@ -324,3 +326,19 @@ to the real 16 and build a from-scratch patch · **VR-readiness verdict:** TBD
 
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
+- **NEW, ACTIVE (2026-08-26): a hard crash immediately after `CreateDevice` succeeds in windowed
+  mode.** Live test 6, twice in a row: `CreateDevice` returns success, then `manhunt.exe`
+  immediately hard-crashes with `EXCEPTION_ACCESS_VIOLATION` (`0xC0000005`) at the identical
+  faulting offset both times — per Windows Error Reporting, `manhunt.exe+0x0023CE95` (module base
+  `0x00400000` per §3, so absolute VA `0x0063CE95`). That address sits in the same general
+  code region as several of the 16 known SecuROM-remnant call sites (§4's cluster around
+  `0x0065xxxx`–`0x0066xxxx`) but doesn't exactly match any of them — plausibly related, plausibly
+  a separate bug that windowed mode simply exposes for the first time (this code path never ran
+  before, since `CreateDevice` always failed first). **x32dbg attach is still confirmed blocked**
+  (§4), so a vectored exception handler (`CrashDiagnosticFilter` in `proxy-d3d8/src/proxy.c`,
+  staging `c832448`) was added instead — logs faulting address, access type (read/write), all
+  GP registers, and the raw bytes at EIP the instant this exception fires, then lets it proceed
+  exactly as it would without the handler (`EXCEPTION_CONTINUE_SEARCH` always). Deployed;
+  **awaiting the next live test's crash-diagnostic log** (the crash is reliably reproducible, so
+  this should need only one more launch). This is the next blocker after windowed mode itself,
+  which is now fully working.
