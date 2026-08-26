@@ -33,6 +33,8 @@ notes, and tools we wrote ourselves.
 | "Breaking SecuROM 7 - A Dissection" | lostfilearchives | https://lostfilearchives.github.io/08/28/Dissection/ |
 | ScyllaHide (x64dbg/x32dbg anti-anti-debug plugin) | x64dbg / NtQuery (ScyllaHide) contributors | https://github.com/x64dbg/ScyllaHide |
 | SecuROMLoader (version-identification database, cited for version data only) | nckstwrt | https://github.com/nckstwrt/SecuROMLoader |
+| GTASA (GTA San Andreas decompilation/RE project, CCamera reference) | jte | https://github.com/jte/GTASA |
+| GTAMods Wiki (RenderWare engine documentation) | GTAMods community | https://gtamods.com/wiki/RenderWare |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
