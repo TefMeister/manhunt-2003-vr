@@ -154,3 +154,58 @@ its own video-mode state (RenderWare, and likely most of that era), overriding
 `D3DPRESENT_PARAMETERS` alone is not enough. The engine's own mode selection has to agree, or its
 internal allocations fail in ways that surface as unrelated-looking null-pointer crashes deep in
 engine code — exactly the trail chased here across four attempts.
+
+---
+
+## ✅ SOLVED (2026-08-26, live test 14) — "Camera raster is too big."
+
+Windowed mode works. The game runs at 800×600 in a window, no crash, process stable.
+
+The last blocker had nothing to do with pixel formats, swap effects, or video-mode records — all
+of which I chased confidently and wrongly. Having dumped the game's full unpacked code to disk
+(the exe is packed at rest, and a debugger can't attach), the remaining analysis was offline, and
+it led to RenderWare's **sized**-camera-raster path calling `GetClientRect` and refusing any
+camera raster bigger than the window's client area. The game says so itself — the error string
+sitting right there in the code is literally **`"Camera raster is too big."`**
+
+The window was still **640×480**, whatever the fullscreen path had left behind, while the game
+asked for an 800×600 camera raster. Refused raster → NULL → and that single NULL cascaded into
+every null-pointer crash chased since live test 6.
+
+It also finally explained the asymmetry visible from the very beginning: the game creates two
+rasters, a `0×0` one that always worked and an `800×600` one that never did. Zero-sized rasters
+are routed around this check entirely.
+
+**The fix** (`ensure_client_area()`): resize the window so its client area is at least the
+back-buffer size, using `AdjustWindowRectEx` against the window's own style. No game code patched.
+
+### What windowed mode actually required, in full
+
+1. `Windowed = TRUE` — the obvious part.
+2. `SwapEffect` `FLIP` → `DISCARD` — D3D8 disallows `FLIP` windowed.
+3. `FullScreen_PresentationInterval` `IMMEDIATE` → `DEFAULT` — this driver rejects `IMMEDIATE`
+   windowed (found by the 7-variant probe sweep).
+4. Client area ≥ back-buffer size — the real blocker.
+
+### Honest scorecard
+
+Fourteen live tests. Three confidently-wrong theories before the right one. Worth recording *why*
+the wrong ones died cleanly instead of becoming folklore:
+
+- **Logging the pre-change value before every fix.** The display-format theory was plausible and
+  well-argued, and the log killed it in one run by showing the globals were *already* correct —
+  the "fix" was a measured no-op. Without that logging it would have looked like a partial success.
+- **Building instrumentation instead of guessing again.** The probe sweep turned "one guess per
+  launch" into seven hypotheses in one. The crash handler and full-image dump turned a
+  no-debugger situation into ordinary offline analysis.
+- **Knowing when a fix is the wrong kind of fix.** Byte-patching the first crash site genuinely
+  worked — and was retired anyway, because the NULL just moved to the next consumer. When a null
+  pointer has many consumers, fix the producer.
+
+### Reusable lesson (any engine, any project)
+
+When retrofitting windowed mode into an old engine, **check the window's client area against
+whatever render targets the engine wants to allocate.** Engines written for exclusive fullscreen
+routinely assume the window is already the size of the display mode, and validate render-target
+sizes against it. The failure surfaces far away from the cause — as null-pointer crashes deep in
+unrelated engine code — so it is worth checking early rather than after four crash-chasing rounds.
