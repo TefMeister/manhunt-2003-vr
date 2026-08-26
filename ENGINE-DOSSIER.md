@@ -342,3 +342,28 @@ read the crash-diagnostic log from the next live test · **VR-readiness verdict:
   **awaiting the next live test's crash-diagnostic log** (the crash is reliably reproducible, so
   this should need only one more launch). This is the next blocker after windowed mode itself,
   which is now fully working.
+  - **FULLY DIAGNOSED (2026-08-26, live tests 7-9, no debugger — offline disassembly of
+    in-process memory dumps via Python/capstone).** The chain, all confirmed from real dumps
+    rather than inferred: `manhunt.exe+0x00593282` calls an allocator/constructor helper
+    (`manhunt.exe+0x0063CED0`) whose own disassembly shows an internal NULL-return failure path,
+    then passes that return value **straight into a second helper (`+0x0063CE70`) with no NULL
+    check**. That helper's prologue loads its 2nd argument into `EDI` (`mov edi,[esp+0x10]`) and
+    at `+0x0063CE95` reads two 16-bit fields through it (`mov cx,[edi+0x1C]` / `mov dx,[edi+0x1E]`)
+    to compute an offset added onto two fields of the object it's filling. Register + stack dumps
+    agreed 3-for-3 on the argument layout, and the stack-walk caller dump independently produced
+    the same return address (`0x00593282`) that was derived by hand — two independent confirmations.
+    **Why only in windowed mode:** the allocator's failure path appears to trigger when no
+    enumerated *fullscreen* video mode matches the live desktop mode — which every windowed device
+    hits by construction. The game never shipped a windowed option, so this path plausibly never
+    ran on any retail install, ever. A genuine latent bug in the original 2003 code, not something
+    our hook introduced.
+  - **PATCHED (2026-08-26, staging `0ff31a3`), not yet live-verified.**
+    `patch_windowed_raster_offset_crash()` replaces exactly the 23 bytes at
+    `+0x0023CE95..0x0023CEAC` with a 2-byte short jump + NOP padding, skipping only the two
+    null-dependent field copies. **Why skipping is safe rather than a behavior change:** the two
+    destination fields are already zero-initialized by the object's own constructor inside the
+    same allocator (visible in its disassembly), so the skipped work would only have *added an
+    offset* to them — omitting it leaves them at their existing safe default. Applied
+    just-in-time right after our own `CreateDevice` returns (the `.text` is packed at rest, see
+    §4) and **only after byte-comparing against the exact expected original bytes**, so a
+    different build or not-yet-unpacked memory is skipped rather than written blind.
