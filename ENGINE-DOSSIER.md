@@ -324,6 +324,44 @@ not patched) remains separately open · **VR-readiness verdict:** TBD
   five-attempt trace in `manhunt-2003-vr-modding-notes/2026-08-25-windowed-mode-three-live-tests.md`
   (title predates the final two attempts, content covers all five).
 
+### Gameplay crash after 3-4 minutes — decoded (2026-08-26)
+
+User hit repeatable crashes ~3-4 minutes into actual play. Our in-process handler caught two:
+`0x004E7738` (WRITE to NULL) and **`0x004C9AAD`** (READ at address `3`). The latter is the
+**same address recorded on 2026-08-25** as the Tab/item-swap crash, logged before any camera or
+input hooks existed — so this is pre-existing, not introduced by our tooling (a vanilla A/B is
+queued to confirm rather than assert).
+
+Disassembled offline from the unpacked image:
+
+```
+004C9AA0: push  ebx
+004C9AA1: mov   edx, [ecx + 0x1D0]      ; pointer field
+004C9AA7: xor   bl, bl
+004C9AA9: test  edx, edx
+004C9AAB: je    0x4C9AB8                ; NULL check EXISTS...
+004C9AAD: movzx eax, byte ptr [edx+2]   ; ...but EDX==1 at the crash -> reads addr 3
+004C9AB1: and   eax, 3
+004C9AB4: je    0x4C9AB8
+004C9AB6: mov   bl, 1
+004C9AB8: movzx eax, bl
+004C9ABC: ret
+```
+
+**The field at `+0x1D0` contained the integer `1`.** The guard only rejects NULL, so a faked
+boolean `1` passes it and is then dereferenced as a pointer. This is precisely the damage
+pattern the DRM remnants produce: a call that should yield a **pointer** returning a faked
+**TRUE** instead (see §4 — MHNoDRM's 16 sites each fake a per-site return value).
+
+Two possible fixes, in order of preference:
+1. **Root cause** — find what writes `1` into `+0x1D0` and fix the faked return there. Almost
+   certainly one of the 16 known sites; fixing it likely also cures the stuck gates and the
+   item-swap crash, since they're all the same cluster.
+2. **Harden the guard** (fallback) — widen the existing `test edx,edx` into a real
+   plausible-pointer test, so a small integer is rejected exactly as NULL already is. Low risk
+   because the rejecting branch is the function's **own** existing path, not invented behaviour —
+   but it treats the symptom, so prefer (1).
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
