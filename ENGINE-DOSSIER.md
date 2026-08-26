@@ -5,15 +5,12 @@
 > `-dev-archive` / `-modding-notes` repos; this file is the *distilled current
 > truth*. Update it whenever a fact changes; correct false leads in place.
 
-**Status:** windowed `CreateDevice` succeeds (§11), but the game still can't run windowed — RenderWare
-refuses to create an 800×600 raster because forcing `Windowed=TRUE` in the present parameters leaves
-its own video-mode state believing it is still in exclusive fullscreen (§12; proven not to be a D3D
-limitation via a standalone probe). Byte-patching the resulting null-pointer crashes was tried across
-10 live tests and retired as symptom-chasing. Next approach: make RenderWare itself select a windowed
-video mode (index 0 in its mode list) instead of overriding present parameters behind it. The
-DRM-remnant bug (§4: 16 real call sites identified, root cause understood, not yet patched) and the
-still-active SecuROM code-packing layer (blocks debugger attach) remain separately open ·
-**VR-readiness verdict:** TBD
+**Status:** ✅ **WINDOWED MODE WORKING (2026-08-26)** — game runs windowed at 800×600, no crash,
+process stable. Real blocker was the window's client area, not formats or video modes (§11). This also
+proves a strong foothold: D3D vtable hooking, live memory patching, crash interception, and full
+unpacked-image dumping all work on this title despite a blocked debugger. Next: the VR keystone —
+locate the camera/projection delivery (playbook Phase 3). The DRM-remnant bug (§4: 16 sites identified,
+not patched) remains separately open · **VR-readiness verdict:** TBD
 
 ## 1. Identity
 - Game / build / version: Manhunt (2003), Rockstar North, published by Rockstar Games. Steam release.
@@ -329,73 +326,29 @@ still-active SecuROM code-packing layer (blocks debugger attach) remain separate
 
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
-- **NEW, ACTIVE (2026-08-26): a hard crash immediately after `CreateDevice` succeeds in windowed
-  mode.** Live test 6, twice in a row: `CreateDevice` returns success, then `manhunt.exe`
-  immediately hard-crashes with `EXCEPTION_ACCESS_VIOLATION` (`0xC0000005`) at the identical
-  faulting offset both times — per Windows Error Reporting, `manhunt.exe+0x0023CE95` (module base
-  `0x00400000` per §3, so absolute VA `0x0063CE95`). That address sits in the same general
-  code region as several of the 16 known SecuROM-remnant call sites (§4's cluster around
-  `0x0065xxxx`–`0x0066xxxx`) but doesn't exactly match any of them — plausibly related, plausibly
-  a separate bug that windowed mode simply exposes for the first time (this code path never ran
-  before, since `CreateDevice` always failed first). **x32dbg attach is still confirmed blocked**
-  (§4), so a vectored exception handler (`CrashDiagnosticFilter` in `proxy-d3d8/src/proxy.c`,
-  staging `c832448`) was added instead — logs faulting address, access type (read/write), all
-  GP registers, and the raw bytes at EIP the instant this exception fires, then lets it proceed
-  exactly as it would without the handler (`EXCEPTION_CONTINUE_SEARCH` always). Deployed;
-  **awaiting the next live test's crash-diagnostic log** (the crash is reliably reproducible, so
-  this should need only one more launch). This is the next blocker after windowed mode itself,
-  which is now fully working.
-  - **FULLY DIAGNOSED (2026-08-26, live tests 7-9, no debugger — offline disassembly of
-    in-process memory dumps via Python/capstone).** The chain, all confirmed from real dumps
-    rather than inferred: `manhunt.exe+0x00593282` calls an allocator/constructor helper
-    (`manhunt.exe+0x0063CED0`) whose own disassembly shows an internal NULL-return failure path,
-    then passes that return value **straight into a second helper (`+0x0063CE70`) with no NULL
-    check**. That helper's prologue loads its 2nd argument into `EDI` (`mov edi,[esp+0x10]`) and
-    at `+0x0063CE95` reads two 16-bit fields through it (`mov cx,[edi+0x1C]` / `mov dx,[edi+0x1E]`)
-    to compute an offset added onto two fields of the object it's filling. Register + stack dumps
-    agreed 3-for-3 on the argument layout, and the stack-walk caller dump independently produced
-    the same return address (`0x00593282`) that was derived by hand — two independent confirmations.
-    **Why only in windowed mode:** the allocator's failure path appears to trigger when no
-    enumerated *fullscreen* video mode matches the live desktop mode — which every windowed device
-    hits by construction. The game never shipped a windowed option, so this path plausibly never
-    ran on any retail install, ever. A genuine latent bug in the original 2003 code, not something
-    our hook introduced.
-  - **PATCHED (2026-08-26, staging `0ff31a3`), not yet live-verified.**
-    `patch_windowed_raster_offset_crash()` replaces exactly the 23 bytes at
-    `+0x0023CE95..0x0023CEAC` with a 2-byte short jump + NOP padding, skipping only the two
-    null-dependent field copies. **Why skipping is safe rather than a behavior change:** the two
-    destination fields are already zero-initialized by the object's own constructor inside the
-    same allocator (visible in its disassembly), so the skipped work would only have *added an
-    offset* to them — omitting it leaves them at their existing safe default. Applied
-    just-in-time right after our own `CreateDevice` returns (the `.text` is packed at rest, see
-    §4) and **only after byte-comparing against the exact expected original bytes**, so a
-    different build or not-yet-unpacked memory is skipped rather than written blind.
-  - **❌ THAT PATCH IS NOW RETIRED AND DISABLED (2026-08-26, live test 10 + a standalone probe) —
-    the whole byte-patching approach was attacking a symptom.** The patch *did* work as designed
-    (the `+0x0023CE95` crash disappeared; the game got far enough to show a taskbar icon for the
-    first time), but it then crashed at **`+0x0025FBF8`** — a field-copy helper reading through
-    the *same* null raster, reached from inside the very function that was patched. The NULL
-    propagates into many consumers, so patching individual dereferences is unwinnable
-    whack-a-mole.
-  - **✅ REAL ROOT CAUSE (2026-08-26): we were lying to RenderWare — and it is NOT a D3D
-    limitation.** The game creates two rasters: `0×0` (succeeds) and `800×600` (**returns NULL**).
-    A **standalone D3D8 probe** (`manhunt-2003-vr-staging/d3d8-windowed-probe.c`, run on this same
-    machine/driver, replicating Manhunt's exact present parameters, **without launching the
-    game**) creates every 800×600 surface RenderWare could plausibly want — render targets
-    (lockable and not), image surface, render-target texture, D24S8 depth-stencil — all `hr=0`,
-    plus a desktop-size control. **So nothing at the D3D level refuses; RenderWare's own
-    raster-creation callback does.** Forcing `Windowed=TRUE` in `D3DPRESENT_PARAMETERS` overrides
-    the device behind RenderWare's back: RenderWare still believes it is in exclusive fullscreen
-    800×600 (what the game's own launcher configured), so its internal video-mode state disagrees
-    with the actual device and its raster creation fails.
-  - **NEXT APPROACH (not yet started): make RenderWare itself select a windowed video mode**,
-    rather than overriding present parameters underneath it. RenderWare's video-mode list
-    conventionally puts the **windowed mode at index 0** (the entry without the exclusive flag),
-    with fullscreen modes following. The levers to find in this binary: the engine's video-mode
-    get/set path (the `[engine+0x??]` device-callback table around `+0x0063CC50`–`+0x0063CE40`
-    is the relevant dispatch region seen in the dumps) and wherever the launcher's chosen mode
-    index is applied at startup. **Useful reusable lesson:** when a windowed-mode retrofit fails
-    inside an engine that manages its own video-mode state (RenderWare, and likely others of that
-    era), overriding `D3DPRESENT_PARAMETERS` alone is not enough — the engine's own mode selection
-    has to agree, or its internal allocations fail in ways that look like unrelated null-pointer
-    crashes deep in engine code.
+- **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
+  Fourteen live tests, three wrong theories, and the answer was stated in the game's own words.
+  RenderWare's **sized**-camera-raster path (`+0x0065F0BC`, reached via the *second* raster jump
+  table at `+0x0065F1E4`, taken only when width/height are non-zero) calls **`GetClientRect`** and
+  refuses any camera raster larger than the window's client area, with the literal error string
+  **`"Camera raster is too big."`** (`0x007EC5C0`). In windowed mode nothing resizes the game's
+  window — it was still **640×480**, whatever the fullscreen path left behind — while the game asked
+  for an 800×600 camera raster. The refused raster returned NULL, and that single NULL cascaded into
+  a series of unrelated-looking null-pointer crashes deep in engine code.
+  This also explains the asymmetry visible from the start: the game's other raster is `0×0`, and
+  zero-sized rasters are routed away from this check at `+0x0065EF89` — so it always succeeded while
+  the 800×600 one never did.
+  **Fix:** `ensure_client_area()` resizes the window (via `AdjustWindowRectEx` against its own style)
+  so the client area is at least the back-buffer size. **No game code patched.**
+- **Wrong theories, recorded so they aren't re-run:** (a) `BackBufferFormat` vs desktop mismatch —
+  disproved, formats already matched; (b) `SwapEffect = FLIP` — a real, documented D3D8 restriction
+  and a correct fix to keep, but not the blocker; (c) RenderWare's display-format globals
+  (`0x00829590`/`0x00829594`) being uninitialised because our first-try `CreateDevice` success skipped
+  the engine's own windowed fallback at `+0x006416A5` — a genuinely plausible mechanism that turned
+  out to be a **measured no-op**: logging the old values first showed they were already `22`/`32`.
+  **Lesson: log the pre-change value before every fix; it makes a wrong theory falsifiable in one run
+  instead of becoming folklore.**
+- **Byte-patching the crash sites was tried and RETIRED as symptom-chasing.** Patching the first
+  null-dependent read did work (crash gone, game reached a taskbar icon for the first time) but the
+  NULL simply propagated to the next consumer. When a null pointer has many consumers, fix the
+  producer.
