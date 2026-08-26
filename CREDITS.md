@@ -21,6 +21,8 @@ notes, and tools we wrote ourselves.
 | Source / Work | Creator(s) | Link |
 |---|---|---|
 | Manhunt.SimpleDebugMenu | ermaccer | https://github.com/ermaccer/Manhunt.SimpleDebugMenu |
+| Manhunt.PluginMH (free camera, first-person mode, custom menu) | ermaccer | https://github.com/ermaccer/Manhunt.PluginMH |
+| Ultimate ASI Loader | ThirteenAG | https://github.com/ThirteenAG/Ultimate-ASI-Loader |
 | MHNoDRM (SecuROM check remover) | Fire-Head | https://github.com/Fire-Head/MHNoDRM |
 | Manhunt Windows 10/11 compatibility fixes | silentgameplays | https://github.com/silentgameplays/Manhunt-Windows-11-Fix |
 | "Fixer" automated fix guide | Steam Community guide author | https://steamcommunity.com/sharedfiles/filedetails/?id=2166039806 |
