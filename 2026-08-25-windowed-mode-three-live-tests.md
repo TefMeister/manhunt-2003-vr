@@ -67,13 +67,34 @@ rejects `D3DPRESENT_INTERVAL_IMMEDIATE` for a windowed device.**
 to `DEFAULT` whenever forcing windowed mode, on top of the (real, harmless, worth keeping)
 format-match and `SwapEffect` fixes from attempts 1-3. The probe-sweep scaffolding was removed
 once it had done its job, keeping the hook back to a narrow, minimal size. Built clean, deployed
-to the live install. **The probe sweep itself already proved this exact configuration succeeds
-against a real device on this real driver — the only thing left to confirm is the same result
-through the game's own window on the real forwarded call.**
+to the live install.
+
+## Attempt 6 — windowed mode CONFIRMED WORKING; a new crash appears right after
+
+Live-tested the final fix. **`CreateDevice` succeeded** — `hr=0x00000000` with a real device
+pointer, on two separate launches. The windowed-mode bug that took five attempts to chase down is
+genuinely fixed.
+
+But the game hard-crashed immediately afterward both times, with no error dialog visible to the
+user ("stops running, no error no nothing"). Checking the Windows Event Log told the real story:
+both crashes are `EXCEPTION_ACCESS_VIOLATION` (`0xC0000005`) at the **identical** faulting offset
+(`manhunt.exe+0x0023CE95`) — a perfectly reproducible crash, and a new one, since this code path
+never ran before (the game never got past the failing `CreateDevice` in any prior attempt).
+
+Since x32dbg attach is confirmed blocked on this game, live-debugging the crash the normal way
+isn't available. Instead, added a vectored exception handler inside the proxy itself
+(`CrashDiagnosticFilter`, registered via `AddVectoredExceptionHandler`) that logs the faulting
+address, read/write access type, all general-purpose registers, and the raw bytes at EIP the
+instant this exact exception fires — then always lets the crash proceed exactly as it would
+without the handler (`EXCEPTION_CONTINUE_SEARCH`, never swallowed or altered). Built clean,
+deployed. Given the crash reproduced identically twice already, the next launch should produce a
+full diagnostic log without needing a debugger session at all.
 
 ## Process note
 
 Building a self-contained probe harness (attempt 5) turned what would have been several more
 single-guess live-test round trips into one. Worth reaching for this pattern earlier next time a
 single-field fix doesn't clear an error on the first retest, rather than defaulting to another
-one-guess-per-launch cycle.
+one-guess-per-launch cycle. Same lesson applied again in attempt 6: rather than ask for another
+live test just to see the same crash again with no new information, build the instrumentation
+that captures what a debugger would show, so the next (inevitable) crash IS the diagnostic data.
