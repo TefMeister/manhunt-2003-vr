@@ -5,12 +5,15 @@
 > `-dev-archive` / `-modding-notes` repos; this file is the *distilled current
 > truth*. Update it whenever a fact changes; correct false leads in place.
 
-**Status:** windowed mode CONFIRMED WORKING (§11) after 6 live tests — `CreateDevice` now succeeds
-through the game's real window. New blocker found immediately after: a reproducible hard crash right
-after device creation (§12), crash-diagnostic handler deployed, awaiting its first triggered log. The
+**Status:** windowed `CreateDevice` succeeds (§11), but the game still can't run windowed — RenderWare
+refuses to create an 800×600 raster because forcing `Windowed=TRUE` in the present parameters leaves
+its own video-mode state believing it is still in exclusive fullscreen (§12; proven not to be a D3D
+limitation via a standalone probe). Byte-patching the resulting null-pointer crashes was tried across
+10 live tests and retired as symptom-chasing. Next approach: make RenderWare itself select a windowed
+video mode (index 0 in its mode list) instead of overriding present parameters behind it. The
 DRM-remnant bug (§4: 16 real call sites identified, root cause understood, not yet patched) and the
-still-active SecuROM code-packing layer (blocks debugger attach) remain separately open. Next step:
-read the crash-diagnostic log from the next live test · **VR-readiness verdict:** TBD
+still-active SecuROM code-packing layer (blocks debugger attach) remain separately open ·
+**VR-readiness verdict:** TBD
 
 ## 1. Identity
 - Game / build / version: Manhunt (2003), Rockstar North, published by Rockstar Games. Steam release.
@@ -367,3 +370,32 @@ read the crash-diagnostic log from the next live test · **VR-readiness verdict:
     just-in-time right after our own `CreateDevice` returns (the `.text` is packed at rest, see
     §4) and **only after byte-comparing against the exact expected original bytes**, so a
     different build or not-yet-unpacked memory is skipped rather than written blind.
+  - **❌ THAT PATCH IS NOW RETIRED AND DISABLED (2026-08-26, live test 10 + a standalone probe) —
+    the whole byte-patching approach was attacking a symptom.** The patch *did* work as designed
+    (the `+0x0023CE95` crash disappeared; the game got far enough to show a taskbar icon for the
+    first time), but it then crashed at **`+0x0025FBF8`** — a field-copy helper reading through
+    the *same* null raster, reached from inside the very function that was patched. The NULL
+    propagates into many consumers, so patching individual dereferences is unwinnable
+    whack-a-mole.
+  - **✅ REAL ROOT CAUSE (2026-08-26): we were lying to RenderWare — and it is NOT a D3D
+    limitation.** The game creates two rasters: `0×0` (succeeds) and `800×600` (**returns NULL**).
+    A **standalone D3D8 probe** (`manhunt-2003-vr-staging/d3d8-windowed-probe.c`, run on this same
+    machine/driver, replicating Manhunt's exact present parameters, **without launching the
+    game**) creates every 800×600 surface RenderWare could plausibly want — render targets
+    (lockable and not), image surface, render-target texture, D24S8 depth-stencil — all `hr=0`,
+    plus a desktop-size control. **So nothing at the D3D level refuses; RenderWare's own
+    raster-creation callback does.** Forcing `Windowed=TRUE` in `D3DPRESENT_PARAMETERS` overrides
+    the device behind RenderWare's back: RenderWare still believes it is in exclusive fullscreen
+    800×600 (what the game's own launcher configured), so its internal video-mode state disagrees
+    with the actual device and its raster creation fails.
+  - **NEXT APPROACH (not yet started): make RenderWare itself select a windowed video mode**,
+    rather than overriding present parameters underneath it. RenderWare's video-mode list
+    conventionally puts the **windowed mode at index 0** (the entry without the exclusive flag),
+    with fullscreen modes following. The levers to find in this binary: the engine's video-mode
+    get/set path (the `[engine+0x??]` device-callback table around `+0x0063CC50`–`+0x0063CE40`
+    is the relevant dispatch region seen in the dumps) and wherever the launcher's chosen mode
+    index is applied at startup. **Useful reusable lesson:** when a windowed-mode retrofit fails
+    inside an engine that manages its own video-mode state (RenderWare, and likely others of that
+    era), overriding `D3DPRESENT_PARAMETERS` alone is not enough — the engine's own mode selection
+    has to agree, or its internal allocations fail in ways that look like unrelated null-pointer
+    crashes deep in engine code.
