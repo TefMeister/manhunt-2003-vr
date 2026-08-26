@@ -324,6 +324,66 @@ not patched) remains separately open · **VR-readiness verdict:** TBD
   five-attempt trace in `manhunt-2003-vr-modding-notes/2026-08-25-windowed-mode-three-live-tests.md`
   (title predates the final two attempts, content covers all five).
 
+### ✅ A/B PROVEN: the gameplay crashes are PRE-EXISTING, not our tooling (2026-08-26)
+
+User crashed to desktop swapping an item (plastic bag → painkillers) with **our proxy physically
+absent** — `d3d8.dll` renamed away, no proxy log written for that run (its last entry predates
+the crash by over an hour). Windows Error Reporting: fault offset `0x000C9AAD` → VA
+**`0x004C9AAD`**, the same address recorded on 2026-08-25, same item-swap trigger. Three-way
+confirmation: same address, same trigger, our code not in the process. **Our hooks are cleared.**
+
+### 🔓 THE SABOTAGE MECHANISM, DECODED (2026-08-26)
+
+The 16 sites are not merely "checks that misfire" — they are **deliberate anti-tamper sabotage**,
+and the code says so plainly. Each site called a SecuROM stub that returned (or wrote) a specific
+value; the stubs are gone, the IAT slots now point at ordinary Win32 APIs, the expected value
+never arrives, and the game **punishes itself** on the failure path. Three worked examples, all
+read from our own dump of the unpacked image:
+
+**"Drop Item Timer" — `GetVersion` @ `0x004C78A0`** (the clearest, and item-related):
+```
+004C7891: mov  edx, 0xDD31             ; SecuROM's magic args
+004C7896: mov  ecx, 0xC121
+004C789B: mov  ebx, 0xFA0C
+004C78A0: call [0x0081B380]            ; stub -> now the REAL GetVersion
+004C78A6: cmp  eax, 1                  ; stub used to return 1
+004C78A9: je   0x004C78B5              ; == 1 -> fine, skip
+004C78AB: mov  dword [0x0073731C], 0xFE   ; <-- SABOTAGE VALUE
+```
+Real `GetVersion` returns a Windows version, never 1, so `0xFE` is always written.
+
+**"Broken Doors" — `GetCurrentThread` @ `0x004CC48C`** (the gate bug). Here the stub was expected
+to **write to a global**, not return a value:
+```
+004CC47C: mov  eax, 0xABBA
+004CC481: lea  ebx, [0x007387A0]       ; global handed to the stub
+004CC487: mov  ecx, 0xBABA
+004CC48C: call [0x0081B3B4]            ; real GetCurrentThread writes nothing
+004CC495: cmp  dword [0x007387A0], 0   ; caller branches on this
+```
+
+**`GetLastError` @ `0x0045A30C`** expects a specific error code:
+```
+0045A30C: call [0x0081B364]
+0045A312: cmp  eax, 0x3E5              ; 997 = ERROR_IO_PENDING
+0045A317: je   0x0045A4C0
+0045A31D: xor  eax, eax                ; else -> fail
+```
+
+**Consequences for the fix design:**
+- Each site has its **own** expected value/behaviour — there is no single blanket fix.
+- The cleanest repair per site is to **force the branch the game itself takes when the check
+  passes** (e.g. at `0x004C78A9`, `je` → `jmp`, a single byte, skipping the sabotage write).
+  That restores the game's own intended path rather than inventing behaviour — the same
+  reasoning that made the windowed-mode window resize acceptable.
+- **Our own implementation.** We studied `Fire-Head/MHNoDRM`'s publicly-documented *technique*
+  (which addresses, and that the stubs' return values were faked) and credit it, but every patch
+  here is derived from our own disassembly of our own dump and written by us — per the standing
+  study-don't-copy rule.
+- ⚠️ **Not yet proven:** that the `0x0073731C = 0xFE` sabotage is specifically what causes the
+  `0x004C9AAD` crash. The item-swap trigger and the "Drop Item Timer" name line up suggestively,
+  but suggestive is not proven — verify before claiming it.
+
 ### Gameplay crash after 3-4 minutes — decoded (2026-08-26)
 
 User hit repeatable crashes ~3-4 minutes into actual play. Our in-process handler caught two:
