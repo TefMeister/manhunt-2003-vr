@@ -98,3 +98,59 @@ single-field fix doesn't clear an error on the first retest, rather than default
 one-guess-per-launch cycle. Same lesson applied again in attempt 6: rather than ask for another
 live test just to see the same crash again with no new information, build the instrumentation
 that captures what a debugger would show, so the next (inevitable) crash IS the diagnostic data.
+
+## Attempts 7-10 — the crash chain, and a course correction
+
+Attempts 7-9 chased the post-`CreateDevice` crash with progressively better instrumentation, all
+without a debugger (x32dbg attach is blocked on this game): a vectored exception handler logging
+registers and bytes at EIP, then raw code/stack memory dumps disassembled offline with
+Python/capstone, then a generic stack-walk dumping every in-module return address it found.
+
+That worked. It traced the crash precisely: `manhunt.exe+0x00593282` calls an
+allocator/constructor helper, and passes its result straight into a second helper **without a
+NULL check**. The allocator can and does return NULL. Notably, the stack-walk's top candidate
+independently reproduced the return address that had been derived by hand the previous attempt —
+two independent confirmations of the same call site.
+
+**Attempt 10 patched it** — 23 bytes replaced with a jump skipping the two null-dependent reads —
+and it genuinely worked: that crash disappeared, and the game got far enough to put a **taskbar
+icon** up for the first time (the user spotted this and flagged it, which was the tell that we'd
+moved forward rather than sideways).
+
+But it then crashed at a *new* address — a field-copy helper reading through the **same** null
+pointer, reached from inside the very function we'd just patched. That settled it: the NULL
+propagates into many consumers, and patching each dereference is unwinnable whack-a-mole against
+a symptom.
+
+### The actual root cause (and how it was found without another launch)
+
+The game creates two rasters: a `0×0` one (succeeds) and an `800×600` one (**returns NULL**).
+
+Rather than spend another launch guessing, the D3D-level theory was tested with a **standalone
+probe program** (`manhunt-2003-vr-staging/d3d8-windowed-probe.c`) replicating Manhunt's exact
+present parameters on the same machine and driver — no game launch involved. It creates every
+800×600 surface RenderWare could plausibly want (render targets lockable and not, image surface,
+render-target texture, D24S8 depth-stencil) — **all succeed**, plus a desktop-size control.
+
+So nothing at the D3D level is refusing. **RenderWare's own raster-creation callback is.** Forcing
+`Windowed=TRUE` in `D3DPRESENT_PARAMETERS` overrides the device *behind RenderWare's back*: it
+still believes it's in exclusive fullscreen 800×600, because that's what the game's own launcher
+configured. Its internal video-mode state disagrees with the real device, and its allocations fail.
+
+The patch was therefore **retired and disabled** — not merely unused. It skips the offset copy
+whenever its byte pattern matches, including once the pointer is legitimately non-NULL, so leaving
+it active would silently corrupt real offset math the moment the proper fix works.
+
+### Next approach
+
+Make **RenderWare itself** select a windowed video mode, instead of overriding present parameters
+underneath it. RenderWare's video-mode list conventionally puts the windowed mode at index 0 (the
+entry without the exclusive flag). That means finding the engine's video-mode set path and the
+launcher's mode-index application at startup — a different, more upstream piece of work than
+anything attempted so far.
+
+**Reusable lesson beyond this game:** when retrofitting windowed mode into an engine that manages
+its own video-mode state (RenderWare, and likely most of that era), overriding
+`D3DPRESENT_PARAMETERS` alone is not enough. The engine's own mode selection has to agree, or its
+internal allocations fail in ways that surface as unrelated-looking null-pointer crashes deep in
+engine code — exactly the trail chased here across four attempts.
