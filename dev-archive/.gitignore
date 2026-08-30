@@ -1,0 +1,16 @@
+# Never commit game files or binaries — this project stores only files we create.
+# Game executables, assets, and archives
+*.exe
+*.dll
+*.bin
+# RenderWare engine package/asset formats (original game content)
+*.dff
+*.txd
+*.rws
+# Extracted or dumped memory / process data
+*.dmp
+*.dump
+*.raw
+# Local scratch
+/tmp/
+*.log
