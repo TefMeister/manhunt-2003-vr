@@ -4,7 +4,7 @@ A VR conversion mod for **Manhunt** (2003) — the goal is stereo rendering and
 6DOF head tracking, built on the game's **RenderWare** engine foundation.
 
 > **Status: work in progress — nothing playable released yet, no code written
-> yet.** This repository will hold releases only; watch it if you want to know
+> yet.** This folder holds releases only; watch it if you want to know
 > the moment there is something to try.
 
 ## What this will be
@@ -18,7 +18,7 @@ this repository was created to get the project structure in place before that
 work begins. The real goal, as with all of our projects, is the knowledge
 gained on the way there, written down and shared so anyone can do the same
 for any game — see the
-[engine dossier](https://github.com/TefMeister/manhunt-2003-vr-engine-research)
+[engine dossier](../engine-research/)
 and the cross-engine
 [flat-to-VR library](https://github.com/TefMeister/flat-to-vr-cross-engine-research).
 
@@ -29,19 +29,19 @@ and the cross-engine
 - A PC VR headset (target runtime to be decided — SteamVR/OpenXR, in line with
   our other projects).
 
-## The six repositories for Manhunt VR
+## The folders for Manhunt VR
 
-Everything for this game lives in six repositories, each with one job — so you
-always know where to look. You are in **manhunt-2003-vr-mod**.
+Everything for this game lives in one repository, one folder per job — so you
+always know where to look. You are in **`mod/`**.
 
-| Repository | What lives here |
+| Folder | What lives here |
 | --- | --- |
-| **manhunt-2003-vr-mod** ← you are here | The mod itself — once code exists, it lands here. |
-| [manhunt-2003-vr-dev-archive](https://github.com/TefMeister/manhunt-2003-vr-dev-archive) | Full development history — snapshots, probes, dead ends, raw recon. |
-| [manhunt-2003-vr-modding-notes](https://github.com/TefMeister/manhunt-2003-vr-modding-notes) | Readable field notes / progress ledger. |
-| [manhunt-2003-vr-staging](https://github.com/TefMeister/manhunt-2003-vr-staging) 🔒 | **Private** — unverified WIP builds, cross-machine handoff. |
-| [manhunt-2003-vr-engine-research](https://github.com/TefMeister/manhunt-2003-vr-engine-research) | Distilled engine reference (dossier) + reusable VR RE playbook. |
-| [manhunt-2003-vr-external-research](https://github.com/TefMeister/manhunt-2003-vr-external-research) | Ongoing public-research leads, gathered separately from hands-on modding work. |
+| **`mod/`** ← you are here | The mod itself — once code exists, it lands here. |
+| [`dev-archive/`](../dev-archive/) | Full development history — snapshots, probes, dead ends, raw recon. |
+| [`modding-notes/`](../modding-notes/) | Readable field notes / progress ledger. |
+| [staging/manhunt-2003-vr](https://github.com/TefMeister/staging/tree/main/manhunt-2003-vr) 🔒 | **Private** — unverified WIP builds, cross-machine handoff. |
+| [`engine-research/`](../engine-research/) | Distilled engine reference (dossier) + reusable VR RE playbook. |
+| [`external-research/`](../external-research/) | Ongoing public-research leads, gathered separately from hands-on modding work. |
 
 ## Credits, scope, and legality
 

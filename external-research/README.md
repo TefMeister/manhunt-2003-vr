@@ -1,4 +1,4 @@
-# manhunt-2003-vr-external-research
+# manhunt-2003-vr — `external-research/`
 
 Ongoing **public research** findings for the Manhunt (2003) VR mod — leads,
 prior art, and technique write-ups gathered from publicly available sources
@@ -12,19 +12,19 @@ modding side just reads this one when it wants to check for new leads. See
 [INDEX.md](INDEX.md) for the running list of topics (empty for now — the
 project just started).
 
-## The six repositories for Manhunt VR
+## The folders for Manhunt VR
 
-Everything for this game lives in six repositories, each with one job — so you
-always know where to look. You are in **manhunt-2003-vr-external-research**.
+Everything for this game lives in one repository, one folder per job — so you
+always know where to look. You are in **`external-research/`**.
 
-| Repository | What lives here |
+| Folder | What lives here |
 | --- | --- |
-| [manhunt-2003-vr-mod](https://github.com/TefMeister/manhunt-2003-vr-mod) | The mod itself — once code exists, it lands here. |
-| [manhunt-2003-vr-dev-archive](https://github.com/TefMeister/manhunt-2003-vr-dev-archive) | Full development history — snapshots, probes, dead ends, raw recon. |
-| [manhunt-2003-vr-modding-notes](https://github.com/TefMeister/manhunt-2003-vr-modding-notes) | Readable field notes / progress ledger. |
-| [manhunt-2003-vr-staging](https://github.com/TefMeister/manhunt-2003-vr-staging) 🔒 | **Private** — unverified WIP builds, cross-machine handoff. |
-| [manhunt-2003-vr-engine-research](https://github.com/TefMeister/manhunt-2003-vr-engine-research) | Distilled engine reference (dossier) + reusable VR RE playbook. |
-| **manhunt-2003-vr-external-research** ← you are here | Ongoing public-research leads — read-only input to the other five, never the other way around. |
+| [`mod/`](../mod/) | The mod itself — once code exists, it lands here. |
+| [`dev-archive/`](../dev-archive/) | Full development history — snapshots, probes, dead ends, raw recon. |
+| [`modding-notes/`](../modding-notes/) | Readable field notes / progress ledger. |
+| [staging/manhunt-2003-vr](https://github.com/TefMeister/staging/tree/main/manhunt-2003-vr) 🔒 | **Private** — unverified WIP builds, cross-machine handoff. |
+| [`engine-research/`](../engine-research/) | Distilled engine reference (dossier) + reusable VR RE playbook. |
+| **`external-research/`** ← you are here | Ongoing public-research leads — read-only input to the other five, never the other way around. |
 
 ## How this repo is used
 
