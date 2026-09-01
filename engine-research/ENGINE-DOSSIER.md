@@ -246,7 +246,8 @@ test eax,eax             ; 0 = failed -> bail
 ```
 
 Both are thin wrappers over RenderWare's device-system dispatcher `0x6124D0`, invoked on the device
-system function pointer at `[0x82279C] + 0x10` with request IDs **6** and **7**
+system function pointer at `[0x82279C] + 0x10` with request IDs **6** and **7**.
+
 **Their ROLES are well supported; the RenderWare enum NAMES for 6 and 7 are not verified** and
 should not be quoted as if they were. What actually identifies them, independently of any naming:
 `0x612710` takes `(outStruct, index)` and its caller immediately tests the returned `flags` field;
