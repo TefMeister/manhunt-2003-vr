@@ -35,6 +35,10 @@ notes, and tools we wrote ourselves.
 | SecuROMLoader (version-identification database, cited for version data only) | nckstwrt | https://github.com/nckstwrt/SecuROMLoader |
 | GTASA (GTA San Andreas decompilation/RE project, CCamera reference) | jte | https://github.com/jte/GTASA |
 | GTAMods Wiki (RenderWare engine documentation) | GTAMods community | https://gtamods.com/wiki/RenderWare |
+| librw (open-source re-implementation of RenderWare Graphics; its README is the source for the D3D8-format-but-not-D3D8-backend finding) | aap | https://github.com/aap/librw |
+| Vice City VR (6DoF OpenXR conversion of a RenderWare title — recorded as prior art; nothing used) | dubrovskiy-yevhen-stakelogic | https://github.com/dubrovskiy-yevhen-stakelogic/vice-city-vr |
+| vice-city-vr-quest (native Quest sibling of the above) | Blackbird88 | https://github.com/Blackbird88/vice-city-vr-quest |
+| GTAMods Wiki (Rendering with RenderWare; Camera RW section) | GTAMods community | https://gtamods.com/wiki/Rendering_with_RenderWare |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
