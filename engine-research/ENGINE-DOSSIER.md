@@ -207,6 +207,80 @@ not patched) remains separately open · **VR-readiness verdict:** TBD
     worth re-attempting here either. Suggested checking for a spawned watcher/child process at launch as
     a test for a specific anti-debug mechanism — not yet tried.
 
+## 4a. Video-mode selection is REGISTRY-DRIVEN (static, 2026-09-01)
+
+`[inferred-static 2026-09-01]` - decoded from `manhunt_module_unpacked.bin`, corroborated by a
+read-only query of the live registry. **Nothing has been run.**
+
+**The windowed-mode question does not need a code patch.** The game reads a RenderWare video-mode
+index out of the registry at startup and hands it straight to RenderWare's own mode-set, so making
+the engine select windowed *itself* - the thing ten live tests showed was necessary - is one DWORD.
+
+### Startup reads three DWORDs from HKCU
+
+`0x004BF010`-`0x004BF320`, via `RegOpenKeyExA`/`RegCreateKeyExA`/`RegQueryValueExA` (IAT
+`0x81B344`/`0x81B348`/`0x81B354`), under
+**`HKEY_CURRENT_USER\SOFTWARE\Rockstar Games\Manhunt\Video`**:
+
+| Value | Stored into | Live value, this machine, 2026-09-01 |
+|---|---|---|
+| `Device` | `0x00735EB0` | `0` |
+| `Mode` | `0x00735EB4` | **`4`** |
+| `Index` | `0x00735EB8` | `3` |
+
+Each read has a "not found -> write a default" branch (`cmp eax, 2` = `ERROR_FILE_NOT_FOUND` ->
+`RegSetValueExA`). **Deleting the `Video` key makes the game recreate it with its own defaults** -
+a free, non-destructive reset.
+
+### `Mode` goes straight to RenderWare
+
+At `0x004C0A01`:
+
+```
+push [0x735EB4]          ; the Mode value, verbatim
+lea  ecx,[esp+4]; push ecx
+call 0x612710            ; RwEngineGetVideoModeInfo(&modeInfo, modeIndex)
+push [0x735EB4]
+call 0x612770            ; RwEngineSetVideoMode(modeIndex)
+test eax,eax             ; 0 = failed -> bail
+```
+
+Both are thin wrappers over RenderWare's device-system dispatcher `0x6124D0`, invoked on the device
+system function pointer at `[0x82279C] + 0x10` with request IDs **6** and **7**
+(`rwDEVICESYSTEMGETMODEINFO` / `rwDEVICESYSTEMUSEMODE`). The two functions differ only in request ID
+and argument shape, which is what identifies them - not a name match.
+
+### The code already distinguishes windowed from fullscreen
+
+Right after the info call, `0x004C0A37`: `test dword ptr [esp+0xc], 1`. `+0xC` is `RwVideoMode`'s
+`flags` (`width, height, depth, flags`) and bit 0 is `rwVIDEOMODEEXCLUSIVE`. **A mode index whose
+`flags & 1 == 0` is windowed**, and the game branches on exactly that.
+
+### How to find the right index without guessing
+
+**"Index 0 is windowed" is `[hypothesis]`** - the RenderWare convention and the old plan's
+assumption, never measured on this build; the list comes from the D3D8 driver's runtime enumeration
+and varies by adapter. Instead, from the already-loaded proxy, **call `0x612710` in a loop over mode
+indices and log `width/height/depth/flags`** - the game's own enumeration, so the table is exactly
+what the engine will act on. One launch yields the whole list rather than one bit per launch.
+
+`Index` (`0x00735EB8`, read at `0x004BF3BA`/`0x004BF721`/`0x004BF96E`) is **not** what reaches
+`RwEngineSetVideoMode`; its meaning is untraced.
+
+### Static analysis of this game is possible now
+
+`.text` is packed at rest, but **`manhunt_module_unpacked.bin` next to the exe is a full unpacked
+module image at ImageBase `0x400000`**, and
+`flat-to-vr-RE-toolkit/tools/static-disasm.py --raw` reads it by VA:
+
+```
+python static-disasm.py manhunt_module_unpacked.bin at 0x63CC50 --count 8 --raw
+python static-disasm.py manhunt_module_unpacked.bin xrefs 0x735EB4 --raw
+```
+
+Quick check that a dump really is unpacked: at `0x0063CC50` the on-disk file decodes to garbage
+(`lcall 0xd892, ...`) while the dump decodes to a clean six-instruction getter.
+
 ## 5. Threading & frame structure
 - Immediate context only, or deferred contexts + command lists?:
 - Which thread(s) do what; render-thread name(s):
