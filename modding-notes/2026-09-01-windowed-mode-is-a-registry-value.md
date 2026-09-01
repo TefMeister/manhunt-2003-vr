@@ -49,8 +49,8 @@ test eax,eax             ; 0 = failed -> bail out
 ```
 
 Both callees are thin wrappers over RenderWare's device-system dispatcher `0x6124D0`, called on the
-device's system function pointer at `[0x82279C] + 0x10`, with request IDs **6** and **7** — the
-a get-mode-info / use-mode pair.
+device's system function pointer at `[0x82279C] + 0x10`, with request IDs **6** and **7** — a
+get-mode-info / use-mode pair.
 
 **Correction from the review pass:** an earlier draft named these request IDs as RenderWare's
 `rwDEVICESYSTEMGETMODEINFO` / `rwDEVICESYSTEMUSEMODE`. **Those specific enum names and numbers were
