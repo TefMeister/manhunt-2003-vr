@@ -50,9 +50,14 @@ test eax,eax             ; 0 = failed -> bail out
 
 Both callees are thin wrappers over RenderWare's device-system dispatcher `0x6124D0`, called on the
 device's system function pointer at `[0x82279C] + 0x10`, with request IDs **6** and **7** — the
-standard `rwDEVICESYSTEMGETMODEINFO` / `rwDEVICESYSTEMUSEMODE` pair. That identification is not a
-guess from names: the two functions differ only in the request ID and their argument shape, which is
-exactly how RenderWare's `RwEngineGetVideoModeInfo`/`RwEngineSetVideoMode` are built.
+a get-mode-info / use-mode pair.
+
+**Correction from the review pass:** an earlier draft named these request IDs as RenderWare's
+`rwDEVICESYSTEMGETMODEINFO` / `rwDEVICESYSTEMUSEMODE`. **Those specific enum names and numbers were
+not verified**, and quoting them would have dressed an inference as a citation. The roles stand on
+their own evidence, which does not depend on naming at all: `0x612710` takes `(outStruct, index)` and
+its caller immediately tests the returned `flags` field; `0x612770` takes `(index)` alone and returns
+a normalised boolean; and the same registry `Mode` value flows into both.
 
 ### 3. The code already knows which modes are windowed
 
