@@ -1,6 +1,6 @@
 # Research index
 
-**Last `/gr` pass: 2026-09-01 — FULL.** Inbox drained (`/sr`'s RenderWare prior-art drop). One new
+**Last `/gr` pass: 2026-09-01 — CHECK-IN** (inbox + INDEX + §6/§9/§12 of the dossier; not every topic was re-read)**.** Inbox drained (`/sr`'s RenderWare prior-art drop). One new
 topic: **RenderWare now has VR prior art** (Vice City VR) — but it is a *source port* built on `reVC`
 + `librw`, so nothing transfers, and the new finding is that **`librw` has no D3D8 rendering backend
 either**, which removes the fallback of reading it as an engine reference for our API. Two 2026-08-26
