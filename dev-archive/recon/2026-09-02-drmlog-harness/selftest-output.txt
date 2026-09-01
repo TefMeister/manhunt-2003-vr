@@ -1,0 +1,100 @@
+== 1. unpatched sites behave (harness sanity)
+  [site0 raw] eax=0x11110001 esp balanced lasterr=0x5678 reports=0
+  PASS  api0 called once (got 0x00000001, want 0x00000001)
+  PASS  no report yet (got 0x00000000, want 0x00000000)
+  PASS  api0 result in eax (got 0x11110001, want 0x11110001)
+  PASS  raw stack balanced (got 0x0113F6A8, want 0x0113F6A8)
+  [site8 raw] eax=0x1D3B5977 esp balanced lasterr=0x5678 reports=0
+  PASS  api8 called once (got 0x00000001, want 0x00000001)
+  PASS  raw arg0 (got 0x12345678, want 0x12345678)
+  PASS  raw arg1 (got 0x0F0F0F0F, want 0x0F0F0F0F)
+== 2. slot decode out of the stub bodies
+  PASS  stub0 -> slot0 (got 0x00B87070, want 0x00B87070)
+  PASS  stub1 -> slot4 (got 0x00B87074, want 0x00B87074)
+  PASS  stub2 -> slot8 (got 0x00B87078, want 0x00B87078)
+== 3. redirect writes E8+NOP, idempotent
+  PASS  site0 PATCHED (got 0x00000000, want 0x00000000)
+  PASS  bytes are E8 .. .. .. .. 90
+  PASS  rel32 lands on the stub (got 0x00B81410, want 0x00B81410)
+  PASS  site0 second pass ALREADY (got 0x00000001, want 0x00000001)
+  PASS  site4 PATCHED (got 0x00000000, want 0x00000000)
+  PASS  bytes are E8 .. .. .. .. 90
+  PASS  rel32 lands on the stub (got 0x00B8144B, want 0x00B8144B)
+  PASS  site8 PATCHED (got 0x00000000, want 0x00000000)
+  PASS  bytes are E8 .. .. .. .. 90
+  PASS  rel32 lands on the stub (got 0x00B8148B, want 0x00B8148B)
+== 4-8. through the stubs: 0-arg site
+  [site0 via stub] eax=0x11110002 esp balanced lasterr=0x5678 reports=1
+  PASS  api0 reached through the stub (got 0x00000002, want 0x00000002)
+  PASS  api0 result returned in eax (next instruction ran) (got 0x11110002, want 0x11110002)
+  PASS  stack balanced (stdcall cleanup by stub) (got 0x0113F6A8, want 0x0113F6A8)
+  PASS  ebx preserved (got 0xBBBB0004, want 0xBBBB0004)
+  PASS  esi preserved (got 0xEEEE0005, want 0xEEEE0005)
+  PASS  edi preserved (got 0xF0F0F0F0, want 0xF0F0F0F0)
+  PASS  ebp preserved (got 0x0B0B0B0B, want 0x0B0B0B0B)
+  PASS  ecx restored to entry value (got 0xCCCC0002, want 0xCCCC0002)
+  PASS  edx restored to entry value (got 0xDDDD0003, want 0xDDDD0003)
+  PASS  GetLastError is the API's, not the logger's (got 0x00005678, want 0x00005678)
+  PASS  exactly one report (got 0x00000001, want 0x00000001)
+  PASS  report idx (got 0x00000000, want 0x00000000)
+  PASS  report eax at entry (got 0xAAAA0001, want 0xAAAA0001)
+  PASS  report ecx at entry (got 0xCCCC0002, want 0xCCCC0002)
+  PASS  report edx at entry (got 0xDDDD0003, want 0xDDDD0003)
+  PASS  report ebx at entry (got 0xBBBB0004, want 0xBBBB0004)
+  PASS  report esi at entry (got 0xEEEE0005, want 0xEEEE0005)
+  PASS  report ret (got 0x11110002, want 0x11110002)
+== 4-8. through the stubs: 1-arg site
+  [site4 via stub] eax=0x44440A11 esp balanced lasterr=0x5678 reports=1
+  PASS  api4 reached through the stub (got 0x00000001, want 0x00000001)
+  PASS  api4 saw arg0 (got 0x00000A11, want 0x00000A11)
+  PASS  api4 result in eax (got 0x44440A11, want 0x44440A11)
+  PASS  stack balanced (stdcall cleanup by stub) (got 0x0113F6A8, want 0x0113F6A8)
+  PASS  ebx preserved (got 0xBBBB0004, want 0xBBBB0004)
+  PASS  esi preserved (got 0xEEEE0005, want 0xEEEE0005)
+  PASS  edi preserved (got 0xF0F0F0F0, want 0xF0F0F0F0)
+  PASS  ebp preserved (got 0x0B0B0B0B, want 0x0B0B0B0B)
+  PASS  ecx restored to entry value (got 0xCCCC0002, want 0xCCCC0002)
+  PASS  edx restored to entry value (got 0xDDDD0003, want 0xDDDD0003)
+  PASS  GetLastError is the API's, not the logger's (got 0x00005678, want 0x00005678)
+  PASS  exactly one report (got 0x00000001, want 0x00000001)
+  PASS  report idx (got 0x00000001, want 0x00000001)
+  PASS  report eax at entry (got 0xAAAA0001, want 0xAAAA0001)
+  PASS  report ecx at entry (got 0xCCCC0002, want 0xCCCC0002)
+  PASS  report edx at entry (got 0xDDDD0003, want 0xDDDD0003)
+  PASS  report ebx at entry (got 0xBBBB0004, want 0xBBBB0004)
+  PASS  report esi at entry (got 0xEEEE0005, want 0xEEEE0005)
+  PASS  report arg0 (got 0x00000A11, want 0x00000A11)
+  PASS  report ret (got 0x44440A11, want 0x44440A11)
+== 4-8. through the stubs: 2-arg site
+  [site8 via stub] eax=0x1D3B5977 esp balanced lasterr=0x5678 reports=1
+  PASS  api8 reached through the stub (got 0x00000002, want 0x00000002)
+  PASS  api8 saw arg0 (got 0x12345678, want 0x12345678)
+  PASS  api8 saw arg1 (got 0x0F0F0F0F, want 0x0F0F0F0F)
+  PASS  api8 result in eax (got 0x1D3B5977, want 0x1D3B5977)
+  PASS  stack balanced (stdcall cleanup by stub) (got 0x0113F6A8, want 0x0113F6A8)
+  PASS  ebx preserved (got 0xBBBB0004, want 0xBBBB0004)
+  PASS  esi preserved (got 0xEEEE0005, want 0xEEEE0005)
+  PASS  edi preserved (got 0xF0F0F0F0, want 0xF0F0F0F0)
+  PASS  ebp preserved (got 0x0B0B0B0B, want 0x0B0B0B0B)
+  PASS  ecx restored to entry value (got 0xCCCC0002, want 0xCCCC0002)
+  PASS  edx restored to entry value (got 0xDDDD0003, want 0xDDDD0003)
+  PASS  GetLastError is the API's, not the logger's (got 0x00005678, want 0x00005678)
+  PASS  exactly one report (got 0x00000001, want 0x00000001)
+  PASS  report idx (got 0x00000002, want 0x00000002)
+  PASS  report eax at entry (got 0xAAAA0001, want 0xAAAA0001)
+  PASS  report ecx at entry (got 0xCCCC0002, want 0xCCCC0002)
+  PASS  report edx at entry (got 0xDDDD0003, want 0xDDDD0003)
+  PASS  report ebx at entry (got 0xBBBB0004, want 0xBBBB0004)
+  PASS  report esi at entry (got 0xEEEE0005, want 0xEEEE0005)
+  PASS  report arg0 (got 0x12345678, want 0x12345678)
+  PASS  report arg1 (got 0x0F0F0F0F, want 0x0F0F0F0F)
+  PASS  report ret (got 0x1D3B5977, want 0x1D3B5977)
+== 9. wrong slot -> MISMATCH, untouched
+  PASS  MISMATCH reported (got 0x00000003, want 0x00000003)
+  PASS  the slot actually present is reported (got 0x00B8707C, want 0x00B8707C)
+  PASS  mismatch site bytes untouched
+== 10. no FF 15 -> NOT_READY, untouched
+  PASS  NOT_READY reported (got 0x00000002, want 0x00000002)
+  PASS  garbage site bytes untouched
+
+85 checks, 0 failed -> ALL PASS
