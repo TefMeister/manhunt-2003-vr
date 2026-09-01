@@ -247,8 +247,12 @@ test eax,eax             ; 0 = failed -> bail
 
 Both are thin wrappers over RenderWare's device-system dispatcher `0x6124D0`, invoked on the device
 system function pointer at `[0x82279C] + 0x10` with request IDs **6** and **7**
-(`rwDEVICESYSTEMGETMODEINFO` / `rwDEVICESYSTEMUSEMODE`). The two functions differ only in request ID
-and argument shape, which is what identifies them - not a name match.
+**Their ROLES are well supported; the RenderWare enum NAMES for 6 and 7 are not verified** and
+should not be quoted as if they were. What actually identifies them, independently of any naming:
+`0x612710` takes `(outStruct, index)` and its caller immediately tests the returned `flags` field;
+`0x612770` takes `(index)` alone and returns a normalised boolean; and **the same registry `Mode`
+value flows into both**. That is the shape of a get-mode-info / use-mode pair regardless of what the
+constants are called.
 
 ### The code already distinguishes windowed from fullscreen
 
