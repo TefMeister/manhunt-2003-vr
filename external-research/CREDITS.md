@@ -39,6 +39,7 @@ notes, and tools we wrote ourselves.
 | Vice City VR (6DoF OpenXR conversion of a RenderWare title — recorded as prior art; nothing used) | dubrovskiy-yevhen-stakelogic | https://github.com/dubrovskiy-yevhen-stakelogic/vice-city-vr |
 | vice-city-vr-quest (native Quest sibling of the above) | Blackbird88 | https://github.com/Blackbird88/vice-city-vr-quest |
 | GTAMods Wiki (Rendering with RenderWare; Camera RW section) | GTAMods community | https://gtamods.com/wiki/Rendering_with_RenderWare |
+| Widescreen Fixes Pack — Manhunt packaging and ini | ThirteenAG (pack), Fire-Head (fix) | https://github.com/ThirteenAG/WidescreenFixesPack |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
