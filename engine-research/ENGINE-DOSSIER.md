@@ -299,13 +299,39 @@ Quick check that a dump really is unpacked: at `0x0063CC50` the on-disk file dec
 - Exact constant-buffer slot, parameter name(s), byte offset(s), layout,
   handedness, row/column convention: N/A for D3D8 fixed-function (see above); revisit once
   `SetTransform` calls are traced.
-- Where projection `P` / FOV comes from: **promising lead, not yet confirmed live** — `manhunt.exe`'s own
-  strings include printf-style debug output for exactly this: `FRUSTUM ANGLE X/Y = %3.2f %3.2f`,
-  `CFovX %3.4f`, `FovY %3.4f`, plus discrete debug-menu-looking tokens `FOVX+`/`FOVX-`/`FOVY+`/`FOVY-`.
-  Also a live camera-position debug print: `Camera pos.=(%3.3f, %3.3f, %3.3f)`. This independently
-  upgrades external-research's unverified "camera effects in the debug menu" claim from
-  reported-but-uncertain to solidly plausible — the FOV/frustum debug plumbing genuinely exists in this
-  binary, compiled into the retail exe (not stripped).
+- **Where projection `P` / FOV comes from — NAMED ADDRESSES (`/gr`, folded 2026-09-02).**
+  All `[reported 2026-09-02]`, from Fire-Head's public `MHWSF` widescreen fix, read online, **study
+  only, nothing copied**; the addresses target the same retail/Steam `manhunt.exe` we inject into.
+  **None has been verified in our binary yet** — a recon that checks them is built and deployed.
+
+  | Symbol | VA | Note |
+  |---|---|---|
+  | `CCamera::m_aspectRatio` | `0x007A164C` | |
+  | **`CCamera::m_viewWindow`** | **`0x007A1650`** | **RenderWare expresses FOV as a view window = `tan(fov/2)` per axis** |
+  | `CScene::m_viewWindowOriginal` | `0x00715C98` | |
+  | `CScene::ms_viewWinScale` | `0x00715CDC` | |
+  | `CFrontend::ms_scrn` | `0x007D3440` | `{fWidth, fHeight, fInvWidth, fInvHeight, fWidthScale, fHeightScale, HudStretch, pCamera, pFrameBuffer, pZBuffer}` |
+  | **`RwCamera*`** | **`0x007D345C`** | `ms_scrn + 0x1C` — the camera whose `RwFrame` carries position/orientation |
+  | rasters | `0x007D3460` / `0x007D3464` | frame buffer / Z buffer |
+
+  View window set at **`0x00475BF5`** (init), **`0x00476A80`** (default aspect), **`0x00476AA0`**
+  (widescreen); `0x00604F20` is the aspect query.
+
+  **Why this matters for VR:** it makes per-eye rendering concrete — **a shifted view window plus a
+  translated camera frame before `RwCameraBeginUpdate`** — rather than a projection-matrix hunt.
+
+  **⚠️ The `ms_scrn` stride is the load-bearing assumption and it is `n=1`** (the drop's evidence is
+  "HudStretch sits at base+0x18"). Off by one field and `pCamera` is not at `+0x1C`, sending a future
+  session after a garbage pointer. **The deployed recon checks it instead of trusting it:** it logs
+  all ten fields and computes `1/fWidth` against the `fInvWidth` field, printing `AGREES` or
+  `DISAGREES`, and the reader compares `fWidth`/`fHeight` against the resolution actually running.
+  One launch corroborates the layout or kills it.
+
+- Retained, and now clearly the weaker evidence: `manhunt.exe`'s own strings carry printf-style debug
+  output for exactly this — `FRUSTUM ANGLE X/Y = %3.2f %3.2f`, `CFovX %3.4f`, `FovY %3.4f`, the
+  `FOVX+`/`FOVX-`/`FOVY+`/`FOVY-` tokens, and a live `Camera pos.=(%3.3f, %3.3f, %3.3f)` print. That
+  establishes the FOV/frustum plumbing is compiled into the retail exe; the table above is what says
+  *where*.
 - The per-eye override maths (`K_eye = …`): not started.
 
 ## 7. Constant-buffer fill mechanism
