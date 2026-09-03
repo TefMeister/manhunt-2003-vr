@@ -1,7 +1,7 @@
 # Research index
 
-**Last `/gr` pass: 2026-09-02 (estate sweep) — CHECK-IN** (board OPEN block + INDEX + dossier §6/§9/§11; topics not re-read)**.** Inbox empty. One new topic, aimed at §6's empty projection line: **Fire-Head's widescreen fix names the camera globals** — the view window (RenderWare's FOV) at `0x7A1650`, set at three sites, and the SCREEN struct whose `pCamera` field at `0x7D345C` is the `RwCamera*`. Pointer in `engine-research/inbox/`. Also noted: XIII's new per-draw D3D8 stereo design applies at this proxy's seam too.
-_Previous: Last `/gr` pass: 2026-09-01 — CHECK-IN (inbox + INDEX + §6/§9/§12 of the dossier; not every topic was re-read). Inbox drained (`/sr`'s RenderWare prior-art drop). One new topic: RenderWare now has VR prior art (Vice City…_
+**Last `/gr` pass: 2026-09-03 (estate sweep) — CHECK-IN** (board OPEN block + INDEX)**.** Inbox empty. **Nothing new, and not searched.** Both open rows now converge on a single home-PC launch that is fully staged (the proxy is deployed, the DRM-log mechanism self-tests `85/85`), and the second row explicitly waits on that log. There is no public question in front of either — the unknown is whether 16 site addresses land correctly in this machine's live unpacked image, which only the log answers.
+_Previous: **Last `/gr` pass: 2026-09-02 (estate sweep) — CHECK-IN** (board OPEN block + INDEX + dossier §6/§9/§11; topics not re-read)**.** Inbox empty. One new topic, aimed at §6's empty projection line: **Fire-Head's widescreen fix names the camera globals** — the vie…_
 
 Every research topic gathered for this project, newest first. Each row links to a self-contained
 write-up in `topics/`. Status tags:
