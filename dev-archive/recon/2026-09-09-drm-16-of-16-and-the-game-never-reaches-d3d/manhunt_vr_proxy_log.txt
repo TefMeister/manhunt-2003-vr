@@ -1,0 +1,73 @@
+[22:28:42.962] === manhunt-2003-vr proxy d3d8.dll loaded, PID=10732 ===
+[22:28:42.965] real d3d8.dll loaded from C:\WINDOWS\system32\d3d8.dll; Direct3DCreate8=74F1C1C0
+[22:28:42.965]   INPUT: IAT patched -- DirectInput8Create real=74FD6FA0 hook=750134F0
+[22:28:42.965]   INPUT: script watcher started (manhunt_vr_input.txt, one-shot)
+[22:28:42.967]   DRMFIX: watching 1 SecuROM-remnant site(s) for unpacking
+[22:28:42.967]   DRMLOG: table self-check OK -- 16 passthrough sites, stubs at 75013AB0..75013E57
+[22:28:43.258]   INPUT: DirectInput8Create(ver=0x800) -> hr=0x00000000 obj=00C66F70
+[22:28:43.258]   INPUT: IDirectInput8::CreateDevice hooked (real=74D8B9E0)
+[22:28:43.259]   INPUT: CreateDevice(SysMouse) -> hr=0x00000000 dev=030140F8
+[22:28:43.259]   INPUT: GetDeviceState hooked (real=74D8B310)
+[22:28:43.259]   INPUT: GetDeviceData hooked (real=74D8B2B0) -- buffered path armed
+[22:28:43.323]   INPUT: CreateDevice(SysKeyboard) -> hr=0x00000000 dev=02FBCEA0
+[22:28:43.470]   DRMFIX: PATCHED Drop Item Timer (GetVersion @0x004C78A0)
+[22:28:43.470]       at 0x004C78A9: 74 -> EB   (skips 'mov [0x0073731C], 0xFE' by taking the game's own pass branch)
+[22:28:43.470]   DRMLOG: redirected GetLastError @0x0042BDC3 [(unnamed 1)] -> stub 75013AB0 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] -> stub 75013AEB (ret cleans 8 bytes)
+[22:28:43.470]   DRMLOG: redirected GetVersion @0x004667DC [DropDeadBody Crash] -> stub 75013B2E (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadCodePtr @0x0046D688 [More Damage] -> stub 75013B69 (ret cleans 4 bytes)
+[22:28:43.470]   DRMLOG: redirected GetLastError @0x004732AA [Broken Health 1] -> stub 75013BA9 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected GetVersion @0x00474EB7 [Ignore Control 1] -> stub 75013BE4 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadWritePtr @0x0047D05C [Help Text Crash] -> stub 75013C1F (ret cleans 8 bytes)
+[22:28:43.470]   DRMLOG: redirected GetVersion @0x004C78A0 [Drop Item Timer] -> stub 75013C62 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected GetCurrentThread @0x004CC48C [Broken Doors] -> stub 75013C9D (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected GetCurrentThread @0x004D26F4 [Broken Health 2] -> stub 75013CD8 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadReadPtr @0x004D4063 [Broken Useables] -> stub 75013D13 (ret cleans 8 bytes)
+[22:28:43.470]   DRMLOG: redirected GetLastError @0x004D7E7A [Broken Level Initialization 1] -> stub 75013D56 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadCodePtr @0x004D84DE [Broken Level Initialization 2] -> stub 75013D91 (ret cleans 4 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadWritePtr @0x004F222E [Ignore Control 2] -> stub 75013DD1 (ret cleans 8 bytes)
+[22:28:43.470]   DRMLOG: redirected IsBadReadPtr @0x004F9B5C [Less Ammo] -> stub 75013E14 (ret cleans 8 bytes)
+[22:28:43.470]   DRMLOG: redirected GetVersion @0x005FFCE6 [Broken SaveGame Button] -> stub 75013E57 (ret cleans 0 bytes)
+[22:28:43.470]   DRMLOG: 16/16 sites redirected
+[22:30:09.144] Direct3DCreate8 called: SDKVersion=0xDC
+[22:30:10.201]   -> returned 02FB4928
+[22:30:10.201]   CreateDevice vtable hook installed: real=74D81210 hook=75011B20
+[22:31:02.341] === CRASH: EXCEPTION_ACCESS_VIOLATION at 7751D896 ===
+[22:31:02.341]   access=READ faulting-address=00000000
+[22:31:02.341]   EAX=00000000 EBX=016B9650 ECX=003B6000 EDX=00000000 ESI=00000000 EDI=02FCCCC0 EBP=001AF494 ESP=001AF410 EIP=7751D896
+[22:31:02.341]   bytes at EIP: 8B 38 8B 48 04 8B C7 0B C1 0F 84 52 0E 00 00 8B 
+[22:31:02.342]   dumped manhunt_crash_code_dump: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_code_dump.bin (base=7751D596, 768 bytes before center, 256 after)
+[22:31:02.342]   dumped manhunt_crash_stack_dump: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_stack_dump.bin (base=001AF410, 0 bytes before center, 512 after)
+[22:31:02.343]   possible caller #0: stack[ESP+0x2E4]=004BFAB3 (inside module range)
+[22:31:02.343]   dumped manhunt_crash_caller_0_at_004BFAB3: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_0_at_004BFAB3.bin (base=004BFA53, 96 bytes before center, 32 after)
+[22:31:02.343]   possible caller #1: stack[ESP+0x360]=004BF3E0 (inside module range)
+[22:31:02.344]   dumped manhunt_crash_caller_1_at_004BF3E0: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_1_at_004BF3E0.bin (base=004BF380, 96 bytes before center, 32 after)
+[22:31:02.344]   possible caller #2: stack[ESP+0x364]=004BF3E0 (inside module range)
+[22:31:02.344]   dumped manhunt_crash_caller_2_at_004BF3E0: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_2_at_004BF3E0.bin (base=004BF380, 96 bytes before center, 32 after)
+[22:31:02.344]   possible caller #3: stack[ESP+0x380]=004BF3E0 (inside module range)
+[22:31:02.345]   dumped manhunt_crash_caller_3_at_004BF3E0: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_3_at_004BF3E0.bin (base=004BF380, 96 bytes before center, 32 after)
+[22:31:02.345]   possible caller #4: stack[ESP+0x38C]=004BF3E0 (inside module range)
+[22:31:02.345]   dumped manhunt_crash_caller_4_at_004BF3E0: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_4_at_004BF3E0.bin (base=004BF380, 96 bytes before center, 32 after)
+[22:31:02.345]   possible caller #5: stack[ESP+0x390]=004BF3E0 (inside module range)
+[22:31:02.345]   dumped manhunt_crash_caller_5_at_004BF3E0: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_5_at_004BF3E0.bin (base=004BF380, 96 bytes before center, 32 after)
+[22:31:02.345]   OBJ ECX(this?) = 003B6000 (private/heap), [+0]=0x003B8000  <- vtable ptr identifies the class
+[22:31:02.345]     ECX(this?) @ 003B6000:
+[22:31:02.345]       +0x000:    3899392          0     719744          0     679936          0          0          0
+[22:31:02.345]       fields +0x1C8..+0x1D4 @ 003B61C8:
+[22:31:02.345]       +0x000:          0          0          0          0
+[22:31:02.345]   OBJ EBP = 001AF494 (private/heap), [+0]=0x001AF4C0  <- vtable ptr identifies the class
+[22:31:02.345]     EBP @ 001AF494:
+[22:31:02.345]       +0x000:    1766592 2001851803   23729088          0          8    1966448          0          1
+[22:31:02.345]       fields +0x1C8..+0x1D4 @ 001AF65C:
+[22:31:02.345]       +0x000:   23729088          0          8    1966448
+[22:31:02.345]   OBJ EBX = 016B9650 (mapped), [+0]=0x001E0170  <- vtable ptr identifies the class
+[22:31:02.345]     EBX @ 016B9650:
+[22:31:02.345]       +0x000:    1966448          0     169552          0  537591880 2147485440 3758950657 2496141508
+[22:31:02.345]       fields +0x1C8..+0x1D4 @ 016B9818:
+[22:31:02.345]       +0x000:          0          0          0          0
+[22:31:02.345]   OBJ EDI = 02FCCCC0 (private/heap), [+0]=0x016A13C0  <- vtable ptr identifies the class
+[22:31:02.345]     EDI @ 02FCCCC0:
+[22:31:02.345]       +0x000:   23729088          0   23828048          0          3          3        238         18
+[22:31:02.345]       fields +0x1C8..+0x1D4 @ 02FCCE88:
+[22:31:02.345]       +0x000: 2430782074 3559913046 1321987145          0
+[22:31:02.345]   manhunt.exe module base=00400000, EIP module-relative offset=7711D896
