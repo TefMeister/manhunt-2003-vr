@@ -527,6 +527,55 @@ Two possible fixes, in order of preference:
    because the rejecting branch is the function's **own** existing path, not invented behaviour —
    but it treats the symptom, so prefer (1).
 
+## 11b. Two D3D8 proxy traps (from an `/sr` drop, 2026-09-04; drained 2026-09-09, one FIXED)
+
+### ✅ FIXED 2026-09-09 — the proxy never released the real `d3d8.dll`
+
+`/sr` reported that `proxy.c` takes a `LoadLibraryA(<system32>\d3d8.dll)` reference and never gives
+it back. **Confirmed by direct read** `[verified-numerically 2026-09-09]`: the load is at
+`src/proxy.c:100`, and `DLL_PROCESS_DETACH` closed the log and did nothing else.
+
+Why it matters: `LoadLibrary` matches an **already-loaded module by BASE NAME** before it searches
+any directory. So if the game ever unloads our proxy — a startup capability probe, a renderer
+restart, a video-settings change — the system `d3d8.dll` stays resident under that base name, the
+game's next `LoadLibrary("d3d8.dll")` binds to **it**, the game folder is never searched, and **the
+proxy never runs again for the life of the process.**
+
+⚠️ **The signature is worth knowing even now it is fixed:** the game looks completely fine. The log
+reads load → one or two export calls → unload within ~100 ms while the game reaches gameplay
+normally — which reads as a crash, or as "we hooked the wrong API". It is neither. ReShade shipped
+the identical defect until commit `74347b91d` (2019-12-19), whose own comment says freeing the
+reference *"is necessary for Alan Wake to work"* `[reported]`.
+
+**Fixed** in `DLL_PROCESS_DETACH`, deliberately **only when `reserved == NULL`** — a non-NULL
+`reserved` means the process is terminating, where the loader may already have unmapped the module,
+so freeing there is pointless at best and a fault at worst on a path that runs at every exit. The
+explicit-unload case is exactly the one the fix exists for. `[compile-verified 2026-09-09]`; the DRM
+self-test still passes 85/85.
+
+### ⏳ Not exposed yet — state-block recording rewrites patched device slots
+
+`[reported]` `BeginStateBlock` swaps the device's **state-setting** methods for recording variants
+and `EndStateBlock` restores the runtime's **own** originals, overwriting any third-party pointer in
+those slots. Non-state-setting methods are untouched, so the signature is *"some of my hooks
+survived forever and others died permanently, silently, in the same table"*. Witnesses: gho of DxWnd
+(D3D9) and Paul Roussin on **D3D8** specifically.
+
+**This project is not exposed today** — our D3D hooks are on `IDirect3D8::CreateDevice`, which is
+not a state-setting method, and the DirectInput hooks are a different object entirely. **It becomes
+exposed the moment the stereo work patches a device state-setting method** (`SetTransform`,
+`SetRenderState`, `SetVertexShaderConstant`, `SetTexture`). Mitigation to bank now: verify each
+patched slot every `Present`, log the first mismatch with the new pointer and its module, and re-arm
+only a slot that has reverted to the **runtime's own** original.
+
+⚠️ **Sibling-project update the drop could not have had (2026-09-09):** `enslaved-vr` built exactly
+that self-healing check and ran it — and its logs show **`state blocks 0` for a whole session,
+either side of two device Resets** `[verified-live 2026-09-09, n=3 launches]`. So for that game the
+state-block explanation is **unsupported**; the revert happens at `Reset` itself. The mechanism
+stays real in general, but the drop's framing — *"if any of the three learns which resident records
+the state block, it answers the question for all three"* — did not hold: one of the three answered
+it, and the answer was "not this".
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
