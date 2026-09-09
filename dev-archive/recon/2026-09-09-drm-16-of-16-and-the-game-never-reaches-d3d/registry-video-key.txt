@@ -1,0 +1,4 @@
+HKCU\Software\Rockstar Games\Manhunt\Video, read 2026-09-09 on RTX
+Device = 0  (DWord)
+Mode   = 0  (DWord)
+Index  = 0  (DWord)
