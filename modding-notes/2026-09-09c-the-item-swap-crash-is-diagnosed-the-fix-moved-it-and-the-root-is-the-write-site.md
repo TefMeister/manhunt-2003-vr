@@ -105,3 +105,31 @@ save either."*
 Which of #0 / #8 writes the `+0x1D0` field (or the `00550E0A` one); each site's expected pass
 value; whether `START_LEVEL` works; whether the `EDX = 0x1001` at crash 2 is another sentinel.
 `n=2` for the fingerprint, `n=1` for the moved crash.
+
+## 7. Launch 4 (23:02): `SKIP_MENU 1` + `START_LEVEL 1` WORKS as a skip — and the direct start crashes in level init
+
+Evidence: `dev-archive/recon/2026-09-09e-skip-menu-works-and-the-direct-level-start-crashes-in-init/`.
+
+**The knob is honoured on the retail build.** With `SKIP_MENU 1` the frontend is bypassed:
+`Direct3DCreate8` at **+0.5 s** after proxy load and `CreateDevice` at +2 s — against **87 s** on
+the first menu launch, so the frontend was the slow part all along `[verified-live 2026-09-09,
+n=1 launch]`. Tefa: *"the game starts up now but crashes after the initial Rockstar logo screen"*.
+
+The crash, 10 s after load, **before any DRM site logged a hit**:
+```
+[23:02:51.353] === CRASH: EXCEPTION_ACCESS_VIOLATION at 00471FFB ===
+                 access=WRITE faulting-address=225BAA38   EBX=225BAA38
+                 89 03   mov [ebx], eax        caller 0x00791F2C
+```
+A write through a garbage pointer during level init — not a small sentinel this time. Two sites
+are named for exactly this path, #11 `[Broken Level Initialization 1]` and #12 `[... 2]`, but
+neither logged a hit before the fault, so either the direct-start path skips frontend state the
+level needs (Tefa's read: *"it's trying to load into a save"*) or the fault is upstream of the
+sites. `[hypothesis]` **`SKIP_MENU` reverted to 0 at 23:05** so a normal launch still boots;
+`START_LEVEL 1` left in place (inert without it). Set `SKIP_MENU 1` again when working on this.
+
+**Tefa's direction, 23:04, verbatim:** *"don't park it, if we can make it work so that i don't have
+to go through the beginning tutorial every time and you can deal with the secuROM triggers and
+remove them without looking for them 1 by 1, then we'll just keep working on it."* So the project
+stays live, with two conditions that are now the top two `[PD]` rows: the tutorial skip, and a
+**wholesale** treatment of all sixteen sites rather than one per crash.
