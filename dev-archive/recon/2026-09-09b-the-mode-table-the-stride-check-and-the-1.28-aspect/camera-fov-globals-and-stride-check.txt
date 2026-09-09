@@ -1,0 +1,26 @@
+[22:36:13.718]   [VIEW #1]
+[22:36:13.718]            -1.0000       0.0000       0.0000       0.0000
+[22:36:13.718]            -0.0000       1.0000       0.0000       0.0000
+[22:36:13.718]            -0.0000       0.0000       1.0000       0.0000
+[22:36:13.718]            -0.0000       0.0000       0.0000       1.0000
+[22:36:13.718]   [PROJECTION #1]
+[22:36:13.718]             1.4286       0.0000       0.0000       0.0000
+[22:36:13.718]             0.0000       1.8286       0.0000       0.0000
+[22:36:13.718]             0.0000       0.0000       1.0050       1.0000
+[22:36:13.718]            -0.0000      -0.0000      -0.0503       0.0000
+[22:36:13.718]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[22:36:14.091] === camera/FOV globals populated after ~500 ms ===
+[22:36:14.091]   --- CAMERA / FOV globals (ALL [reported], from MHWSF; verifying, not trusting) ---
+[22:36:14.091]     CCamera::m_aspectRatio  0x007A164C = 1.280000
+[22:36:14.091]     CCamera::m_viewWindow   0x007A1650 = (0.700000, 69.984039)   [RW FOV = 2*atan(viewWindow)]
+[22:36:14.091]     CScene::m_viewWindowOriginal 0x00715C98 = (0.000000, 0.000000)
+[22:36:14.091]     CScene::ms_viewWinScale 0x00715CDC = 0.000000
+[22:36:14.091]     CFrontend::ms_scrn 0x007D3440: w=1280.00 h=720.00 invW=0.000781 invH=0.001389 wScale=2.0000 hScale=1.5000 hudStretch=0.7500
+[22:36:14.091]       pCamera(RwCamera*)=0x00000020  pFrameBuffer=0x0701E7FC  pZBuffer=0x07021958
+[22:36:14.091]       STRIDE CHECK: 1/w = 0.000781 vs invW field 0.000781 -> AGREES (layout corroborated)
+[22:36:14.091]       (compare w/h against the resolution actually running: a match is the second half of the corroboration)
+[22:36:16.832]   [VIEW #3]
+[22:36:16.832]            -1.0000       0.0000       0.0000       0.0000
+[22:36:16.832]            -0.0000       1.0000       0.0000       0.0000
+[22:36:16.832]            -0.0000       0.0000       1.0000       0.0000
+[22:36:16.832]             0.0000      -0.0000      -0.0000       1.0000

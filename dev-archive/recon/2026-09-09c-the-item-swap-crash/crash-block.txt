@@ -1,0 +1,51 @@
+[22:39:12.517]   DRMLOG #6 hit 9: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x001AF9BC arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x089B26E0 esi=0x001AF9BC
+[22:39:20.522]   DRMLOG #6 hit 10: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x001AF9AC arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x089B26E0 esi=0x001AF9AC
+[22:39:28.524]   DRMLOG #6 hit 11: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x001AF9AC arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x089B26E0 esi=0x001AF9AC
+[22:39:37.527]   DRMLOG #6 hit 12: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x001AF9AC arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x089B26E0 esi=0x001AF9AC
+[22:39:37.527]   DRMLOG #6: 12 hits -- now logging every 500th only
+[22:40:47.445]   DRMLOG #0 hit 1: GetLastError @0x0042BDC3 [(unnamed 1)] -> ret=0x00000000  | eax=0x0000DEAD ecx=0x0000FEED edx=0x07192400 ebx=0x0000BEEF esi=0x082A7AA0
+[22:40:52.915]   DRMLOG #8 hit 1: GetCurrentThread @0x004CC48C [Broken Doors] -> ret=0xFFFFFFFE  | eax=0x0000ABBA ecx=0x0000BABA edx=0x0000018C ebx=0x007387A0 esi=0x00000001
+[22:41:12.641] === CRASH: EXCEPTION_ACCESS_VIOLATION at 004C9AAD ===
+[22:41:12.641]   access=READ faulting-address=00000003
+[22:41:12.641]   EAX=08453800 EBX=088C2C00 ECX=0828F1D0 EDX=00000001 ESI=00000003 EDI=001AFE64 EBP=0828F1D0 ESP=001AFB60 EIP=004C9AAD
+[22:41:12.641]   bytes at EIP: 0F B6 42 02 83 E0 03 74 02 B3 01 0F B6 C3 5B C3 
+[22:41:12.644]   dumped manhunt_crash_code_dump: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_code_dump.bin (base=004C97AD, 768 bytes before center, 256 after)
+[22:41:12.644]   dumped manhunt_crash_stack_dump: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_stack_dump.bin (base=001AFB60, 0 bytes before center, 512 after)
+[22:41:12.644]   possible caller #0: stack[ESP+0x4]=004A89DB (inside module range)
+[22:41:12.645]   dumped manhunt_crash_caller_0_at_004A89DB: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_0_at_004A89DB.bin (base=004A897B, 96 bytes before center, 32 after)
+[22:41:12.645]   possible caller #1: stack[ESP+0x40]=00711398 (inside module range)
+[22:41:12.645]   dumped manhunt_crash_caller_1_at_00711398: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_1_at_00711398.bin (base=00711338, 96 bytes before center, 32 after)
+[22:41:12.645]   possible caller #2: stack[ESP+0x48]=00711398 (inside module range)
+[22:41:12.645]   dumped manhunt_crash_caller_2_at_00711398: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_2_at_00711398.bin (base=00711338, 96 bytes before center, 32 after)
+[22:41:12.645]   possible caller #3: stack[ESP+0x54]=004EAFA1 (inside module range)
+[22:41:12.645]   dumped manhunt_crash_caller_3_at_004EAFA1: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_3_at_004EAFA1.bin (base=004EAF41, 96 bytes before center, 32 after)
+[22:41:12.645]   possible caller #4: stack[ESP+0x70]=004E944E (inside module range)
+[22:41:12.647]   dumped manhunt_crash_caller_4_at_004E944E: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_4_at_004E944E.bin (base=004E93EE, 96 bytes before center, 32 after)
+[22:41:12.647]   possible caller #5: stack[ESP+0x74]=00434222 (inside module range)
+[22:41:12.647]   dumped manhunt_crash_caller_5_at_00434222: D:\SteamLibrary\steamapps\common\Manhunt\manhunt_crash_caller_5_at_00434222.bin (base=004341C2, 96 bytes before center, 32 after)
+[22:41:12.647]   OBJ ECX(this?) = 0828F1D0 (private/heap), [+0]=0x00738630  <- vtable ptr identifies the class
+[22:41:12.647]     ECX(this?) @ 0828F1D0:
+[22:41:12.648]       +0x000:    7570992          0          0          0          0 1232348160 4294967291 1136168562
+[22:41:12.648]       fields +0x1C8..+0x1D4 @ 0828F398:
+[22:41:12.648]       +0x000:          0          0          1          1
+[22:41:12.648]   OBJ EBP = 0828F1D0 (private/heap), [+0]=0x00738630  <- vtable ptr identifies the class
+[22:41:12.648]     EBP @ 0828F1D0:
+[22:41:12.648]       +0x000:    7570992          0          0          0          0 1232348160 4294967291 1136168562
+[22:41:12.648]       fields +0x1C8..+0x1D4 @ 0828F398:
+[22:41:12.648]       +0x000:          0          0          1          1
+[22:41:12.648]   OBJ EBX = 088C2C00 (private/heap), [+0]=0x088C2BD0  <- vtable ptr identifies the class
+[22:41:12.648]     EBX @ 088C2C00:
+[22:41:12.648]       +0x000:  143403984    6803480    6803464 2147483808    7490232  143403248  143351028 1035580388
+[22:41:12.648]       fields +0x1C8..+0x1D4 @ 088C2DC8:
+[22:41:12.649]       +0x000:          0          0 4294901760          0
+[22:41:12.649]   OBJ EAX = 08453800 (private/heap), [+0]=0x0069AFB4  <- vtable ptr identifies the class
+[22:41:12.649]     EAX @ 08453800:
+[22:41:12.649]       +0x000:    6926260       4097       4096  138800880    1048592          1  138469712    1048592
+[22:41:12.649]       fields +0x1C8..+0x1D4 @ 084539C8:
+[22:41:12.649]       +0x000:          0          0          0          0
+[22:41:12.649]   OBJ EDI = 001AFE64 (private/heap), [+0]=0x00000000  <- vtable ptr identifies the class
+[22:41:12.649]     EDI @ 001AFE64:
+[22:41:12.649]       +0x000:          0        275      32451  554885584    6357281       1648       1421          0
+[22:41:12.649]       fields +0x1C8..+0x1D4 @ 001B002C:
+[22:41:12.649]       +0x000:         52        380          1          0
+[22:41:12.649]   manhunt.exe module base=00400000, EIP module-relative offset=000C9AAD

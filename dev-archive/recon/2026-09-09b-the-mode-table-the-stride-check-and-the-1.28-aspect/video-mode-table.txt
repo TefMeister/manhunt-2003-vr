@@ -1,0 +1,31 @@
+[22:36:13.587]   --- RenderWare video-mode TABLE (via game wrapper 0x612710, read-only) ---
+[22:36:13.587]     registry-driven globals: Device=0 Mode=8 Index=7  (0x735EB0/B4/B8)
+[22:36:13.587]     idx  ret        width  height depth flags      refRate format   note
+[22:36:13.587]      0   0x001AF6C8  3440   1440    32  0x00000000    175    1536   WINDOWED
+[22:36:13.587]      1   0x001AF6C8   640    480    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      2   0x001AF6C8   720    480    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      3   0x001AF6C8   720    576    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      4   0x001AF6C8   800    600    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      5   0x001AF6C8  1024    768    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      6   0x001AF6C8  1152    864    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      7   0x001AF6C8  1176    664    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]      8   0x001AF6C8  1280    720    32  0x00000001    175    1536   exclusive(fullscreen)  <- current registry Mode
+[22:36:13.587]      9   0x001AF6C8  1280    768    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     10   0x001AF6C8  1280    800    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     11   0x001AF6C8  1280    960    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     12   0x001AF6C8  1280   1024    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     13   0x001AF6C8  1360    768    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     14   0x001AF6C8  1366    768    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     15   0x001AF6C8  1440   1080    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     16   0x001AF6C8  1600    900    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     17   0x001AF6C8  1600   1024    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     18   0x001AF6C8  1600   1200    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     19   0x001AF6C8  1680   1050    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     20   0x001AF6C8  1920   1080    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     21   0x001AF6C8  1920   1200    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     22   0x001AF6C8  1920   1440    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     23   0x001AF6C8  2560   1440    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     24   0x001AF6C8  3440   1440    32  0x00000001    175    1536   exclusive(fullscreen)
+[22:36:13.587]     25   ret=0 -> end of table
+[22:36:13.587]     1 windowed (flags&1==0) entries seen. Set HKCU\SOFTWARE\Rockstar Games\Manhunt\Video\Mode to one of them to have RenderWare pick windowed itself.
+[22:36:13.587]   --- end video-mode recon ---

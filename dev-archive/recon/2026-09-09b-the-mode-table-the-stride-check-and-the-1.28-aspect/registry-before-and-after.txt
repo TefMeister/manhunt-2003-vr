@@ -1,0 +1,8 @@
+HKCU\Software\Rockstar Games\Manhunt\Video
+
+22:31 (after the STALLED launch, read by /lm):   Device=0  Mode=0  Index=0
+22:36 (the WORKING launch, read by the proxy):   Device=0  Mode=8  Index=7
+22:40 (re-read by /lm while the game runs):      Device=0  Mode=8  Index=7
+
+Mode 0 = the table entry at index 0 = 3440x1440, flags 0x00000000 = WINDOWED (the only windowed entry).
+Mode 8 = 1280x720, flags 0x00000001 = exclusive(fullscreen).
