@@ -1,0 +1,247 @@
+[18:01:02.306] === manhunt-2003-vr proxy d3d8.dll loaded, PID=9400 ===
+[18:01:02.309] real d3d8.dll loaded from C:\Windows\system32\d3d8.dll; Direct3DCreate8=74D8C0E0
+[18:01:02.309]   INPUT: IAT patched -- DirectInput8Create real=74EB33F0 hook=74E73950
+[18:01:02.309]   INPUT: script watcher started (manhunt_vr_input.txt, one-shot)
+[18:01:02.310]   DRMFIX: watching 16 SecuROM-remnant site(s) for unpacking
+[18:01:02.310]   DRMLOG: table self-check OK -- 16 passthrough sites, stubs at 74E74780..74E74B27
+[18:01:02.697]   INPUT: DirectInput8Create(ver=0x800) -> hr=0x00000000 obj=00C73C78
+[18:01:02.697]   INPUT: IDirectInput8::CreateDevice hooked (real=741BB9E0)
+[18:01:02.697]   INPUT: CreateDevice(SysMouse) -> hr=0x00000000 dev=00C88548
+[18:01:02.697]   INPUT: SysMouse GetDeviceState hooked (vt=742395F4 real=741BB310)
+[18:01:02.697]   INPUT: SysMouse GetDeviceData hooked (vt=742395F4 real=741BB2B0) -- buffered path armed
+[18:01:02.740]   INPUT: CreateDevice(SysKeyboard) -> hr=0x00000000 dev=02CE5690
+[18:01:02.740]   INPUT: SysKeyboard GetDeviceState hooked (vt=74239570 real=741BDF80)
+[18:01:02.740]   INPUT: SysKeyboard GetDeviceData hooked (vt=74239570 real=741BDB80) -- buffered path armed
+[18:01:02.813]   DRMFIX: PATCHED Drop Item Timer (GetVersion @0x004C78A0)
+[18:01:02.813]       at 0x004C78A9: 74 -> EB   (skips 'mov [0x0073731C], 0xFE' by taking the game's own pass branch)
+[18:01:02.813]   DRMFIX: PATCHED Item Swap Crash (poisoned pointer @0x004C9AA0)
+[18:01:02.813]       at 0x004C9A92: 90 -> 83   (widens the game's own null check to 'edx <= 0x10' so a sabotage sentinel returns 0 instead of faulting)
+[18:01:02.813]   DRMFIX: PATCHED (unnamed) GetLastError @0x0042BDC3
+[18:01:02.813]       at 0x0042BDCC: 74 -> EB   (takes the game's own pass branch: [0x0069A5A0] = 0x1F instead of 0 (0 makes its reader bail out early))
+[18:01:02.813]   DRMFIX: PATCHED Broken SaveGame EntityData: IsBadReadPtr @0x0043A005
+[18:01:02.813]       at 0x0043A013: 00 -> 01   (restores [0x0069B914] = 1 (its static value) instead of 0, so the entity-0x25 size adjustment still happens)
+[18:01:02.813]   DRMFIX: PATCHED DropDeadBody Crash: GetVersion @0x004667DC
+[18:01:02.813]       at 0x004667E7: 74 -> EB   (takes the game's own pass branch: [0x00756244] = 0 instead of 2)
+[18:01:02.813]   DRMFIX: PATCHED More Damage: IsBadCodePtr @0x0046D688
+[18:01:02.813]       at 0x0046D6A2: 74 -> EB   (skips 'mov [0x007105A4], 0'; leaving it at 1 makes its reader skip the damage multiply)
+[18:01:02.813]   DRMFIX: PATCHED Broken Health 1: GetLastError @0x004732AA
+[18:01:02.813]       at 0x004732B5: 74 -> EB   (skips 'mov [0x00755E50], 1'; its reader bails out on any non-zero)
+[18:01:02.813]   DRMFIX: PATCHED Ignore Control 1: GetVersion @0x00474EB7
+[18:01:02.813]       at 0x00474ED1: 74 -> EB   (takes the game's own pass branch: [0x0075625C] = 1 instead of 2)
+[18:01:02.813]   DRMFIX: PATCHED Broken Doors: GetCurrentThread @0x004CC48C
+[18:01:02.813]       at 0x004CC46F: C7 -> 90   (stops the block NULLing the live pointer in [0x007387A0]; the stub used to put it back)
+[18:01:02.813]   DRMFIX: PATCHED Broken Health 2: GetCurrentThread @0x004D26F4
+[18:01:02.813]       at 0x004D2701: 75 -> EB   (skips 'mov [0x00755E50], 2'; its reader bails out on any non-zero)
+[18:01:02.813]   DRMFIX: PATCHED Broken Useables: IsBadReadPtr @0x004D4063
+[18:01:02.813]       at 0x004D407D: 74 -> EB   (takes the game's own pass branch: [0x00739080] = 1 instead of 0 (0 makes its reader return failure))
+[18:01:02.813]   DRMFIX: PATCHED Broken Level Initialization 1: GetLastError @0x004D7E7A
+[18:01:02.813]       at 0x004D7E83: 74 -> EB   (takes the game's own pass branch: [0x00755978] = 0 instead of 1 (1 makes its reader bail out))
+[18:01:02.813]   DRMFIX: PATCHED Broken Level Initialization 2: IsBadCodePtr @0x004D84DE
+[18:01:02.813]       at 0x004D84B8: 01 -> 00   (writes 0 not 1 into [0x00755978]; the stub used to overwrite the 1, and 1 makes the reader bail out)
+[18:01:02.813]   DRMFIX: PATCHED Ignore Control 2: IsBadWritePtr @0x004F222E
+[18:01:02.813]       at 0x004F2245: 75 -> EB   (skips 'mov [0x0075625C], 2'; 2 makes its reader zero [0x00725710])
+[18:01:02.813]   DRMFIX: PATCHED Less Ammo: IsBadReadPtr @0x004F9B5C
+[18:01:02.813]       at 0x004F9B62: FF -> 90   (stops the block decrementing [0x00821540] back to 0; at 1 the ammo drain and the divide-by-2 are both no-ops)
+[18:01:02.813]   DRMFIX: PATCHED Broken SaveGame Button: GetVersion @0x005FFCE6
+[18:01:02.813]       at 0x005FFCF1: 74 -> EB   (takes the game's own pass branch: [0x007D6148] = 0x2E instead of 0x2D (its reader tests for 0x2E))
+[18:01:02.813]   DRMLOG: redirected GetLastError @0x0042BDC3 [(unnamed 1)] -> stub 74E74780 (ret cleans 0 bytes)
+[18:01:02.813]   DRMLOG: redirected IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] -> stub 74E747BB (ret cleans 8 bytes)
+[18:01:02.814]   DRMLOG: redirected GetVersion @0x004667DC [DropDeadBody Crash] -> stub 74E747FE (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected IsBadCodePtr @0x0046D688 [More Damage] -> stub 74E74839 (ret cleans 4 bytes)
+[18:01:02.814]   DRMLOG: redirected GetLastError @0x004732AA [Broken Health 1] -> stub 74E74879 (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected GetVersion @0x00474EB7 [Ignore Control 1] -> stub 74E748B4 (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected IsBadWritePtr @0x0047D05C [Help Text Crash] -> stub 74E748EF (ret cleans 8 bytes)
+[18:01:02.814]   DRMLOG: redirected GetVersion @0x004C78A0 [Drop Item Timer] -> stub 74E74932 (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected GetCurrentThread @0x004CC48C [Broken Doors] -> stub 74E7496D (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected GetCurrentThread @0x004D26F4 [Broken Health 2] -> stub 74E749A8 (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected IsBadReadPtr @0x004D4063 [Broken Useables] -> stub 74E749E3 (ret cleans 8 bytes)
+[18:01:02.814]   DRMLOG: redirected GetLastError @0x004D7E7A [Broken Level Initialization 1] -> stub 74E74A26 (ret cleans 0 bytes)
+[18:01:02.814]   DRMLOG: redirected IsBadCodePtr @0x004D84DE [Broken Level Initialization 2] -> stub 74E74A61 (ret cleans 4 bytes)
+[18:01:02.814]   DRMLOG: redirected IsBadWritePtr @0x004F222E [Ignore Control 2] -> stub 74E74AA1 (ret cleans 8 bytes)
+[18:01:02.814]   DRMLOG: redirected IsBadReadPtr @0x004F9B5C [Less Ammo] -> stub 74E74AE4 (ret cleans 8 bytes)
+[18:01:02.814]   DRMLOG: redirected GetVersion @0x005FFCE6 [Broken SaveGame Button] -> stub 74E74B27 (ret cleans 0 bytes)
+[18:01:02.814]   SPLINEGUARD: INSTALLED at 0x004720D9 -- spline count clamped to 99 slots (stub at 74E74140); stops the loader writing over its own counter at 0x00713684
+[18:01:02.814]   DRMLOG: 16/16 sites redirected
+[18:01:03.029] Direct3DCreate8 called: SDKVersion=0xDC
+[18:01:03.248]   -> returned 02CD6568
+[18:01:03.248]   CreateDevice vtable hook installed: real=741B1210 hook=74E71B20
+[18:01:32.428] Direct3DCreate8 called: SDKVersion=0xDC
+[18:01:32.633]   -> returned 02CD6558
+[18:01:32.633] CreateDevice called: Adapter=0 DeviceType=1 hFocusWindow=002B063C BehaviorFlags=0x00000050
+[18:01:32.633]   --- RenderWare video-mode recon ---
+[18:01:32.633]     engine ptr slot 0x0082279C @ 0082279C:
+[18:01:32.633]       +0x000:  120663888   47610456          0          0       1364          0          0          0
+[18:01:32.633]     global 0x008243A8 @ 008243A8:
+[18:01:32.633]       +0x000:          0          0          0          0          0          0          0          0
+[18:01:32.633]     engine instance = 0x07312F50
+[18:01:32.633]     engine instance struct @ 07312F50:
+[18:01:32.633]       +0x000:          0          0          0          0 1065353216    6550112          0 1065353216
+[18:01:32.633]       +0x020:    6668912    6664496    6657664    6658176    6658768    6659392          0          0
+[18:01:32.633]       +0x040:          0          0    6555248    6560992    6684288    6684880    6679632    6682624
+[18:01:32.633]       +0x060:    6685376    6687664    6683616    6686928    6564128    6677392    6683632    6675744
+[18:01:32.634]       +0x080:    6677328    6671680    6672560    6673504    6675712    6675680    6564416    6555680
+[18:01:32.634]       +0x0A0:    6555248    6673216    6673360    6577056    6578000    6577200    6683488          0
+[18:01:32.634]       +0x0C0:          0    6590432    6452272    6451920    6456128    6456880    6453680    6454368
+[18:01:32.634]       +0x0E0:    6641024    6453360    6452048    6453072    6376608    6376576    6362992    6363024
+[18:01:32.634]       +0x100:    6363088    6363136    6597472    6597440    6363760    6363200    6363264    6597264
+[18:01:32.634]       +0x120:    6362960    6597344    6597392    6363456    6546960    4970880    4970848    4970816
+[18:01:32.634]       +0x140:    4970784    6360992    6361280          0          2    1024000          0          0
+[18:01:32.634]       +0x160:          0          0          0          0          0          0          0          0
+[18:01:32.634]     device state 0x00828440 @ 00828440:
+[18:01:32.634]       +0x000:          0          0          0          0          0          0          0          0
+[18:01:32.634]       +0x020:          0          0          0          0          0  120664196          0         85
+[18:01:32.634]       +0x040:          0          0          0          0        800        600         22          1
+[18:01:32.634]       +0x060:          0          2    2819644          0          1         75          0         60
+[18:01:32.634]       +0x080: 2147483648          0          0          0          0          0          0          0
+[18:01:32.634]       +0x0A0:          0          0          0          0          0          0          0          0
+[18:01:32.634]       +0x0C0:          0          0          0          0          0          0          0          0
+[18:01:32.634]       +0x0E0:          0          0          0          0          0          0          0          0
+[18:01:32.634]     candidate mode-array pointer = 0x00000000
+[18:01:32.634]     engine device function table:
+[18:01:32.634]       [engine+0x058] = 0x0065EC50   raster-create callback (the one FAILING for 800x600)
+[18:01:32.634]       [engine+0x074] = 0x0065E390   called at +0x0063CDE0 / +0x0063CD0F
+[18:01:32.634]       [engine+0x078] = 0x0065FBF0   called right after the patched site (+0x0063CEB1)
+[18:01:32.634]       [engine+0x088] = 0x0065D0B0   called at +0x0063CC7F
+[18:01:32.635]       [engine+0x0A4] = 0x0065D340   called at +0x0063CD94
+[18:01:32.635]       [engine+0x0A8] = 0x0065D3D0   called at +0x0063CC9F
+[18:01:32.635]       [engine+0x0B8] = 0x0065FB60   called at +0x0063CE1D
+[18:01:32.635]       [engine+0x098] = 0x00642A40   called at +0x0063CE47
+[18:01:32.635]       [engine+0x144] = 0x00610FA0   allocator (returns the NULL raster)
+[18:01:32.635]       [engine+0x148] = 0x006110C0   free/destroy counterpart
+[18:01:32.635]       [engine+0x05C] = 0x0065F800   adjacent to raster-create
+[18:01:32.635]   --- RenderWare video-mode TABLE (via game wrapper 0x612710, read-only) ---
+[18:01:32.635]     registry-driven globals: Device=0 Mode=4 Index=3  (0x735EB0/B4/B8)
+[18:01:32.635]     idx  ret        width  height depth flags      refRate format   note
+[18:01:32.635]      0   0x0019F6A8  1920   1080    32  0x00000000     60    1536   WINDOWED
+[18:01:32.635]      1   0x0019F6A8   640    480    32  0x00000001     75    1536   exclusive(fullscreen)
+[18:01:32.635]      2   0x0019F6A8   720    480    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]      3   0x0019F6A8   720    576    32  0x00000001     50    1536   exclusive(fullscreen)
+[18:01:32.635]      4   0x0019F6A8   800    600    32  0x00000001     75    1536   exclusive(fullscreen)  <- current registry Mode
+[18:01:32.635]      5   0x0019F6A8  1024    768    32  0x00000001     75    1536   exclusive(fullscreen)
+[18:01:32.635]      6   0x0019F6A8  1152    864    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]      7   0x0019F6A8  1176    664    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]      8   0x0019F6A8  1280    720    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]      9   0x0019F6A8  1280    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     10   0x0019F6A8  1280    800    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     11   0x0019F6A8  1280    960    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     12   0x0019F6A8  1280   1024    32  0x00000001     75    1536   exclusive(fullscreen)
+[18:01:32.635]     13   0x0019F6A8  1360    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     14   0x0019F6A8  1366    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     15   0x0019F6A8  1440   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     16   0x0019F6A8  1600    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     17   0x0019F6A8  1600   1024    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     18   0x0019F6A8  1680   1050    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     19   0x0019F6A8  1920   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     20   0x0019F6A8  1440    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[18:01:32.635]     21   ret=0 -> end of table
+[18:01:32.635]     1 windowed (flags&1==0) entries seen. Set HKCU\SOFTWARE\Rockstar Games\Manhunt\Video\Mode to one of them to have RenderWare pick windowed itself.
+[18:01:32.635]   --- end video-mode recon ---
+[18:01:32.635]   original: Windowed=0 BackBufferWidth=800 BackBufferHeight=600 BackBufferFormat=22 FullScreen_RefreshRateInHz=60
+[18:01:32.635]   original (cont.): BackBufferCount=1 MultiSampleType=0 SwapEffect=2 hDeviceWindow=002B063C EnableAutoDepthStencil=1 AutoDepthStencilFormat=75 Flags=0x00000000 FullScreen_PresentationInterval=2147483648
+[18:01:32.635]   desktop adapter mode: 1920x1080 @ 60Hz format=22
+[18:01:32.635]   BackBufferFormat already matches the desktop format, no override needed
+[18:01:32.635]   CheckDeviceType(windowed=TRUE, DisplayFormat=22, BackBufferFormat=22) -> hr=0x00000000
+[18:01:32.635]   SwapEffect is D3DSWAPEFFECT_FLIP, which D3D8 disallows for windowed swap chains -- overriding to D3DSWAPEFFECT_DISCARD
+[18:01:32.635]   FullScreen_PresentationInterval is D3DPRESENT_INTERVAL_IMMEDIATE, which this driver rejects for windowed mode (confirmed via probe sweep) -- overriding to D3DPRESENT_INTERVAL_DEFAULT
+[18:01:32.635]   forced: Windowed=TRUE, FullScreen_RefreshRateInHz=0, BackBufferFormat=22, SwapEffect=1, FullScreen_PresentationInterval=0 (everything else unchanged)
+[18:01:32.804]   -> hr=0x00000000 device=0E4183F8
+[18:01:32.804]   DISPLAY-FORMAT FIX: [0x00829590] was 22, [0x00829594] was 32
+[18:01:32.804]   DISPLAY-FORMAT FIX: set [0x00829590]=22 (D3DFORMAT), [0x00829594]=32 (bpp) -- replicates the engine's own windowed fallback at +0x006416D8, which our first-try CreateDevice success had skipped
+[18:01:32.804]   WINDOW FIX: client area is 640x480, camera raster needs 800x600
+[18:01:32.805]   WINDOW FIX: resized -- client area is now 800x600 (style=0x04CF0000)
+[18:01:32.805]   CAMERA: vtable sanity check passed (slot37=741AC450, Present=741AFB10, both mapped code)
+[18:01:32.805]   CAMERA: SetTransform hook installed (real=741AC450 hook=74E72AD0) -- logging VIEW/PROJECTION
+[18:01:32.805]   CAMERA: SetVertexShaderConstant hooked (real=741B1B20) -- watching for the world/view-projection matrix (SetTransform proved unused in 3D)
+[18:01:32.816]   [VIEW #1]
+[18:01:32.816]            -1.0000       0.0000       0.0000       0.0000
+[18:01:32.816]            -0.0000       1.0000       0.0000       0.0000
+[18:01:32.816]            -0.0000       0.0000       1.0000       0.0000
+[18:01:32.816]            -0.0000       0.0000       0.0000       1.0000
+[18:01:32.816]   [PROJECTION #1]
+[18:01:32.816]             1.4286       0.0000       0.0000       0.0000
+[18:01:32.816]             0.0000       1.8286       0.0000       0.0000
+[18:01:32.816]             0.0000       0.0000       1.0050       1.0000
+[18:01:32.816]            -0.0000      -0.0000      -0.0503       0.0000
+[18:01:32.816]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[18:01:33.145] === camera/FOV globals populated after ~500 ms ===
+[18:01:33.145]   --- CAMERA / FOV globals (ALL [reported], from MHWSF; verifying, not trusting) ---
+[18:01:33.145]     CCamera::m_aspectRatio  0x007A164C = 1.280000
+[18:01:33.145]     CCamera::m_viewWindow   0x007A1650 = (0.700000, 69.984039)   [RW FOV = 2*atan(viewWindow)]
+[18:01:33.145]     CScene::m_viewWindowOriginal 0x00715C98 = (0.000000, 0.000000)
+[18:01:33.145]     CScene::ms_viewWinScale 0x00715CDC = 0.000000
+[18:01:33.145]     CFrontend::ms_scrn 0x007D3440: w=800.00 h=600.00 invW=0.001250 invH=0.001667 wScale=1.2500 hScale=1.2500 hudStretch=0.7500
+[18:01:33.145]       pCamera(RwCamera*)=0x00000020  pFrameBuffer=0x073233BC  pZBuffer=0x07326518
+[18:01:33.145]       STRIDE CHECK: 1/w = 0.001250 vs invW field 0.001250 -> AGREES (layout corroborated)
+[18:01:33.145]       (compare w/h against the resolution actually running: a match is the second half of the corroboration)
+[18:01:35.923]   [VIEW #3]
+[18:01:35.923]            -1.0000       0.0000       0.0000       0.0000
+[18:01:35.923]            -0.0000       1.0000       0.0000       0.0000
+[18:01:35.923]            -0.0000       0.0000       1.0000       0.0000
+[18:01:35.923]             0.0000      -0.0000      -0.0000       1.0000
+[18:01:35.923]   [PROJECTION #3]
+[18:01:35.923]             1.4286       0.0000       0.0000       0.0000
+[18:01:35.923]             0.0000       1.8286       0.0000       0.0000
+[18:01:35.923]             0.0000       0.0000       1.0007       1.0000
+[18:01:35.923]            -0.0000      -0.0000      -0.1001       0.0000
+[18:01:35.923]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[18:01:36.299]   [VIEW #4]
+[18:01:36.299]            -1.0000       0.0000       0.0000       0.0000
+[18:01:36.299]            -0.0000       1.0000       0.0000       0.0000
+[18:01:36.299]            -0.0000       0.0000       1.0000       0.0000
+[18:01:36.299]            -0.0000       0.0000       0.0000       1.0000
+[18:04:45.844]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[18:04:45.844]   INPUT: before script -- GetDeviceState=11558169 (keyboard=0, mouse=11533301, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:04:45.844]   INPUT:   device 0 SysMouse     state=11533302   data=0        lastCb=20
+[18:04:45.844]   INPUT:   device 1 SysKeyboard  state=24867      data=0        lastCb=0
+[18:04:45.845]   INPUT: mid-script -- GetDeviceState=11558170 (keyboard=0, mouse=11533301, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:04:45.845]   INPUT:   device 0 SysMouse     state=11533302   data=0        lastCb=20
+[18:04:45.845]   INPUT:   device 1 SysKeyboard  state=24868      data=0        lastCb=0
+[18:04:45.845]   INPUT: key DIK 0x50 for 150ms
+[18:04:46.397]   INPUT: key DIK 0x50 for 150ms
+[18:04:46.947]   INPUT: mid-script -- GetDeviceState=11558610 (keyboard=0, mouse=11533521, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:04:46.947]   INPUT:   device 0 SysMouse     state=11533522   data=0        lastCb=20
+[18:04:46.947]   INPUT:   device 1 SysKeyboard  state=25088      data=0        lastCb=0
+[18:04:46.947]   INPUT: after script -- GetDeviceState=11558610 (keyboard=0, mouse=11533521, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:04:46.947]   INPUT:   device 0 SysMouse     state=11533522   data=0        lastCb=20
+[18:04:46.947]   INPUT:   device 1 SysKeyboard  state=25088      data=0        lastCb=0
+[18:06:36.473]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[18:06:36.473]   INPUT: before script -- GetDeviceState=11602395 (keyboard=0, mouse=11555414, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:06:36.473]   INPUT:   device 0 SysMouse     state=11555415   data=0        lastCb=20
+[18:06:36.473]   INPUT:   device 1 SysKeyboard  state=46980      data=0        lastCb=0
+[18:06:36.474]   INPUT: mouse move dx=0 dy=400 dz=0 over 600ms (step 1/6/1 per 8ms)
+[18:06:37.514]   INPUT: after script -- GetDeviceState=11602812 (keyboard=0, mouse=11555622, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:06:37.514]   INPUT:   device 0 SysMouse     state=11555623   data=0        lastCb=20
+[18:06:37.514]   INPUT:   device 1 SysKeyboard  state=47189      data=0        lastCb=0
+[18:07:14.857]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[18:07:14.857]   INPUT: before script -- GetDeviceState=11617745 (keyboard=0, mouse=11563089, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:07:14.857]   INPUT:   device 0 SysMouse     state=11563090   data=0        lastCb=20
+[18:07:14.857]   INPUT:   device 1 SysKeyboard  state=54655      data=0        lastCb=0
+[18:07:14.857]   INPUT: mouse move dx=187 dy=-427 dz=0 over 700ms (step 3/5/1 per 8ms)
+[18:07:16.202]   INPUT: after script -- GetDeviceState=11618283 (keyboard=0, mouse=11563358, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:07:16.202]   INPUT:   device 0 SysMouse     state=11563359   data=0        lastCb=20
+[18:07:16.202]   INPUT:   device 1 SysKeyboard  state=54924      data=0        lastCb=0
+[18:08:05.832]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[18:08:05.832]   INPUT: before script -- GetDeviceState=11638133 (keyboard=0, mouse=11573283, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:08:05.832]   INPUT:   device 0 SysMouse     state=11573284   data=0        lastCb=20
+[18:08:05.832]   INPUT:   device 1 SysKeyboard  state=64849      data=0        lastCb=0
+[18:08:05.832]   INPUT: mouse move dx=-100 dy=100 dz=0 over 400ms (step 3/3/1 per 8ms)
+[18:08:06.357]   INPUT: after script -- GetDeviceState=11638343 (keyboard=0, mouse=11573388, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:08:06.357]   INPUT:   device 0 SysMouse     state=11573389   data=0        lastCb=20
+[18:08:06.357]   INPUT:   device 1 SysKeyboard  state=64954      data=0        lastCb=0
+[18:08:38.433]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[18:08:38.433]   INPUT: before script -- GetDeviceState=11651170 (keyboard=0, mouse=11579801, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:08:38.433]   INPUT:   device 0 SysMouse     state=11579802   data=0        lastCb=20
+[18:08:38.433]   INPUT:   device 1 SysKeyboard  state=71368      data=0        lastCb=0
+[18:08:38.433]   INPUT: mouse move dx=-15 dy=105 dz=0 over 400ms (step 1/3/1 per 8ms)
+[18:08:38.969]   INPUT: after script -- GetDeviceState=11651385 (keyboard=0, mouse=11579909, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:08:38.969]   INPUT:   device 0 SysMouse     state=11579910   data=0        lastCb=20
+[18:08:38.969]   INPUT:   device 1 SysKeyboard  state=71475      data=0        lastCb=0
+[18:09:00.774]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[18:09:00.774]   INPUT: before script -- GetDeviceState=11660105 (keyboard=0, mouse=11584269, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:09:00.774]   INPUT:   device 0 SysMouse     state=11584270   data=0        lastCb=20
+[18:09:00.774]   INPUT:   device 1 SysKeyboard  state=75835      data=0        lastCb=0
+[18:09:00.774]   INPUT: mouse button 0 for 80ms
+[18:09:01.255]   INPUT: after script -- GetDeviceState=11660278 (keyboard=0, mouse=11584355, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[18:09:01.255]   INPUT:   device 0 SysMouse     state=11584356   data=0        lastCb=20
+[18:09:01.255]   INPUT:   device 1 SysKeyboard  state=75922      data=0        lastCb=0
+[18:09:39.708] === manhunt-2003-vr proxy d3d8.dll unloading (process exit) ===
