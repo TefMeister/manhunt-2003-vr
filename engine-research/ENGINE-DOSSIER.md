@@ -615,10 +615,12 @@ each behind a 10–16 byte verify window.
 
 ### Three findings that change how the site list should be read
 
-- **⚠️ #6 "Help Text Crash" is INERT and always was** `[verified-numerically 2026-09-10]`. Its
-  guarded block computes `(2*eax) mod 2` and requires the answer to be `1`, which no `eax` can
-  produce; its only other effect, `add ebp,1`, is undone by `lea ecx,[ebp-1]` twelve instructions
-  later. The community name implies a symptom this site cannot cause.
+- **⚠️ #6 "Help Text Crash": its guarded block is UNREACHABLE** `[verified-numerically 2026-09-10]`
+  — it computes `(2*eax) mod 2` and requires the answer to be `1`, which no `eax` can produce. So
+  the community name implies a symptom this site cannot cause. ⚠️ **Not fully closed**: the
+  `add ebp,1` before it is cancelled only for the following `lea ecx,[ebp-1]`; `ebp` stays +1 into
+  the shared epilogue at `0x0047DEBB` and neither session chased whether that restores it — see
+  §11c-bis. No patch either way; there is no fail branch to force.
 - **⚠️ #8 "Broken Doors" does not fake a return — it DESTROYS A LIVE POINTER.** `[0x007387A0]` held
   `0x0079773C` in our dump; the injected block nulls it and the stub used to put it back. The repair
   is to stop the null, not to force a branch.
@@ -632,6 +634,54 @@ each behind a 10–16 byte verify window.
 Three launches carrying the fix produced **0/16 hits** in the passthrough log — none reached the
 levels where the bug cluster shows. The patches are verified byte-for-byte; their effect on stuck
 gates, the item-swap crash and saving is still `[hypothesis]`.
+
+### 11c-bis. Reconciling the two independent passes made the same day (2026-09-10)
+
+Two sessions disassembled all sixteen sites within an hour of each other — this `/lm` and a `/pd`
+riding tandem, which filed
+`engine-research/inbox/2026-09-10-pd-the-sixteen-sites-are-three-shapes-not-one.md` (drained into
+this section; the file is gone, the analysis is here). Duplicated effort, but two independent
+derivations are worth more than one, and they disagreed in a way that is itself the lesson.
+
+**⭐ Corroboration:** the `/pd` pass extracted site #7's 12-byte verify window from the dump and it
+came out **byte-identical to the array written independently on 2026-09-02**. The extraction method
+is therefore corroborated rather than assumed.
+
+**Where the two passes differ, and why:**
+
+- **⚠️ #9 "Broken Health 2" — the `/pd` conclusion that it needs no patch is WRONG, and the reason
+  is instructive.** It reasoned from the sites alone: #4 poisons `[0x00755E50]` to 1, #9 then sees
+  non-zero and skips, so "fixing #4 restores #9 by itself" and 2 must be the healthy value.
+  **Disassembling the reader settles it the other way.** `0x004C7020` is
+  `cmp [0x00755E50],0 / je continue / xor eax,eax / ret` — **any** non-zero bails out, so 0 is
+  healthy and 2 is as much a sabotage as 1. #9 is patched here `[verified-numerically 2026-09-10]`.
+  **The general point: a site's own code cannot tell you which value is healthy. Only its reader
+  can.** Seven of the sixteen sites are unresolvable without that step.
+- **#12 — two valid repairs, different scope.** `/pd` forces the game's own bypass at `0x004D84B0`
+  (`75 3E` → `EB 3E`), skipping the poison store *and* the call. This session changes the poison
+  store's immediate instead (`0x004D84B8`, `01` → `00`). Both leave `[0x00755978]` non-1, which is
+  what the reader at `0x004D8625` needs. The immediate-change is what shipped and is live-verified;
+  the bypass is the tidier change if this site ever needs revisiting.
+  ⚠️ Note `/pd`'s consequence if the bypass form is ever used: **site #12 would go dark in the
+  passthrough log**, because execution never reaches the hooked call. That would be the patch
+  working, not the logger failing. The shipped immediate-change keeps the call, so 16/16 still log.
+- **⚠️ #6 "Help Text Crash" — this session's "provably inert" was too strong, and `/pd` caught the
+  gap.** The guarded *block* really is unreachable — `(2*eax) mod 2` can never equal 1
+  `[verified-numerically 2026-09-10]`. But the `add ebp,1` that precedes it is only cancelled for
+  the immediately following `lea ecx,[ebp-1]`; **`ebp` itself stays +1 into the shared epilogue at
+  `0x0047DEBB`, and whether that epilogue restores it was not chased by either session.** So: the
+  block is dead, the register residue is `[hypothesis]`. Still no patch — there is no fail branch
+  to force — but it is not a closed question.
+- **#8 "Broken Doors" — `/pd` read it as a register clobber; it is stronger than that.** The block
+  writes `0` over `[0x007387A0]`, which held the live pointer `0x0079773C` in our dump. It destroys
+  a pointer, and the stub used to restore it. That is why the repair is 10 bytes to NOP rather than
+  anything to do with the `ABBA`/`BABA` markers.
+
+**⚠️ Rough edge for the tandem workflow, worth reporting:** both sessions independently built a
+wholesale `drmfix.c` and collided in a git rebase on that file. The tandem rule that only `/lm`
+deploys held perfectly — nothing unsafe happened — but nothing stopped both lanes doing the *same
+analysis*. The queue of `[PD]` rows is what is supposed to prevent that, and a ⭐⭐ row that the
+`/lm` session intends to do itself needs saying so on the board before driving starts.
 
 ## 11d. THE TUTORIAL-SKIP CRASH IS A SPLINE-TABLE OVERFLOW, NOT DRM (2026-09-10)
 
