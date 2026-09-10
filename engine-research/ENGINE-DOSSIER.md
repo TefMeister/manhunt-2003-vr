@@ -740,6 +740,168 @@ injection-point measurement gets.
 ⚠️ **Do not use the white arrow drawn beside the menu entries as a cursor signal** — it is menu art
 and never moved under any input.
 
+### ✅ 11d-bis. RELOCATED, APPLIED LIVE, AND THE TABLE NO LONGER OVERFLOWS (2026-09-10b)
+
+The precondition §11d asked for is met. Three scans of the whole unpacked image
+(`manhunt_module_unpacked.bin`, 4,874,240 bytes, base `0x00400000`, covering `.bss` and
+SecuROM's `.bind`) `[verified-numerically 2026-09-10]`:
+
+- The literal `0x007134F4` occurs **exactly six times in the entire image** — the six already
+  recorded, all in `.text`, all as the `disp32` of a `[reg*4 + disp32]` operand. **Zero** in
+  `.rdata` / `.data` / `.bss` / `.idata` / `.bind`. Nothing stores the address, nothing passes it
+  as an argument, no SecuROM overlay holds a copy to checksum.
+- **Nothing addresses the table's interior**: no dword anywhere in the image has a value in
+  `0x007134F8..0x00713680`.
+- **Nothing can reach it by arithmetic from the count**: `0x00713684` also occurs exactly six
+  times, every one a plain memory operand, so the count's *address* is never loaded and
+  `count − 400` is impossible.
+
+`0x00713684` is confirmed as the count by five independent uses — loop index at `0x00471FA7`,
+scaled at `0x00471FB5`, incremented at `0x004720D9`, zeroed at `0x004721F3`, and pushed as the
+argument to `"%d Splines loaded\n"` at `0x00472151` `[verified-numerically 2026-09-10]`.
+
+**`SPLINERELOC` (in `drmfix.c`) applied live on the first launch that carried it**: table moved
+`0x007134F4 -> 0x04B00000`, **1024 slots**, all six references rewritten, count left in place
+`[verified-live 2026-09-10, n=1 launch]`. It verifies all six 12-byte windows **before writing any
+byte** — a half-relocated table would be far worse than the overflow it fixes. `SPLINEGUARD` is
+kept as a backstop and now clamps to the live capacity.
+
+**Result: a full real level (`BORN AGAIN`) loaded and played for ~8 minutes with no
+"spline table FULL" and no crash at `0x00471FFB` or `0x0061166A`** `[verified-live 2026-09-10,
+n=1]`. ⚠️ That is one level on one run — the level that used to overflow was reached by a
+*direct start*, which this run did not use, so §11d is not closed until a `SKIP_MENU` direct
+start runs clean too.
+
+⚠️ **Correction to §11d.** §11d says the unload-all routine at `0x00472190` has "zero static
+callers". **It has one** — a direct `E8` at `0x00474B6E`, in a level-teardown chain; its partner
+loader `0x00471E40` is called from `0x00474486` in the matching load path
+`[verified-numerically 2026-09-10]`. The earlier search almost certainly looked for the address
+as an absolute dword, which correctly finds nothing because the call is `E8 rel32`. **Method trap
+worth keeping: searching for a function's address finds data references, never `call rel32`
+sites.** This does not change the relocation; it moves "why only on a direct start" from "the
+teardown is never called" to "the direct start does not run it between the intro and the level",
+still `[hypothesis]`.
+
+**The `0x0061166A` fault is not in spline loading** — it is `memcpy(dst=0x40, src=stream cursor,
+0x1000)`, a write to field `+0x40` of a NULL object, reached through generic RenderWare stream
+plumbing (`0x00611640` <- `0x00628380` <- `0x00628340` <- vtable dispatch at `0x00611CB8`), and
+the spline loader never uses `RwStream` — it parses text tokens `[verified-numerically
+2026-09-10]`. Dropped splines remain a credible *cause* rather than the site: `find-spline-by-name`
+(`0x00472200`) returns **0** on a miss and both callers (`0x0057A9D7`, `0x0057AA47`, in the
+level-script command dispatcher) store the result with **no null check**
+`[verified-numerically 2026-09-10]`; the link to this memcpy is `[hypothesis]`.
+
+## 11f. ⚠️⚠️ TWO MEASUREMENT DEFECTS INVALIDATED EVERY "THIS GAME IGNORES INPUT" FINDING (2026-09-10b)
+
+**Supersedes: §11e's conclusion, and every `disproved` input route recorded on 2026-09-10.** Both
+defects were in *our own harness*. Neither produced an error message. Both made a working input
+route look like a dead one, which is precisely the failure mode that
+`feedback-re-audit-after-finding-a-broken-tool` exists for.
+
+### Defect 1 — only the FIRST DirectInput device was ever hooked
+
+`input.c` guarded its device hooks with a single global `g_state_hooked`, so the first
+`CreateDevice` consumed it. The order is fixed and was in the log all along:
+
+```
+CreateDevice(SysMouse)    -> hooked
+CreateDevice(SysKeyboard) -> flag already set, NOT hooked
+```
+
+The comment justifying it assumed the two devices share one vtable. **They do not**
+`[verified-live 2026-09-10, n=1 launch]`:
+
+```
+SysMouse    vt=0x742395F4  real GetDeviceState=0x741BB310
+SysKeyboard vt=0x74239570  real GetDeviceState=0x741BDF80
+```
+
+So §11e's headline — *"`GetDeviceState` = 11,917,105 on the mouse, **0 on the keyboard**"* — was
+half a measurement. The mouse figure is real, counted through our own hook. **The keyboard zero
+was an uninstrumented device reporting nothing**, and our synthetic-keyboard injection was never
+installed in the keyboard's vtable at all, which is why driving it did nothing. Fixed: every
+distinct vtable is hooked, originals are kept per vtable (a single global would call the wrong
+device's real function), and each entry is published *before* its slots are patched so the hook
+can never run against a half-filled record.
+
+**What the corrected instrumentation actually measures** `[verified-live 2026-09-10, n=2 launches]`:
+
+```
+SysMouse     state=22,708,637   data=0   lastCb=20   (DIMOUSESTATE2)
+SysKeyboard  state=12,981       data=0   lastCb=0
+```
+
+The keyboard **is** called — but with **`cbData = 0`**, so it always fails and never returns key
+state, and the count freezes once gameplay starts. That is genuinely odd and is the open
+question; it is *not* "never called". `[verified-live 2026-09-10, n=2]`
+
+### Defect 2 — `SendInput` never sent anything, for the life of the project
+
+The PowerShell harness declared `INPUT` with `Size=28`. That is the **32-bit** layout; the
+harness runs in **64-bit** PowerShell, where `INPUT` is **40 bytes** (a `DWORD type`, four bytes
+of alignment padding, then a 32-byte union). `SendInput` rejected every call:
+
+```
+SendInput returned 0, GetLastError = 87 (The parameter is incorrect)
+```
+
+`[verified-numerically 2026-09-10]`. **A return of 0 means zero events were inserted.** The
+harness never checked the return value, so every result reads as "the game ignored it".
+**Therefore every `SendInput` row in the 2026-09-10 `disproved` list — keyboard scancodes,
+absolute mouse, relative mouse, bare click — proves nothing and is withdrawn.** With `cb=40` the
+same calls return `down=1 up=1` `[verified-live 2026-09-10, n=6]`.
+
+**Rule for every project, not just this one: assert `SendInput`'s return value equals the number
+of events passed, and log `GetLastError` when it does not.** An input API that fails silently and
+an input API that is ignored are indistinguishable from the outside, and only one of them is a
+finding about the game.
+
+### What is actually true about this game's input, re-measured
+
+| Route | Verdict |
+| --- | --- |
+| Proxy-side synthetic **`DIMOUSESTATE2`** (deltas + buttons) into `GetDeviceState` | ✅ **WORKS** — drives the frontend cursor, the menu highlight, menu clicks, and the in-game camera `[verified-live 2026-09-10, n=1 session]` |
+| Proxy-side synthetic **DirectInput keyboard** | ⛔ no effect — the device is called with `cbData = 0` and never returns state |
+| **`SendInput`** scancodes (with the struct size fixed) | ⛔ no effect on character movement; `W` (`0x11`) held 6 s and `Up` (`0x48`, extended) held 4 s both left the scene unchanged `[verified-live 2026-09-10, n=2]` |
+
+⚠️ **Do not record the `SendInput` row as settled.** It is now a *correct* negative for two
+specific scancodes in one place in one level — not the old sweeping claim. The keys this game
+actually binds have never been read out of the binary or its config; `initscripts/FRONTEND/_key1..3.txt`
+look like control bindings and are **not** — they are the on-screen virtual keyboard used for
+save-name entry `[verified-live 2026-09-10]`.
+
+### ⭐ And the claim this all existed to test: the white arrow IS the cursor
+
+§11e warns *"do not use the white arrow beside the menu entries as a cursor signal — it is menu
+art and never moved under any input"*. **Disproved 2026-09-10.** Under synthetic `DIMOUSESTATE2`
+it moves exactly as a cursor, the menu highlight follows whichever entry it is over, and a
+synthetic left button activates that entry. It never moved before because nothing was ever
+actually delivered to the mouse.
+
+**Cursor calibration on the dev PC, from a controlled 100-count move away from both window edges**
+`[verified-live 2026-09-10, n=1]`:
+
+```
+X: 1.87 screen px per DirectInput count
+Y: 1.36 screen px per DirectInput count      ratio 1.37
+```
+
+⚠️ Both of the first two probe moves hit the window edge and **clamped**, which made the rate look
+like 0.70 px/count — calibrate only with a move that starts and ends away from the edges. The
+1.37 ratio is very close to the engine's known **1.39x horizontal stretch** (§6: a 1.28 aspect
+rendered into a 1.7778 backbuffer), which is what you would expect if the cursor is positioned in
+the engine's own aspect and stretched with the frame. `[hypothesis]` that they are the same
+number, but it is a cheap corroboration of the stretch.
+
+### Mouse synthesis: the one thing that is easy to get wrong
+
+The game polls the mouse on the order of **20,000 times a second**. DirectInput mouse axes are
+**relative**, so adding a delta on every poll delivers one to two orders of magnitude more
+movement than the same gesture on a real mouse. `input.c` therefore hands movement over in
+**ticks at a real-mouse report rate** (default 8 ms, ~125 Hz), spread across a duration the script
+asks for. Buttons are the opposite — they are a *level*, so they are ORed on **every** poll, since
+a button missed for one frame reads as a dropped click.
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
