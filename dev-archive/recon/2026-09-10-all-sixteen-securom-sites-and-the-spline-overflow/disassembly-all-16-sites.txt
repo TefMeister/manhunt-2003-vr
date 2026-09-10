@@ -1,0 +1,570 @@
+==============================================================================
+#0  GetLastError                                      @ 0x0042BDC3
+------------------------------------------------------------------------------
+  0042BDAB: ff 00                    inc      dword ptr [eax]
+  0042BDAD: 00 00                    add      byte ptr [eax], al
+  0042BDAF: 75 3c                    jne      0x42bded
+  0042BDB1: 50                       push     eax
+  0042BDB2: b8 ad de 00 00           mov      eax, 0xdead
+  0042BDB7: 53                       push     ebx
+  0042BDB8: 51                       push     ecx
+  0042BDB9: bb ef be 00 00           mov      ebx, 0xbeef
+  0042BDBE: b9 ed fe 00 00           mov      ecx, 0xfeed
+  0042BDC3: ff 15 64 b3 81 00        call     dword ptr [0x81b364]  <== CALL
+  0042BDC9: 83 f8 01                 cmp      eax, 1
+  0042BDCC: 74 12                    je       0x42bde0
+  0042BDCE: c7 05 a0 a5 69 00 00 00 00 00 mov      dword ptr [0x69a5a0], 0
+  0042BDD8: eb 10                    jmp      0x42bdea
+  0042BDDA: 8d 80 00 00 00 00        lea      eax, [eax]
+  0042BDE0: c7 05 a0 a5 69 00 1f 00 00 00 mov      dword ptr [0x69a5a0], 0x1f
+  0042BDEA: 59                       pop      ecx
+  0042BDEB: 5b                       pop      ebx
+  0042BDEC: 58                       pop      eax
+  0042BDED: 8b 86 84 00 00 00        mov      eax, dword ptr [esi + 0x84]
+  0042BDF3: 83 c4 24                 add      esp, 0x24
+  0042BDF6: 5d                       pop      ebp
+  0042BDF7: 5e                       pop      esi
+  0042BDF8: 5b                       pop      ebx
+  0042BDF9: c2 04 00                 ret      4
+  0042BDFC: 90                       nop      
+  0042BDFD: 90                       nop      
+  0042BDFE: 90                       nop      
+  0042BDFF: 90                       nop      
+  0042BE00: d9 44 24 04              fld      dword ptr [esp + 4]
+  0042BE04: d8 54 24 08              fcom     dword ptr [esp + 8]
+  0042BE08: df e0                    fnstsw   ax
+==============================================================================
+#1  IsBadReadPtr     Broken SaveGame EntityData       @ 0x0043A005
+------------------------------------------------------------------------------
+  00439FED: b9 08 10 00 00           mov      ecx, 0x1008
+  00439FF2: 52                       push     edx
+  00439FF3: 56                       push     esi
+  00439FF4: ba a0 20 00 00           mov      edx, 0x20a0
+  00439FF9: be 1c a0 43 00           mov      esi, 0x43a01c
+  00439FFE: 6a 04                    push     4
+  0043A000: 68 14 b9 69 00           push     0x69b914
+  0043A005: ff 15 68 b3 81 00        call     dword ptr [0x81b368]  <== CALL
+  0043A00B: 85 c0                    test     eax, eax
+  0043A00D: c7 05 14 b9 69 00 00 00 00 00 mov      dword ptr [0x69b914], 0
+  0043A017: 75 03                    jne      0x43a01c
+  0043A019: 83 c0 01                 add      eax, 1
+  0043A01C: 5e                       pop      esi
+  0043A01D: 5a                       pop      edx
+  0043A01E: 59                       pop      ecx
+  0043A01F: c7 04 24 00 00 00 00     mov      dword ptr [esp], 0
+  0043A026: 8b 2b                    mov      ebp, dword ptr [ebx]
+  0043A028: 83 c3 04                 add      ebx, 4
+  0043A02B: 85 ed                    test     ebp, ebp
+  0043A02D: 75 08                    jne      0x43a037
+  0043A02F: 83 c4 04                 add      esp, 4
+  0043A032: 5d                       pop      ebp
+  0043A033: 5f                       pop      edi
+  0043A034: 5e                       pop      esi
+  0043A035: 5b                       pop      ebx
+  0043A036: c3                       ret      
+  0043A037: 8d 3c ad 00 00 00 00     lea      edi, [ebp*4]
+  0043A03E: 57                       push     edi
+  0043A03F: e8 dc 6f fc ff           call     0x401020
+  0043A044: 59                       pop      ecx
+  0043A045: 89 c6                    mov      esi, eax
+  0043A047: 57                       push     edi
+  0043A048: e8 d3 6f fc ff           call     0x401020
+==============================================================================
+#2  GetVersion       DropDeadBody Crash               @ 0x004667DC
+------------------------------------------------------------------------------
+  004667C4: 00 00                    add      byte ptr [eax], al
+==============================================================================
+#3  IsBadCodePtr     More Damage                      @ 0x0046D688
+------------------------------------------------------------------------------
+  0046D670: ed                       in       eax, dx
+  0046D671: ed                       in       eax, dx
+  0046D672: 00 00                    add      byte ptr [eax], al
+  0046D674: 68 de de 00 00           push     0xdede
+  0046D679: 8d 5c 24 30              lea      ebx, [esp + 0x30]
+  0046D67D: 53                       push     ebx
+  0046D67E: 68 ed ed 00 00           push     0xeded
+  0046D683: 68 10 cc 46 00           push     0x46cc10
+  0046D688: ff 15 84 b3 81 00        call     dword ptr [0x81b384]  <== CALL
+  0046D68E: 58                       pop      eax
+  0046D68F: 5b                       pop      ebx
+  0046D690: 59                       pop      ecx
+  0046D691: 6a 00                    push     0
+  0046D693: 6a 00                    push     0
+  0046D695: 6a 00                    push     0
+  0046D697: 58                       pop      eax
+  0046D698: 5b                       pop      ebx
+  0046D699: 59                       pop      ecx
+  0046D69A: 81 7c 24 2c de de 00 00  cmp      dword ptr [esp + 0x2c], 0xdede
+  0046D6A2: 74 0a                    je       0x46d6ae
+  0046D6A4: c7 05 a4 05 71 00 00 00 00 00 mov      dword ptr [0x7105a4], 0
+  0046D6AE: 81 c4 88 00 00 00        add      esp, 0x88
+  0046D6B4: 5d                       pop      ebp
+  0046D6B5: 5f                       pop      edi
+  0046D6B6: 5e                       pop      esi
+  0046D6B7: 5b                       pop      ebx
+  0046D6B8: c3                       ret      
+  0046D6B9: 8d 84 20 00 00 00 00     lea      eax, [eax]
+  0046D6C0: dd d8                    fstp     st(0)
+  0046D6C2: e9 fa fc ff ff           jmp      0x46d3c1
+  0046D6C7: 90                       nop      
+  0046D6C8: 90                       nop      
+  0046D6C9: 90                       nop      
+  0046D6CA: 90                       nop      
+  0046D6CB: 90                       nop      
+  0046D6CC: 90                       nop      
+  0046D6CD: 90                       nop      
+  0046D6CE: 90                       nop      
+  0046D6CF: 90                       nop      
+==============================================================================
+#4  GetLastError     Broken Health 1                  @ 0x004732AA
+------------------------------------------------------------------------------
+  00473292: 71 00                    jno      0x473294
+  00473294: 5d                       pop      ebp
+  00473295: 5e                       pop      esi
+  00473296: 5b                       pop      ebx
+  00473297: c3                       ret      
+  00473298: 53                       push     ebx
+  00473299: 51                       push     ecx
+  0047329A: 52                       push     edx
+  0047329B: bb ba 1c 00 00           mov      ebx, 0x1cba
+  004732A0: b9 3d 20 00 00           mov      ecx, 0x203d
+  004732A5: ba 06 05 00 00           mov      edx, 0x506
+  004732AA: ff 15 64 b3 81 00        call     dword ptr [0x81b364]  <== CALL
+  004732B0: 3d 06 05 00 00           cmp      eax, 0x506
+  004732B5: 74 0a                    je       0x4732c1
+  004732B7: c7 05 50 5e 75 00 01 00 00 00 mov      dword ptr [0x755e50], 1
+  004732C1: 5a                       pop      edx
+  004732C2: 59                       pop      ecx
+  004732C3: 5b                       pop      ebx
+  004732C4: 56                       push     esi
+  004732C5: ff 35 b8 37 71 00        push     dword ptr [0x7137b8]
+  004732CB: e8 c0 22 1c 00           call     0x635590
+  004732D0: 59                       pop      ecx
+  004732D1: 59                       pop      ecx
+  004732D2: c7 44 24 1c 00 00 80 3f  mov      dword ptr [esp + 0x1c], 0x3f800000
+  004732DA: c7 44 24 20 00 00 00 00  mov      dword ptr [esp + 0x20], 0
+  004732E2: c7 44 24 24 00 00 00 00  mov      dword ptr [esp + 0x24], 0
+  004732EA: 6a 01                    push     1
+  004732EC: ff 35 cc 37 71 00        push     dword ptr [0x7137cc]
+==============================================================================
+#5  GetVersion       Ignore Control 1                 @ 0x00474EB7
+------------------------------------------------------------------------------
+  00474E9F: 83 3d 5c 62 75 00 00     cmp      dword ptr [0x75625c], 0
+  00474EA6: 75 42                    jne      0x474eea
+  00474EA8: 68 02 19 00 00           push     0x1902
+  00474EAD: 68 cf 01 00 00           push     0x1cf
+  00474EB2: 68 28 24 00 00           push     0x2428
+  00474EB7: ff 15 80 b3 81 00        call     dword ptr [0x81b380]  <== CALL
+  00474EBD: 89 c6                    mov      esi, eax
+  00474EBF: 58                       pop      eax
+  00474EC0: 5b                       pop      ebx
+  00474EC1: 59                       pop      ecx
+  00474EC2: 6a 00                    push     0
+  00474EC4: 6a 00                    push     0
+  00474EC6: 6a 00                    push     0
+  00474EC8: 58                       pop      eax
+  00474EC9: 5b                       pop      ebx
+  00474ECA: 59                       pop      ecx
+  00474ECB: 81 fe 02 19 00 00        cmp      esi, 0x1902
+  00474ED1: 74 0d                    je       0x474ee0
+  00474ED3: c7 05 5c 62 75 00 02 00 00 00 mov      dword ptr [0x75625c], 2
+  00474EDD: eb 0b                    jmp      0x474eea
+  00474EDF: 90                       nop      
+  00474EE0: c7 05 5c 62 75 00 01 00 00 00 mov      dword ptr [0x75625c], 1
+  00474EEA: 83 c4 04                 add      esp, 4
+  00474EED: b8 01 00 00 00           mov      eax, 1
+  00474EF2: 5d                       pop      ebp
+  00474EF3: 5e                       pop      esi
+  00474EF4: 5b                       pop      ebx
+  00474EF5: c3                       ret      
+  00474EF6: 90                       nop      
+  00474EF7: 90                       nop      
+  00474EF8: 90                       nop      
+  00474EF9: 90                       nop      
+  00474EFA: 90                       nop      
+  00474EFB: 90                       nop      
+  00474EFC: 90                       nop      
+  00474EFD: 90                       nop      
+  00474EFE: 90                       nop      
+==============================================================================
+#6  IsBadWritePtr    Help Text Crash                  @ 0x0047D05C
+------------------------------------------------------------------------------
+  0047D044: 02 00                    add      al, byte ptr [eax]
+  0047D046: 00 56 be                 add      byte ptr [esi - 0x42], dl
+  0047D049: 98                       cwde     
+  0047D04A: d0 47 00                 rol      byte ptr [edi], 1
+  0047D04D: ba 28 01 00 00           mov      edx, 0x128
+  0047D052: 6a 04                    push     4
+  0047D054: 8d b4 24 98 00 00 00     lea      esi, [esp + 0x98]
+  0047D05B: 56                       push     esi
+  0047D05C: ff 15 88 b3 81 00        call     dword ptr [0x81b388]  <== CALL
+  0047D062: 83 c5 01                 add      ebp, 1
+  0047D065: 3d 10 27 00 00           cmp      eax, 0x2710
+  0047D06A: 0f b6 1d c5 6d 73 00     movzx    ebx, byte ptr [0x736dc5]
+  0047D071: 7e 25                    jle      0x47d098
+  0047D073: 01 c0                    add      eax, eax
+  0047D075: 99                       cdq      
+  0047D076: 83 e0 01                 and      eax, 1
+  0047D079: 31 d0                    xor      eax, edx
+  0047D07B: 29 d0                    sub      eax, edx
+  0047D07D: 83 f8 01                 cmp      eax, 1
+  0047D080: 75 16                    jne      0x47d098
+  0047D082: 80 3d c5 6d 73 00 01     cmp      byte ptr [0x736dc5], 1
+  0047D089: 75 0d                    jne      0x47d098
+  0047D08B: 89 ea                    mov      edx, ebp
+  0047D08D: 81 fa 00 00 00 80        cmp      edx, 0x80000000
+  0047D093: 83 da ff                 sbb      edx, -1
+  0047D096: d1 fa                    sar      edx, 1
+  0047D098: 5e                       pop      esi
+  0047D099: 59                       pop      ecx
+  0047D09A: 5a                       pop      edx
+  0047D09B: 8d 4d ff                 lea      ecx, [ebp - 1]
+  0047D09E: 83 f9 0a                 cmp      ecx, 0xa
+==============================================================================
+#7  GetVersion       Drop Item Timer                  @ 0x004C78A0
+------------------------------------------------------------------------------
+  004C7888: 24 04                    and      al, 4
+  004C788A: ed                       in       eax, dx
+  004C788B: de 00                    fiadd    word ptr [eax]
+  004C788D: 00 53 51                 add      byte ptr [ebx + 0x51], dl
+  004C7890: 52                       push     edx
+  004C7891: ba 31 dd 00 00           mov      edx, 0xdd31
+  004C7896: b9 21 c1 00 00           mov      ecx, 0xc121
+  004C789B: bb 0c fa 00 00           mov      ebx, 0xfa0c
+  004C78A0: ff 15 80 b3 81 00        call     dword ptr [0x81b380]  <== CALL
+  004C78A6: 83 f8 01                 cmp      eax, 1
+  004C78A9: 74 0a                    je       0x4c78b5
+  004C78AB: c7 05 1c 73 73 00 fe 00 00 00 mov      dword ptr [0x73731c], 0xfe
+  004C78B5: 5a                       pop      edx
+  004C78B6: 59                       pop      ecx
+  004C78B7: 5b                       pop      ebx
+  004C78B8: 83 c4 08                 add      esp, 8
+  004C78BB: b8 01 00 00 00           mov      eax, 1
+  004C78C0: 5d                       pop      ebp
+  004C78C1: 5f                       pop      edi
+  004C78C2: 5e                       pop      esi
+  004C78C3: 5b                       pop      ebx
+  004C78C4: c3                       ret      
+  004C78C5: dd d8                    fstp     st(0)
+  004C78C7: e9 24 fd ff ff           jmp      0x4c75f0
+  004C78CC: 8d 44 20 00              lea      eax, [eax]
+  004C78D0: dd d8                    fstp     st(0)
+  004C78D2: e9 19 fd ff ff           jmp      0x4c75f0
+  004C78D7: dd d8                    fstp     st(0)
+  004C78D9: e9 12 fd ff ff           jmp      0x4c75f0
+  004C78DE: 89 c0                    mov      eax, eax
+  004C78E0: dd d8                    fstp     st(0)
+  004C78E2: e9 09 fd ff ff           jmp      0x4c75f0
+==============================================================================
+#8  GetCurrentThread Broken Doors                     @ 0x004CC48C
+------------------------------------------------------------------------------
+  004CC474: 00 00                    add      byte ptr [eax], al
+  004CC476: 00 00                    add      byte ptr [eax], al
+  004CC478: 00 50 53                 add      byte ptr [eax + 0x53], dl
+  004CC47B: 51                       push     ecx
+  004CC47C: b8 ba ab 00 00           mov      eax, 0xabba
+  004CC481: 8d 1d a0 87 73 00        lea      ebx, [0x7387a0]
+  004CC487: b9 ba ba 00 00           mov      ecx, 0xbaba
+  004CC48C: ff 15 b4 b3 81 00        call     dword ptr [0x81b3b4]  <== CALL
+  004CC492: 59                       pop      ecx
+  004CC493: 5b                       pop      ebx
+  004CC494: 59                       pop      ecx
+  004CC495: 83 3d a0 87 73 00 00     cmp      dword ptr [0x7387a0], 0
+  004CC49C: 5b                       pop      ebx
+  004CC49D: c3                       ret      
+  004CC49E: 90                       nop      
+  004CC49F: 90                       nop      
+  004CC4A0: 53                       push     ebx
+  004CC4A1: 8b 89 a8 00 00 00        mov      ecx, dword ptr [ecx + 0xa8]
+  004CC4A7: 8b 19                    mov      ebx, dword ptr [ecx]
+  004CC4A9: ff 53 14                 call     dword ptr [ebx + 0x14]
+  004CC4AC: 5b                       pop      ebx
+  004CC4AD: c3                       ret      
+  004CC4AE: 90                       nop      
+  004CC4AF: 90                       nop      
+  004CC4B0: 53                       push     ebx
+  004CC4B1: 89 cb                    mov      ebx, ecx
+  004CC4B3: 55                       push     ebp
+  004CC4B4: 83 ec 10                 sub      esp, 0x10
+  004CC4B7: 8b ab a8 00 00 00        mov      ebp, dword ptr [ebx + 0xa8]
+  004CC4BD: 8b 95 98 00 00 00        mov      edx, dword ptr [ebp + 0x98]
+  004CC4C3: 89 14 24                 mov      dword ptr [esp], edx
+  004CC4C6: d9 ee                    fldz     
+  004CC4C8: d9 ee                    fldz     
+  004CC4CA: d9 ee                    fldz     
+  004CC4CC: 89 d1                    mov      ecx, edx
+  004CC4CE: 89 4c 24 0c              mov      dword ptr [esp + 0xc], ecx
+==============================================================================
+#9  GetCurrentThread Broken Health 2                  @ 0x004D26F4
+------------------------------------------------------------------------------
+  004D26DC: e8 6a 7d 00 89           call     0x894da44b
+  004D26E1: de 52 51                 ficom    word ptr [edx + 0x51]
+  004D26E4: 56                       push     esi
+  004D26E5: b9 01 00 00 00           mov      ecx, 1
+  004D26EA: be 0d 27 4d 00           mov      esi, 0x4d270d
+  004D26EF: ba 96 40 00 00           mov      edx, 0x4096
+  004D26F4: ff 15 b4 b3 81 00        call     dword ptr [0x81b3b4]  <== CALL
+  004D26FA: 83 3d 50 5e 75 00 00     cmp      dword ptr [0x755e50], 0
+  004D2701: 75 0a                    jne      0x4d270d
+  004D2703: c7 05 50 5e 75 00 02 00 00 00 mov      dword ptr [0x755e50], 2
+  004D270D: 5e                       pop      esi
+  004D270E: 59                       pop      ecx
+  004D270F: 5a                       pop      edx
+  004D2710: 83 c4 10                 add      esp, 0x10
+  004D2713: 5e                       pop      esi
+  004D2714: 5b                       pop      ebx
+  004D2715: c3                       ret      
+  004D2716: 90                       nop      
+  004D2717: 90                       nop      
+  004D2718: 90                       nop      
+  004D2719: 90                       nop      
+  004D271A: 90                       nop      
+  004D271B: 90                       nop      
+  004D271C: 90                       nop      
+  004D271D: 90                       nop      
+  004D271E: 90                       nop      
+  004D271F: 90                       nop      
+  004D2720: 53                       push     ebx
+  004D2721: 8b 54 24 08              mov      edx, dword ptr [esp + 8]
+  004D2725: 55                       push     ebp
+  004D2726: 83 7a 30 08              cmp      dword ptr [edx + 0x30], 8
+  004D272A: 89 cb                    mov      ebx, ecx
+  004D272C: 75 05                    jne      0x4d2733
+  004D272E: 8b 6a 2c                 mov      ebp, dword ptr [edx + 0x2c]
+  004D2731: eb 02                    jmp      0x4d2735
+  004D2733: 31 ed                    xor      ebp, ebp
+  004D2735: 39 ab 58 01 00 00        cmp      dword ptr [ebx + 0x158], ebp
+==============================================================================
+#10  IsBadReadPtr     Broken Useables                  @ 0x004D4063
+------------------------------------------------------------------------------
+  004D404B: 00 00                    add      byte ptr [eax], al
+  004D404D: 68 26 24 00 00           push     0x2426
+  004D4052: 68 cf 01 00 00           push     0x1cf
+  004D4057: 68 02 19 00 00           push     0x1902
+  004D405C: 6a 04                    push     4
+  004D405E: 8d 54 24 64              lea      edx, [esp + 0x64]
+  004D4062: 52                       push     edx
+  004D4063: ff 15 68 b3 81 00        call     dword ptr [0x81b368]  <== CALL
+  004D4069: 89 c6                    mov      esi, eax
+  004D406B: 58                       pop      eax
+  004D406C: 5b                       pop      ebx
+  004D406D: 59                       pop      ecx
+  004D406E: 6a 00                    push     0
+  004D4070: 6a 00                    push     0
+  004D4072: 6a 00                    push     0
+  004D4074: 58                       pop      eax
+  004D4075: 5b                       pop      ebx
+  004D4076: 59                       pop      ecx
+  004D4077: 81 fe 26 24 00 00        cmp      esi, 0x2426
+  004D407D: 74 11                    je       0x4d4090
+  004D407F: c7 05 80 90 73 00 00 00 00 00 mov      dword ptr [0x739080], 0
+  004D4089: eb 0f                    jmp      0x4d409a
+  004D408B: 89 c0                    mov      eax, eax
+  004D408D: 8d 40 00                 lea      eax, [eax]
+  004D4090: c7 05 80 90 73 00 01 00 00 00 mov      dword ptr [0x739080], 1
+  004D409A: 83 c4 58                 add      esp, 0x58
+  004D409D: 5d                       pop      ebp
+  004D409E: 5e                       pop      esi
+  004D409F: 5b                       pop      ebx
+  004D40A0: c2 04 00                 ret      4
+  004D40A3: 90                       nop      
+  004D40A4: 90                       nop      
+  004D40A5: 90                       nop      
+  004D40A6: 90                       nop      
+  004D40A7: 90                       nop      
+  004D40A8: 90                       nop      
+  004D40A9: 90                       nop      
+  004D40AA: 90                       nop      
+==============================================================================
+#11  GetLastError     Broken Level Initialization 1    @ 0x004D7E7A
+------------------------------------------------------------------------------
+  004D7E62: 59                       pop      ecx
+  004D7E63: 75 00                    jne      0x4d7e65
+  004D7E65: 02 75 36                 add      dh, byte ptr [ebp + 0x36]
+  004D7E68: 52                       push     edx
+  004D7E69: ba 01 00 00 00           mov      edx, 1
+  004D7E6E: 51                       push     ecx
+  004D7E6F: 53                       push     ebx
+  004D7E70: b9 00 00 00 00           mov      ecx, 0
+  004D7E75: bb 02 00 00 00           mov      ebx, 2
+  004D7E7A: ff 15 64 b3 81 00        call     dword ptr [0x81b364]  <== CALL
+  004D7E80: 83 f8 01                 cmp      eax, 1
+  004D7E83: 74 0c                    je       0x4d7e91
+  004D7E85: c7 05 78 59 75 00 01 00 00 00 mov      dword ptr [0x755978], 1
+  004D7E8F: eb 0a                    jmp      0x4d7e9b
+  004D7E91: c7 05 78 59 75 00 00 00 00 00 mov      dword ptr [0x755978], 0
+  004D7E9B: 5b                       pop      ebx
+  004D7E9C: 59                       pop      ecx
+  004D7E9D: 5a                       pop      edx
+  004D7E9E: 83 c4 0c                 add      esp, 0xc
+  004D7EA1: b8 01 00 00 00           mov      eax, 1
+  004D7EA6: 5b                       pop      ebx
+  004D7EA7: c3                       ret      
+  004D7EA8: 90                       nop      
+  004D7EA9: 90                       nop      
+  004D7EAA: 90                       nop      
+  004D7EAB: 90                       nop      
+  004D7EAC: 90                       nop      
+  004D7EAD: 90                       nop      
+  004D7EAE: 90                       nop      
+  004D7EAF: 90                       nop      
+  004D7EB0: 8b 0d 4c 5e 75 00        mov      ecx, dword ptr [0x755e4c]
+  004D7EB6: 83 e9 01                 sub      ecx, 1
+  004D7EB9: 83 f9 05                 cmp      ecx, 5
+  004D7EBC: 77 22                    ja       0x4d7ee0
+==============================================================================
+#12  IsBadCodePtr     Broken Level Initialization 2    @ 0x004D84DE
+------------------------------------------------------------------------------
+  004D84C6: 00 00                    add      byte ptr [eax], al
+  004D84C8: 68 10 10 00 00           push     0x1010
+  004D84CD: 8d 1d 78 59 75 00        lea      ebx, [0x755978]
+  004D84D3: 53                       push     ebx
+  004D84D4: 68 73 19 00 00           push     0x1973
+  004D84D9: 68 c0 83 4d 00           push     0x4d83c0
+  004D84DE: ff 15 84 b3 81 00        call     dword ptr [0x81b384]  <== CALL
+  004D84E4: 58                       pop      eax
+  004D84E5: 5b                       pop      ebx
+  004D84E6: 59                       pop      ecx
+  004D84E7: 6a 00                    push     0
+  004D84E9: 6a 00                    push     0
+  004D84EB: 6a 00                    push     0
+  004D84ED: 58                       pop      eax
+  004D84EE: 5b                       pop      ebx
+  004D84EF: 59                       pop      ecx
+  004D84F0: 83 c4 08                 add      esp, 8
+  004D84F3: 5b                       pop      ebx
+  004D84F4: c3                       ret      
+  004D84F5: 90                       nop      
+  004D84F6: 90                       nop      
+  004D84F7: 90                       nop      
+  004D84F8: 90                       nop      
+  004D84F9: 90                       nop      
+  004D84FA: 90                       nop      
+  004D84FB: 90                       nop      
+  004D84FC: 90                       nop      
+  004D84FD: 90                       nop      
+  004D84FE: 90                       nop      
+  004D84FF: 90                       nop      
+  004D8500: 53                       push     ebx
+  004D8501: b9 00 d0 67 00           mov      ecx, 0x67d000
+  004D8506: e8 15 98 f2 ff           call     0x401d20
+  004D850B: e8 80 99 f2 ff           call     0x401e90
+  004D8510: ff 35 54 96 73 00        push     dword ptr [0x739654]
+  004D8516: b9 d4 9a 7e 00           mov      ecx, 0x7e9ad4
+  004D851B: e8 c0 62 13 00           call     0x60e7e0
+  004D8520: e8 db b3 f9 ff           call     0x473900
+==============================================================================
+#13  IsBadWritePtr    Ignore Control 2                 @ 0x004F222E
+------------------------------------------------------------------------------
+  004F2216: 00 00                    add      byte ptr [eax], al
+  004F2218: 68 06 25 00 00           push     0x2506
+  004F221D: 8d 5c 24 08              lea      ebx, [esp + 8]
+  004F2221: 53                       push     ebx
+  004F2222: 68 69 19 00 00           push     0x1969
+  004F2227: 6a 04                    push     4
+  004F2229: 8d 6c 24 10              lea      ebp, [esp + 0x10]
+  004F222D: 55                       push     ebp
+  004F222E: ff 15 88 b3 81 00        call     dword ptr [0x81b388]  <== CALL
+  004F2234: 58                       pop      eax
+  004F2235: 5b                       pop      ebx
+  004F2236: 59                       pop      ecx
+  004F2237: 6a 00                    push     0
+  004F2239: 6a 00                    push     0
+  004F223B: 6a 00                    push     0
+  004F223D: 58                       pop      eax
+  004F223E: 5b                       pop      ebx
+  004F223F: 59                       pop      ecx
+  004F2240: 83 7c 24 04 00           cmp      dword ptr [esp + 4], 0
+  004F2245: 75 0a                    jne      0x4f2251
+  004F2247: c7 05 5c 62 75 00 02 00 00 00 mov      dword ptr [0x75625c], 2
+  004F2251: 81 c4 88 00 00 00        add      esp, 0x88
+  004F2257: 5d                       pop      ebp
+  004F2258: 5f                       pop      edi
+  004F2259: 5e                       pop      esi
+  004F225A: 5b                       pop      ebx
+  004F225B: c3                       ret      
+  004F225C: 90                       nop      
+  004F225D: 90                       nop      
+  004F225E: 90                       nop      
+  004F225F: 90                       nop      
+  004F2260: 53                       push     ebx
+  004F2261: 83 ec 08                 sub      esp, 8
+  004F2264: 8b 5c 24 14              mov      ebx, dword ptr [esp + 0x14]
+  004F2268: ff 74 24 10              push     dword ptr [esp + 0x10]
+  004F226C: e8 bf 31 12 00           call     0x615430
+  004F2271: 59                       pop      ecx
+  004F2272: d9 5c 24 04              fstp     dword ptr [esp + 4]
+==============================================================================
+#14  IsBadReadPtr     Less Ammo                        @ 0x004F9B5C
+------------------------------------------------------------------------------
+  004F9B44: 52                       push     edx
+  004F9B45: 56                       push     esi
+  004F9B46: b9 08 00 00 00           mov      ecx, 8
+  004F9B4B: ba 1a 00 00 00           mov      edx, 0x1a
+  004F9B50: be 73 9b 4f 00           mov      esi, 0x4f9b73
+  004F9B55: 6a 04                    push     4
+  004F9B57: 68 40 15 82 00           push     0x821540
+  004F9B5C: ff 15 68 b3 81 00        call     dword ptr [0x81b368]  <== CALL
+  004F9B62: ff 0d 40 15 82 00        dec      dword ptr [0x821540]
+  004F9B68: 39 05 40 15 82 00        cmp      dword ptr [0x821540], eax
+  004F9B6E: 75 03                    jne      0x4f9b73
+  004F9B70: 83 c0 01                 add      eax, 1
+  004F9B73: 5e                       pop      esi
+  004F9B74: 5a                       pop      edx
+  004F9B75: 59                       pop      ecx
+  004F9B76: 83 bd 98 00 00 00 00     cmp      dword ptr [ebp + 0x98], 0
+  004F9B7D: 75 11                    jne      0x4f9b90
+  004F9B7F: 31 c0                    xor      eax, eax
+  004F9B81: 83 c4 04                 add      esp, 4
+  004F9B84: 5d                       pop      ebp
+  004F9B85: 5f                       pop      edi
+  004F9B86: 5e                       pop      esi
+  004F9B87: 5b                       pop      ebx
+  004F9B88: c2 04 00                 ret      4
+  004F9B8B: 89 c0                    mov      eax, eax
+  004F9B8D: 8d 40 00                 lea      eax, [eax]
+  004F9B90: 6a 47                    push     0x47
+  004F9B92: ff 75 08                 push     dword ptr [ebp + 8]
+  004F9B95: e8 d6 74 f8 ff           call     0x481070
+  004F9B9A: 8b 77 6c                 mov      esi, dword ptr [edi + 0x6c]
+  004F9B9D: 59                       pop      ecx
+  004F9B9E: 2b b5 a0 00 00 00        sub      esi, dword ptr [ebp + 0xa0]
+==============================================================================
+#15  GetVersion       Broken SaveGame Button           @ 0x005FFCE6
+------------------------------------------------------------------------------
+  005FFCCE: 61                       popal    
+  005FFCCF: 7d 00                    jge      0x5ffcd1
+  005FFCD1: 00 75 39                 add      byte ptr [ebp + 0x39], dh
+  005FFCD4: 50                       push     eax
+  005FFCD5: 53                       push     ebx
+  005FFCD6: 51                       push     ecx
+  005FFCD7: b8 36 a7 6a 02           mov      eax, 0x26aa736
+  005FFCDC: bb f0 19 fe 01           mov      ebx, 0x1fe19f0
+  005FFCE1: b9 9b 44 00 00           mov      ecx, 0x449b
+  005FFCE6: ff 15 80 b3 81 00        call     dword ptr [0x81b380]  <== CALL
+  005FFCEC: 3d 9b 44 00 00           cmp      eax, 0x449b
+  005FFCF1: 74 0d                    je       0x5ffd00
+  005FFCF3: c7 05 48 61 7d 00 2d 00 00 00 mov      dword ptr [0x7d6148], 0x2d
+  005FFCFD: eb 0b                    jmp      0x5ffd0a
+  005FFCFF: 90                       nop      
+  005FFD00: c7 05 48 61 7d 00 2e 00 00 00 mov      dword ptr [0x7d6148], 0x2e
+  005FFD0A: 59                       pop      ecx
+  005FFD0B: 5b                       pop      ebx
+  005FFD0C: 58                       pop      eax
+  005FFD0D: 83 c4 04                 add      esp, 4
+  005FFD10: b8 01 00 00 00           mov      eax, 1
+  005FFD15: 5e                       pop      esi
+  005FFD16: 5b                       pop      ebx
+  005FFD17: c3                       ret      
+  005FFD18: 90                       nop      
+  005FFD19: 90                       nop      
+  005FFD1A: 90                       nop      
+  005FFD1B: 90                       nop      
+  005FFD1C: 90                       nop      
+  005FFD1D: 90                       nop      
+  005FFD1E: 90                       nop      
+  005FFD1F: 90                       nop      
+  005FFD20: 53                       push     ebx
+  005FFD21: 55                       push     ebp
+  005FFD22: 83 ec 10                 sub      esp, 0x10
+  005FFD25: 8b 15 20 87 7c 00        mov      edx, dword ptr [0x7c8720]

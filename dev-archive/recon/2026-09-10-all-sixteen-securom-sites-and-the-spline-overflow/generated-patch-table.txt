@@ -1,0 +1,71 @@
+static const BYTE s00_expect[] = { 0x74, 0x12, 0xC7, 0x05, 0xA0, 0xA5, 0x69, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static const BYTE s00_patch[] = { 0xEB };
+static const BYTE s01_expect[] = { 0x00, 0x00, 0x00, 0x00, 0x75, 0x03, 0x83, 0xC0, 0x01, 0x5E };
+static const BYTE s01_patch[] = { 0x01 };
+static const BYTE s02_expect[] = { 0x74, 0x0C, 0xC7, 0x05, 0x44, 0x62, 0x75, 0x00, 0x02, 0x00, 0x00, 0x00 };
+static const BYTE s02_patch[] = { 0xEB };
+static const BYTE s03_expect[] = { 0x74, 0x0A, 0xC7, 0x05, 0xA4, 0x05, 0x71, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static const BYTE s03_patch[] = { 0xEB };
+static const BYTE s04_expect[] = { 0x74, 0x0A, 0xC7, 0x05, 0x50, 0x5E, 0x75, 0x00, 0x01, 0x00, 0x00, 0x00 };
+static const BYTE s04_patch[] = { 0xEB };
+static const BYTE s05_expect[] = { 0x74, 0x0D, 0xC7, 0x05, 0x5C, 0x62, 0x75, 0x00, 0x02, 0x00, 0x00, 0x00 };
+static const BYTE s05_patch[] = { 0xEB };
+static const BYTE s08_expect[] = { 0xC7, 0x05, 0xA0, 0x87, 0x73, 0x00, 0x00, 0x00, 0x00, 0x00, 0x50, 0x53, 0x51, 0xB8, 0xBA, 0xAB };
+static const BYTE s08_patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+static const BYTE s09_expect[] = { 0x75, 0x0A, 0xC7, 0x05, 0x50, 0x5E, 0x75, 0x00, 0x02, 0x00, 0x00, 0x00 };
+static const BYTE s09_patch[] = { 0xEB };
+static const BYTE s10_expect[] = { 0x74, 0x11, 0xC7, 0x05, 0x80, 0x90, 0x73, 0x00, 0x00, 0x00, 0x00, 0x00 };
+static const BYTE s10_patch[] = { 0xEB };
+static const BYTE s11_expect[] = { 0x74, 0x0C, 0xC7, 0x05, 0x78, 0x59, 0x75, 0x00, 0x01, 0x00, 0x00, 0x00 };
+static const BYTE s11_patch[] = { 0xEB };
+static const BYTE s12_expect[] = { 0x01, 0x00, 0x00, 0x00, 0x8D, 0x54, 0x24, 0x04, 0xC7, 0x44, 0x24, 0x04, 0x00, 0x00 };
+static const BYTE s12_patch[] = { 0x00 };
+static const BYTE s13_expect[] = { 0x75, 0x0A, 0xC7, 0x05, 0x5C, 0x62, 0x75, 0x00, 0x02, 0x00, 0x00, 0x00 };
+static const BYTE s13_patch[] = { 0xEB };
+static const BYTE s14_expect[] = { 0xFF, 0x0D, 0x40, 0x15, 0x82, 0x00, 0x39, 0x05, 0x40, 0x15, 0x82, 0x00 };
+static const BYTE s14_patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
+static const BYTE s15_expect[] = { 0x74, 0x0D, 0xC7, 0x05, 0x48, 0x61, 0x7D, 0x00, 0x2D, 0x00, 0x00, 0x00 };
+static const BYTE s15_patch[] = { 0xEB };
+
+    { "(unnamed) GetLastError @0x0042BDC3", 0x0042BDCC,
+      s00_expect, s00_patch, 1, sizeof(s00_expect),
+      "takes the game's own pass branch: [0x0069A5A0] = 0x1F instead of 0 (0 makes its reader bail out early)" },
+    { "Broken SaveGame EntityData: IsBadReadPtr @0x0043A005", 0x0043A013,
+      s01_expect, s01_patch, 1, sizeof(s01_expect),
+      "restores [0x0069B914] = 1 (its static value) instead of 0, so the entity-0x25 size adjustment still happens" },
+    { "DropDeadBody Crash: GetVersion @0x004667DC", 0x004667E7,
+      s02_expect, s02_patch, 1, sizeof(s02_expect),
+      "takes the game's own pass branch: [0x00756244] = 0 instead of 2" },
+    { "More Damage: IsBadCodePtr @0x0046D688", 0x0046D6A2,
+      s03_expect, s03_patch, 1, sizeof(s03_expect),
+      "skips 'mov [0x007105A4], 0'; leaving it at 1 makes its reader skip the damage multiply" },
+    { "Broken Health 1: GetLastError @0x004732AA", 0x004732B5,
+      s04_expect, s04_patch, 1, sizeof(s04_expect),
+      "skips 'mov [0x00755E50], 1'; its reader bails out on any non-zero" },
+    { "Ignore Control 1: GetVersion @0x00474EB7", 0x00474ED1,
+      s05_expect, s05_patch, 1, sizeof(s05_expect),
+      "takes the game's own pass branch: [0x0075625C] = 1 instead of 2" },
+    { "Broken Doors: GetCurrentThread @0x004CC48C", 0x004CC46F,
+      s08_expect, s08_patch, 10, sizeof(s08_expect),
+      "stops the block NULLing the live pointer in [0x007387A0]; the stub used to put it back" },
+    { "Broken Health 2: GetCurrentThread @0x004D26F4", 0x004D2701,
+      s09_expect, s09_patch, 1, sizeof(s09_expect),
+      "skips 'mov [0x00755E50], 2'; its reader bails out on any non-zero" },
+    { "Broken Useables: IsBadReadPtr @0x004D4063", 0x004D407D,
+      s10_expect, s10_patch, 1, sizeof(s10_expect),
+      "takes the game's own pass branch: [0x00739080] = 1 instead of 0 (0 makes its reader return failure)" },
+    { "Broken Level Initialization 1: GetLastError @0x004D7E7A", 0x004D7E83,
+      s11_expect, s11_patch, 1, sizeof(s11_expect),
+      "takes the game's own pass branch: [0x00755978] = 0 instead of 1 (1 makes its reader bail out)" },
+    { "Broken Level Initialization 2: IsBadCodePtr @0x004D84DE", 0x004D84B8,
+      s12_expect, s12_patch, 1, sizeof(s12_expect),
+      "writes 0 not 1 into [0x00755978]; the stub used to overwrite the 1, and 1 makes the reader bail out" },
+    { "Ignore Control 2: IsBadWritePtr @0x004F222E", 0x004F2245,
+      s13_expect, s13_patch, 1, sizeof(s13_expect),
+      "skips 'mov [0x0075625C], 2'; 2 makes its reader zero [0x00725710]" },
+    { "Less Ammo: IsBadReadPtr @0x004F9B5C", 0x004F9B62,
+      s14_expect, s14_patch, 6, sizeof(s14_expect),
+      "stops the block decrementing [0x00821540] back to 0; at 1 the ammo drain and the divide-by-2 are both no-ops" },
+    { "Broken SaveGame Button: GetVersion @0x005FFCE6", 0x005FFCF1,
+      s15_expect, s15_patch, 1, sizeof(s15_expect),
+      "takes the game's own pass branch: [0x007D6148] = 0x2E instead of 0x2D (its reader tests for 0x2E)" },
