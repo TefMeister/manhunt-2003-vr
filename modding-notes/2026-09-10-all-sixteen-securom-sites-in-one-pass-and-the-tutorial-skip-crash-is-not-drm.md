@@ -40,7 +40,7 @@ written.
 
 ### Three things the pass found that the site list alone could not
 
-**Site #6 is inert, and always was.** Its guarded block computes `(2*eax) mod 2` and then requires
+**Site #6’s guarded block is unreachable.** Its guarded block computes `(2*eax) mod 2` and then requires
 the answer to be 1 — which no value of `eax` can produce. The block is unreachable whatever the
 call returns, and its only other effect (`add ebp,1`) is undone twelve instructions later by
 `lea ecx,[ebp-1]`. There is nothing here to repair, and patching it would be inventing behaviour
