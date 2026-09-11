@@ -809,15 +809,54 @@ The board's `[FLAT]` row asked for exactly one run: `SKIP_MENU 1` + `START_LEVEL
 - **So dropped splines are not the cause.** On 2026-09-10 the guard had fired before every
   `0x0061166A` crash, which made the two look linked; today the guard never fired and the crash did
   not change by a byte. `[disproved 2026-09-11]` for "a dropped spline causes `0x0061166A`".
-- **The same level through the menu is fine** — `BORN AGAIN` via SELECT SCENE ran 50+ minutes today,
-  and ~8 minutes on 2026-09-10. So this is a **direct-start-only** fault: something the frontend
-  creates that `SKIP_MENU` skips. `[hypothesis]`
-- New detail from the crash dump: `EBX` looks like an `RwStream` (`[+0]=0x75`, then `0x006114C4`,
-  `10`, `0`, `1`, `0`, `0`, `4096`) and the source (`ESI`) points into stream data beginning with
-  the ASCII tag **`TKEY`**. Handed to the reader for static work.
+- ~~"The same level through the menu is fine, so this is a direct-start-only fault."~~
+  **`[disproved 2026-09-11]` — it was never the same level.** `START_LEVEL` is a raw index into
+  `initscripts/LEVELS/levels.txt`, where **0 = Jury_Turf (BORN AGAIN) and 1 = Derelict** (checked
+  by hand, and statically: parsed at `0x005FD5C4` into `[0x007D4E94]`, passed to SetLevel
+  `0x004D8390`). Every direct start so far loaded **Derelict**; every menu run loaded BORN AGAIN.
+  The `"0 : Test level"` comment in `settings.txt` is stale — the 2026-09-10 "Test level" run was
+  very probably BORN AGAIN too.
 
-**Priority drops.** The menu route is now fully drivable (§11f, §11g), so `SKIP_MENU` is a debug
-shortcut rather than the only way in. The row is kept, demoted to `[PD]`.
+### 11d-quater. What `0x0061166A` actually is — a failed 12 MB allocation in a retry loop (2026-09-11)
+
+From the reader's drop `inbox/2026-09-11-mod-reader-direct-start-crash-0061166A.md`, static only.
+**Supersedes** the §11d-bis paragraph reading `0x0061166A` as "field `+0x40` of a NULL object".
+
+- **No object is NULL; an allocation is** `[verified-numerically 2026-09-11]`. The whole-file loader
+  `0x004D5090` asks the level's `toc.txt` for the file's size (`0x004D61B0`); on a miss it prints
+  `"!!!!BIG WARNING!!!! %s was not found in TOC"` and uses **12 MB** (`0x00C00000`), allocates that
+  from the game's single 64 MB first-fit heap (`0x00401350`, heap at `0x0067D000`), which returns 0
+  when no block is big enough — then "aligns" it with `(p + 0x40) & ~0x3F`, so NULL becomes `0x40`,
+  and reads the file into it. `EBP = 0x00C00000` in every crash dump is that length.
+- **`TKEY` is the key table of a GXT (game text) file** — the bytes at `ESI` are the start of
+  `levels/derelict/pc_text/pc_derelict.gxt` `[verified-numerically 2026-09-11]`.
+- **Every PC-only file misses the TOC** `[measured 2026-09-11]`: each level's `toc.txt` lists PS2
+  names (`Derelict.gxt`, `modelsps2.dff`, `picload.txd`) while the files are `PC_Derelict.GXT`,
+  `modelspc.dff`, `picload_pc.txd`, `scene1pc.txd`. So they all get 12 MB buffers, **on every level
+  start, menu or not**.
+- **The level load is retried every frame with no teardown** `[inferred-static]`: app state 3
+  (`0x004D7C86`) calls StartupLevel `0x004D8500`; on failure it leaves the state unchanged, so the
+  same step runs next frame, and the only teardown (`0x00474A60`, also the only spline-count reset)
+  is reached solely from unload `0x004D83D0`. **That one loop explains both crash signatures:**
+  Derelict has **36** splines (decoded from `ManHunt.pak`, XOR `0x7F`), so a single load cannot fill
+  a 100-slot table — the **third** attempt did (2026-09-10, `0x00471FFB`); with 1,024 slots the
+  attempts continue, each leaking, until no 12 MB block is left (`0x0061166A`).
+- **The menu creates nothing that `SKIP_MENU` skips** `[inferred-static]`: the frontend's start-game
+  handler ends in `0x005EF790`, the same function the `SKIP_MENU` branch calls directly.
+- **Still unknown: why the FIRST StartupLevel attempt fails on Derelict.** Candidates: one of the
+  loader's failure exits (levelSetupFromIni, Anim Manager Init, SetWorld, Init Archetypes,
+  LoadGraph/mapai, Init Instances), or the heap itself running short on Derelict's 10.7 MB world
+  textures (Jury_Turf's are 4.2 MB). Both `[hypothesis]`.
+- **Fix built, not wired:** `staging/.../src/tocsize.c` `[compile-verified 2026-09-11]` returns the
+  file's real size on a TOC miss (anything ≥ 12 MB or unreadable keeps the game's own fallback), plus
+  a crash-time logger for the loading-step counter `[0x007D358C]`, spline count, error flag
+  `[0x007E9084]` and app state `[0x00755E4C]`. ⚠️ It removes the crash **site**; if the first attempt
+  fails for another reason, the retry loop just runs longer.
+
+**What settles it, no rebuild needed:** (1) `SKIP_MENU 1` + `START_LEVEL 0` — BORN AGAIN by direct
+start; (2) `SKIP_MENU 0` + `START_LEVEL 1`, then NEW GAME — Derelict through the menu. **This now
+matters for players, not just for a debug shortcut**: if Derelict fails its first load through the
+menu too, the transition from BORN AGAIN to the second level is at risk in an ordinary play-through.
 
 ## 11f. ⚠️⚠️ TWO MEASUREMENT DEFECTS INVALIDATED EVERY "THIS GAME IGNORES INPUT" FINDING (2026-09-10b)
 
