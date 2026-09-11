@@ -873,6 +873,78 @@ From the reader's drop `inbox/2026-09-11-mod-reader-direct-start-crash-0061166A.
 the debug shortcut. Whether Derelict loads after BORN AGAIN in a real play-through is still
 unknown, but nothing points at it any more.
 
+### ✅ 11d-quinquies. ROOT CAUSE: THE LEVEL FOLDER NAME IS COPIED BEFORE `levels.txt` IS READ (2026-09-11)
+
+From the reader's drop `inbox/2026-09-11-mod-reader-level-load-retry-and-toc-size.md`, which
+**supersedes** the job-2 drop on the menu question and the step table, then **confirmed live**.
+
+- **Mechanism** `[inferred-static]`: SetLevel `0x004D8390` sets the index `[0x0075622C]` and copies
+  the level's folder name from the table `0x00755E54` (filled from `levels.txt`) into `0x00756214`.
+  `levels.txt` is read once, at `0x004D78A1`, **after** FRONTEND INIT returns — but on `SKIP_MENU`
+  both SetLevel calls happen **inside** FRONTEND INIT (`0x005E2FB8`, `0x005E4CCD`). So the name is
+  `""`. Everything that looks the level up **by index** is right (text, TOC, intro movie — hence
+  the correct GXT in the crash); the world loader builds `./levels//scene1.bsp` from the blank
+  copy, loads nothing, StartupLevel fails (`[0x007E9084] = 9`), and state 3 retries it every
+  frame with no teardown until the heap is gone. PLAY (`0x005D68A0`, always level **0**, a
+  constant) and SELECT SCENE call SetLevel long after the parse, so the menu is immune.
+- **The "mid-cutscene" crash was not mid-cutscene**: that 1.5 minutes is the level's intro **Bink
+  movie** (`LEVELS\Jury_Turf\Jury_Turf.BIK`, played in state 2); the crash comes ~0.3 s into the
+  loading screen after it.
+- **⚠️ The 2026-09-10 "SKIP_MENU + START_LEVEL 0 lands in live 3D" was probably the reporter's
+  camcorder Bink intro** (crosshair, two tape timers, subtitles), not the level. `[hypothesis]`,
+  with the reader.
+- **Live, with the reader's build `d4c849ca` (TOCSIZE on)** `[verified-live 2026-09-11, n=1 each]`:
+  - `SKIP_MENU 1`, fix off → crash moves to `0x00496C4F` (write to `0x4`, inside Anim Manager —
+    the leak runs out somewhere else once the 12 MB requests are gone), and the crash-time line reads
+    **`LEVELLOAD: step=4 splines=750 err=9 appstate=3 level=0 table="Jury_Turf" cur=""
+    loaderName=""`** — **the blank name, measured**, and 750 splines = 15 attempts.
+  - Same, plus the flag file `manhunt_vr_fix_levelname` → `LEVELNAME: level 0 name was "",
+    re-applied SetLevel -> "Jury_Turf"`, **no crash**, the level's script runs exactly as a menu
+    start does (DRM #4, #1, #6 on each help box; tutorial help text drawn), ~200 frames/s — **but
+    the screen is black**: no world, no HUD, Esc draws no pause menu. Something else the frontend
+    sets up is still missing (a fade that never lifts is the leading `[hypothesis]`). With the
+    reader.
+  - **Normal menu PLAY on the same build: fine.** 26 files loaded at their real size instead of
+    12 MB each (e.g. `PC_Jury_Turf.GXT` 18,486 B), gameplay reached, walking works, no crash.
+- **Players and level transitions** `[inferred-static]`: the 12 MB TOC-miss buffers are freed after
+  every load, so an ordinary transition does not leak; the residual risk is **fragmentation** of
+  the single 64 MB heap over a long session `[hypothesis]`, never observed. **TOCSIZE removes it**
+  and is on by default in the deployed build. The only transition trap found besides it is the
+  SecuROM check on the **third** level unload (`0x004D84A2`), already patched.
+- **Scene unlocks live in the save profile**, not `Settings.dat`: a 176-byte record per level at
+  `0x007D6B50 + 176 × level`, byte +0 = completed; scene N is offered when N−1 is completed.
+  `MANHUNT0.SAV` (69,620 B) is BORN AGAIN in progress with nothing completed
+  `[verified-numerically 2026-09-11]` for its label.
+
+## ⭐⭐ 11i. WHERE THE PLAYER IS — `POS`, AND STEERING BY MAP COORDINATES (2026-09-11)
+
+From the reader's drop `inbox/2026-09-11-mod-reader-player-position-and-jury-turf-map.md`, then
+checked live.
+
+- **Player** `[0x00715B9C]` (the instance loader stores it at `0x00439EF4` for the archetype named
+  `"player"`); **frame** `[[player + 0x80] + 0x04]`, the chain the game's own getters use
+  (`0x004317E0` position `+0x40`, `0x004317F0` "at" `+0x30`, `0x00431800` up `+0x20`)
+  `[verified-numerically 2026-09-11]`. **Camera** `[0x00715B94]`, frame `[camera + 4]`, same rows.
+  **Engine is Y-up**: file/map `(X, Y, Z-up)` → engine `(X, Z, −Y)` (`0x00439D33`).
+- **`POS` / `POS x y` / `POSR n ms`** (read-only, in the deployed build `8ceea3a4`) log player and
+  camera map position and yaw (0 = +X, 90 = +Y, counter-clockwise).
+- **All three live checks pass** `[verified-live 2026-09-11, n=1]`: at spawn `map=(427.15, 108.27,
+  −0.20) yaw=−90` against the level file's `(427.15, 108.27, 0.23)`; **+100 synthetic mouse-X counts
+  = yaw −34.3° (0.343°/count, positive turns clockwise)**; W for 1.5 s moved along bearing −122.8°
+  against a reported yaw of −124.3°, at **~2.2 map units/s walking**.
+- **Steering works.** A loop of `POS` → turn by `−Δyaw / 0.343` counts → posted W walked the player
+  from the start to `Bag_(CT)` (421.49, 51.32) in 9 steps and picked it up; **pickup radius is about
+  0.5**. Straight lines hit walls elsewhere (jammed at (418.5, 63.8), (419.3, 52.8), (414.5, 52.0)),
+  so real routes need the level's AI path graph (`mapAI.grf`, being decoded by the reader).
+- **Jury_Turf map** `[verified-numerically 2026-09-11]` (full table in the drop, now in `modding-notes`):
+  start (427.15, 108.27); admin doors (436.3, 106.5 / 103.5); **gates JT_Gate (406.14 / 403.39,
+  84.07, −3.08)**; hunters hLeader (435.9, 73.6), hArena (391.3, 93.7), hBackAlley (370.8, 60.8);
+  **Bag_(CT)01 (390.10, 67.50, −6.93)**, **Gen_Save_Point (379.84, 68.43, −6.93)**, **Shard_(CT)01
+  (370.47, 69.19, −7.10)** — the item-swap pair and the first save point, all on the lower yard;
+  **Gen_Save_Point02 (301.66, 29.94)**; the probable exit **CJ_JuryChute_(D) (274.41, 39.14, 7.75)**
+  `[inferred-static]` for "exit". Source: `levels/jury_turf/entity.inst` (binary) +
+  `entityTypeData.ini` inside `ManHunt.pak` (XOR `0x7F`).
+
 ## 11f. ⚠️⚠️ TWO MEASUREMENT DEFECTS INVALIDATED EVERY "THIS GAME IGNORES INPUT" FINDING (2026-09-10b)
 
 **Supersedes: §11e's conclusion, and every `disproved` input route recorded on 2026-09-10.** Both

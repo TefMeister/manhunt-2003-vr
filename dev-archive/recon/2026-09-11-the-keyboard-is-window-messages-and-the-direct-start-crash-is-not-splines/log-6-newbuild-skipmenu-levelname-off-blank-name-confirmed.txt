@@ -1,0 +1,394 @@
+[15:15:46.429] === manhunt-2003-vr proxy d3d8.dll loaded, PID=9432 ===
+[15:15:46.431] real d3d8.dll loaded from C:\Windows\system32\d3d8.dll; Direct3DCreate8=74D8C0E0
+[15:15:46.431]   INPUT: IAT patched -- DirectInput8Create real=74EB33F0 hook=74E73960
+[15:15:46.431]   INPUT: script watcher started (manhunt_vr_input.txt, one-shot)
+[15:15:46.432]   DRMFIX: watching 16 SecuROM-remnant site(s) for unpacking
+[15:15:46.432]   DRMLOG: table self-check OK -- 16 passthrough sites, stubs at 74E74D20..74E750C7
+[15:15:46.432]   LEVELNAME: off (create manhunt_vr_fix_levelname beside the exe to enable)
+[15:15:46.887]   INPUT: DirectInput8Create(ver=0x800) -> hr=0x00000000 obj=00A24AC8
+[15:15:46.887]   INPUT: IDirectInput8::CreateDevice hooked (real=741BB9E0)
+[15:15:46.888]   INPUT: CreateDevice(SysMouse) -> hr=0x00000000 dev=00A363E8
+[15:15:46.888]   INPUT: SysMouse GetDeviceState hooked (vt=742395F4 real=741BB310)
+[15:15:46.888]   INPUT: SysMouse GetDeviceData hooked (vt=742395F4 real=741BB2B0) -- buffered path armed
+[15:15:46.929]   INPUT: CreateDevice(SysKeyboard) -> hr=0x00000000 dev=02D63DB0
+[15:15:46.929]   INPUT: SysKeyboard GetDeviceState hooked (vt=74239570 real=741BDF80)
+[15:15:46.929]   INPUT: SysKeyboard GetDeviceData hooked (vt=74239570 real=741BDB80) -- buffered path armed
+[15:15:46.935]   DRMFIX: PATCHED Drop Item Timer (GetVersion @0x004C78A0)
+[15:15:46.935]       at 0x004C78A9: 74 -> EB   (skips 'mov [0x0073731C], 0xFE' by taking the game's own pass branch)
+[15:15:46.935]   DRMFIX: PATCHED Item Swap Crash (poisoned pointer @0x004C9AA0)
+[15:15:46.935]       at 0x004C9A92: 90 -> 83   (widens the game's own null check to 'edx <= 0x10' so a sabotage sentinel returns 0 instead of faulting)
+[15:15:46.935]   DRMFIX: PATCHED (unnamed) GetLastError @0x0042BDC3
+[15:15:46.935]       at 0x0042BDCC: 74 -> EB   (takes the game's own pass branch: [0x0069A5A0] = 0x1F instead of 0 (0 makes its reader bail out early))
+[15:15:46.935]   DRMFIX: PATCHED Broken SaveGame EntityData: IsBadReadPtr @0x0043A005
+[15:15:46.935]       at 0x0043A013: 00 -> 01   (restores [0x0069B914] = 1 (its static value) instead of 0, so the entity-0x25 size adjustment still happens)
+[15:15:46.935]   DRMFIX: PATCHED DropDeadBody Crash: GetVersion @0x004667DC
+[15:15:46.935]       at 0x004667E7: 74 -> EB   (takes the game's own pass branch: [0x00756244] = 0 instead of 2)
+[15:15:46.935]   DRMFIX: PATCHED More Damage: IsBadCodePtr @0x0046D688
+[15:15:46.935]       at 0x0046D6A2: 74 -> EB   (skips 'mov [0x007105A4], 0'; leaving it at 1 makes its reader skip the damage multiply)
+[15:15:46.935]   DRMFIX: PATCHED Broken Health 1: GetLastError @0x004732AA
+[15:15:46.935]       at 0x004732B5: 74 -> EB   (skips 'mov [0x00755E50], 1'; its reader bails out on any non-zero)
+[15:15:46.935]   DRMFIX: PATCHED Ignore Control 1: GetVersion @0x00474EB7
+[15:15:46.935]       at 0x00474ED1: 74 -> EB   (takes the game's own pass branch: [0x0075625C] = 1 instead of 2)
+[15:15:46.935]   DRMFIX: PATCHED Broken Doors: GetCurrentThread @0x004CC48C
+[15:15:46.935]       at 0x004CC46F: C7 -> 90   (stops the block NULLing the live pointer in [0x007387A0]; the stub used to put it back)
+[15:15:46.935]   DRMFIX: PATCHED Broken Health 2: GetCurrentThread @0x004D26F4
+[15:15:46.935]       at 0x004D2701: 75 -> EB   (skips 'mov [0x00755E50], 2'; its reader bails out on any non-zero)
+[15:15:46.935]   DRMFIX: PATCHED Broken Useables: IsBadReadPtr @0x004D4063
+[15:15:46.935]       at 0x004D407D: 74 -> EB   (takes the game's own pass branch: [0x00739080] = 1 instead of 0 (0 makes its reader return failure))
+[15:15:46.935]   DRMFIX: PATCHED Broken Level Initialization 1: GetLastError @0x004D7E7A
+[15:15:46.935]       at 0x004D7E83: 74 -> EB   (takes the game's own pass branch: [0x00755978] = 0 instead of 1 (1 makes its reader bail out))
+[15:15:46.935]   DRMFIX: PATCHED Broken Level Initialization 2: IsBadCodePtr @0x004D84DE
+[15:15:46.935]       at 0x004D84B8: 01 -> 00   (writes 0 not 1 into [0x00755978]; the stub used to overwrite the 1, and 1 makes the reader bail out)
+[15:15:46.935]   DRMFIX: PATCHED Ignore Control 2: IsBadWritePtr @0x004F222E
+[15:15:46.935]       at 0x004F2245: 75 -> EB   (skips 'mov [0x0075625C], 2'; 2 makes its reader zero [0x00725710])
+[15:15:46.935]   DRMFIX: PATCHED Less Ammo: IsBadReadPtr @0x004F9B5C
+[15:15:46.935]       at 0x004F9B62: FF -> 90   (stops the block decrementing [0x00821540] back to 0; at 1 the ammo drain and the divide-by-2 are both no-ops)
+[15:15:46.936]   DRMFIX: PATCHED Broken SaveGame Button: GetVersion @0x005FFCE6
+[15:15:46.936]       at 0x005FFCF1: 74 -> EB   (takes the game's own pass branch: [0x007D6148] = 0x2E instead of 0x2D (its reader tests for 0x2E))
+[15:15:46.936]   DRMLOG: redirected GetLastError @0x0042BDC3 [(unnamed 1)] -> stub 74E74D20 (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] -> stub 74E74D5B (ret cleans 8 bytes)
+[15:15:46.936]   DRMLOG: redirected GetVersion @0x004667DC [DropDeadBody Crash] -> stub 74E74D9E (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadCodePtr @0x0046D688 [More Damage] -> stub 74E74DD9 (ret cleans 4 bytes)
+[15:15:46.936]   DRMLOG: redirected GetLastError @0x004732AA [Broken Health 1] -> stub 74E74E19 (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected GetVersion @0x00474EB7 [Ignore Control 1] -> stub 74E74E54 (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadWritePtr @0x0047D05C [Help Text Crash] -> stub 74E74E8F (ret cleans 8 bytes)
+[15:15:46.936]   DRMLOG: redirected GetVersion @0x004C78A0 [Drop Item Timer] -> stub 74E74ED2 (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected GetCurrentThread @0x004CC48C [Broken Doors] -> stub 74E74F0D (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected GetCurrentThread @0x004D26F4 [Broken Health 2] -> stub 74E74F48 (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadReadPtr @0x004D4063 [Broken Useables] -> stub 74E74F83 (ret cleans 8 bytes)
+[15:15:46.936]   DRMLOG: redirected GetLastError @0x004D7E7A [Broken Level Initialization 1] -> stub 74E74FC6 (ret cleans 0 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadCodePtr @0x004D84DE [Broken Level Initialization 2] -> stub 74E75001 (ret cleans 4 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadWritePtr @0x004F222E [Ignore Control 2] -> stub 74E75041 (ret cleans 8 bytes)
+[15:15:46.936]   DRMLOG: redirected IsBadReadPtr @0x004F9B5C [Less Ammo] -> stub 74E75084 (ret cleans 8 bytes)
+[15:15:46.936]   DRMLOG: redirected GetVersion @0x005FFCE6 [Broken SaveGame Button] -> stub 74E750C7 (ret cleans 0 bytes)
+[15:15:46.936]   SPLINERELOC: spline table moved 0x007134F4 -> 0x04B00000, 1024 slots (was 100); six references rewritten at 0x00471FB8, 0x004721A3, 0x004721B3, 0x004721C1, 0x00472223, 0x00472239. Count stays at 0x00713684 and is no longer adjacent to the table, so the 101st spline can no longer overwrite it.
+[15:15:46.936]   SPLINEGUARD: INSTALLED at 0x004720D9 -- spline count clamped to 1023 slots (stub at 74E74150); stops the loader writing over its own counter at 0x00713684
+[15:15:46.936]   TOCSIZE: INSTALLED at 0x004D50D4 -- files missing from toc.txt now load with their real size instead of a 12 MB buffer
+[15:15:46.936]   DRMLOG: 16/16 sites redirected
+[15:15:47.202] Direct3DCreate8 called: SDKVersion=0xDC
+[15:15:47.409]   -> returned 02D641E8
+[15:15:47.409]   CreateDevice vtable hook installed: real=741B1210 hook=74E71B20
+[15:15:48.071] Direct3DCreate8 called: SDKVersion=0xDC
+[15:15:48.272]   -> returned 02D64318
+[15:15:48.272] CreateDevice called: Adapter=0 DeviceType=1 hFocusWindow=008909A6 BehaviorFlags=0x00000050
+[15:15:48.272]   --- RenderWare video-mode recon ---
+[15:15:48.272]     engine ptr slot 0x0082279C @ 0082279C:
+[15:15:48.272]       +0x000:  121020240   47828912          0          0       1364          0          0          0
+[15:15:48.273]     global 0x008243A8 @ 008243A8:
+[15:15:48.273]       +0x000:          0          0          0          0          0          0          0          0
+[15:15:48.273]     engine instance = 0x07369F50
+[15:15:48.273]     engine instance struct @ 07369F50:
+[15:15:48.273]       +0x000:          0          0          0          0 1065353216    6550112          0 1065353216
+[15:15:48.273]       +0x020:    6668912    6664496    6657664    6658176    6658768    6659392          0          0
+[15:15:48.273]       +0x040:          0          0    6555248    6560992    6684288    6684880    6679632    6682624
+[15:15:48.273]       +0x060:    6685376    6687664    6683616    6686928    6564128    6677392    6683632    6675744
+[15:15:48.273]       +0x080:    6677328    6671680    6672560    6673504    6675712    6675680    6564416    6555680
+[15:15:48.274]       +0x0A0:    6555248    6673216    6673360    6577056    6578000    6577200    6683488          0
+[15:15:48.274]       +0x0C0:          0    6590432    6452272    6451920    6456128    6456880    6453680    6454368
+[15:15:48.274]       +0x0E0:    6641024    6453360    6452048    6453072    6376608    6376576    6362992    6363024
+[15:15:48.274]       +0x100:    6363088    6363136    6597472    6597440    6363760    6363200    6363264    6597264
+[15:15:48.274]       +0x120:    6362960    6597344    6597392    6363456    6546960    4970880    4970848    4970816
+[15:15:48.274]       +0x140:    4970784    6360992    6361280          0          2    1024000          0          0
+[15:15:48.274]       +0x160:          0          0          0          0          0          0          0          0
+[15:15:48.274]     device state 0x00828440 @ 00828440:
+[15:15:48.274]       +0x000:          0          0          0          0          0          0          0          0
+[15:15:48.274]       +0x020:          0          0          0          0          0  121020548          0         85
+[15:15:48.275]       +0x040:          0          0          0          0        800        600         22          1
+[15:15:48.275]       +0x060:          0          2    8980902          0          1         75          0         60
+[15:15:48.275]       +0x080: 2147483648          0          0          0          0          0          0          0
+[15:15:48.275]       +0x0A0:          0          0          0          0          0          0          0          0
+[15:15:48.275]       +0x0C0:          0          0          0          0          0          0          0          0
+[15:15:48.275]       +0x0E0:          0          0          0          0          0          0          0          0
+[15:15:48.275]     candidate mode-array pointer = 0x00000000
+[15:15:48.275]     engine device function table:
+[15:15:48.275]       [engine+0x058] = 0x0065EC50   raster-create callback (the one FAILING for 800x600)
+[15:15:48.275]       [engine+0x074] = 0x0065E390   called at +0x0063CDE0 / +0x0063CD0F
+[15:15:48.275]       [engine+0x078] = 0x0065FBF0   called right after the patched site (+0x0063CEB1)
+[15:15:48.275]       [engine+0x088] = 0x0065D0B0   called at +0x0063CC7F
+[15:15:48.275]       [engine+0x0A4] = 0x0065D340   called at +0x0063CD94
+[15:15:48.275]       [engine+0x0A8] = 0x0065D3D0   called at +0x0063CC9F
+[15:15:48.275]       [engine+0x0B8] = 0x0065FB60   called at +0x0063CE1D
+[15:15:48.275]       [engine+0x098] = 0x00642A40   called at +0x0063CE47
+[15:15:48.275]       [engine+0x144] = 0x00610FA0   allocator (returns the NULL raster)
+[15:15:48.275]       [engine+0x148] = 0x006110C0   free/destroy counterpart
+[15:15:48.275]       [engine+0x05C] = 0x0065F800   adjacent to raster-create
+[15:15:48.275]   --- RenderWare video-mode TABLE (via game wrapper 0x612710, read-only) ---
+[15:15:48.275]     registry-driven globals: Device=0 Mode=4 Index=3  (0x735EB0/B4/B8)
+[15:15:48.275]     idx  ret        width  height depth flags      refRate format   note
+[15:15:48.275]      0   0x0019F6A8  1920   1080    32  0x00000000     60    1536   WINDOWED
+[15:15:48.275]      1   0x0019F6A8   640    480    32  0x00000001     75    1536   exclusive(fullscreen)
+[15:15:48.275]      2   0x0019F6A8   720    480    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]      3   0x0019F6A8   720    576    32  0x00000001     50    1536   exclusive(fullscreen)
+[15:15:48.275]      4   0x0019F6A8   800    600    32  0x00000001     75    1536   exclusive(fullscreen)  <- current registry Mode
+[15:15:48.275]      5   0x0019F6A8  1024    768    32  0x00000001     75    1536   exclusive(fullscreen)
+[15:15:48.275]      6   0x0019F6A8  1152    864    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]      7   0x0019F6A8  1176    664    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]      8   0x0019F6A8  1280    720    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]      9   0x0019F6A8  1280    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]     10   0x0019F6A8  1280    800    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]     11   0x0019F6A8  1280    960    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]     12   0x0019F6A8  1280   1024    32  0x00000001     75    1536   exclusive(fullscreen)
+[15:15:48.275]     13   0x0019F6A8  1360    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]     14   0x0019F6A8  1366    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]     15   0x0019F6A8  1440   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.275]     16   0x0019F6A8  1600    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.276]     17   0x0019F6A8  1600   1024    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.276]     18   0x0019F6A8  1680   1050    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.276]     19   0x0019F6A8  1920   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.276]     20   0x0019F6A8  1440    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:15:48.276]     21   ret=0 -> end of table
+[15:15:48.276]     1 windowed (flags&1==0) entries seen. Set HKCU\SOFTWARE\Rockstar Games\Manhunt\Video\Mode to one of them to have RenderWare pick windowed itself.
+[15:15:48.276]   --- end video-mode recon ---
+[15:15:48.276]   original: Windowed=0 BackBufferWidth=800 BackBufferHeight=600 BackBufferFormat=22 FullScreen_RefreshRateInHz=60
+[15:15:48.276]   original (cont.): BackBufferCount=1 MultiSampleType=0 SwapEffect=2 hDeviceWindow=008909A6 EnableAutoDepthStencil=1 AutoDepthStencilFormat=75 Flags=0x00000000 FullScreen_PresentationInterval=2147483648
+[15:15:48.276]   desktop adapter mode: 1920x1080 @ 60Hz format=22
+[15:15:48.276]   BackBufferFormat already matches the desktop format, no override needed
+[15:15:48.276]   CheckDeviceType(windowed=TRUE, DisplayFormat=22, BackBufferFormat=22) -> hr=0x00000000
+[15:15:48.276]   SwapEffect is D3DSWAPEFFECT_FLIP, which D3D8 disallows for windowed swap chains -- overriding to D3DSWAPEFFECT_DISCARD
+[15:15:48.276]   FullScreen_PresentationInterval is D3DPRESENT_INTERVAL_IMMEDIATE, which this driver rejects for windowed mode (confirmed via probe sweep) -- overriding to D3DPRESENT_INTERVAL_DEFAULT
+[15:15:48.276]   forced: Windowed=TRUE, FullScreen_RefreshRateInHz=0, BackBufferFormat=22, SwapEffect=1, FullScreen_PresentationInterval=0 (everything else unchanged)
+[15:15:48.457]   -> hr=0x00000000 device=0E397580
+[15:15:48.457]   DISPLAY-FORMAT FIX: [0x00829590] was 22, [0x00829594] was 32
+[15:15:48.457]   DISPLAY-FORMAT FIX: set [0x00829590]=22 (D3DFORMAT), [0x00829594]=32 (bpp) -- replicates the engine's own windowed fallback at +0x006416D8, which our first-try CreateDevice success had skipped
+[15:15:48.457]   WINDOW FIX: client area is 640x480, camera raster needs 800x600
+[15:15:48.458]   WINDOW FIX: resized -- client area is now 800x600 (style=0x04CF0000)
+[15:15:48.458]   CAMERA: vtable sanity check passed (slot37=741AC450, Present=741AFB10, both mapped code)
+[15:15:48.458]   CAMERA: SetTransform hook installed (real=741AC450 hook=74E72AD0) -- logging VIEW/PROJECTION
+[15:15:48.458]   CAMERA: SetVertexShaderConstant hooked (real=741B1B20) -- watching for the world/view-projection matrix (SetTransform proved unused in 3D)
+[15:15:48.466]   TOCSIZE: "pictures/title/TITLE_PC.TXD" not in TOC -- using its real size 1048744 bytes instead of the 12 MB fallback
+[15:15:48.468]   [VIEW #1]
+[15:15:48.468]            -1.0000       0.0000       0.0000       0.0000
+[15:15:48.468]            -0.0000       1.0000       0.0000       0.0000
+[15:15:48.468]            -0.0000       0.0000       1.0000       0.0000
+[15:15:48.468]            -0.0000       0.0000       0.0000       1.0000
+[15:15:48.468]   [PROJECTION #1]
+[15:15:48.468]             1.4286       0.0000       0.0000       0.0000
+[15:15:48.468]             0.0000       1.8286       0.0000       0.0000
+[15:15:48.468]             0.0000       0.0000       1.0050       1.0000
+[15:15:48.468]            -0.0000      -0.0000      -0.0503       0.0000
+[15:15:48.468]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:15:48.778] === camera/FOV globals populated after ~500 ms ===
+[15:15:48.778]   --- CAMERA / FOV globals (ALL [reported], from MHWSF; verifying, not trusting) ---
+[15:15:48.778]     CCamera::m_aspectRatio  0x007A164C = 1.280000
+[15:15:48.778]     CCamera::m_viewWindow   0x007A1650 = (0.700000, 69.984039)   [RW FOV = 2*atan(viewWindow)]
+[15:15:48.778]     CScene::m_viewWindowOriginal 0x00715C98 = (0.000000, 0.000000)
+[15:15:48.778]     CScene::ms_viewWinScale 0x00715CDC = 0.000000
+[15:15:48.778]     CFrontend::ms_scrn 0x007D3440: w=800.00 h=600.00 invW=0.001250 invH=0.001667 wScale=1.2500 hScale=1.2500 hudStretch=0.7500
+[15:15:48.778]       pCamera(RwCamera*)=0x00000020  pFrameBuffer=0x0737A3BC  pZBuffer=0x0737D518
+[15:15:48.778]       STRIDE CHECK: 1/w = 0.001250 vs invW field 0.001250 -> AGREES (layout corroborated)
+[15:15:48.778]       (compare w/h against the resolution actually running: a match is the second half of the corroboration)
+[15:15:51.518]   TOCSIZE: "initscripts/fonts/FONT.DAT" not in TOC -- using its real size 14220 bytes instead of the 12 MB fallback
+[15:15:51.534]   TOCSIZE: "initscripts/frontend/settings.txt" not in TOC -- using its real size 2199 bytes instead of the 12 MB fallback
+[15:15:51.534]   TOCSIZE: "initscripts/frontend/_key1.txt" not in TOC -- using its real size 2684 bytes instead of the 12 MB fallback
+[15:15:51.548]   TOCSIZE: "initscripts/frontend/_key2.txt" not in TOC -- using its real size 1942 bytes instead of the 12 MB fallback
+[15:15:51.558]   TOCSIZE: "initscripts/frontend/_key3.txt" not in TOC -- using its real size 1832 bytes instead of the 12 MB fallback
+[15:15:51.575]   TOCSIZE: "pictures/frontend_pc.txd" not in TOC -- using its real size 2585848 bytes instead of the 12 MB fallback
+[15:15:51.615]   TOCSIZE: "initscripts/levels/levels.txt" not in TOC -- using its real size 1417 bytes instead of the 12 MB fallback
+[15:15:51.643]   TOCSIZE: ".\levels\global\data\ManHunt.Pak" not in TOC -- using its real size 1299317 bytes instead of the 12 MB fallback
+[15:15:51.665]   TOCSIZE: "./levels/global/PC_Text/PC_GAME.GXT" not in TOC -- using its real size 34112 bytes instead of the 12 MB fallback
+[15:15:51.717]   TOCSIZE: ".\levels\global\SFX\SFX_PC.txd" not in TOC -- using its real size 69544 bytes instead of the 12 MB fallback
+[15:15:51.731]   TOCSIZE: ".\levels\\global\sfx\MH_FX_PC.txd" not in TOC -- using its real size 183976 bytes instead of the 12 MB fallback
+[15:15:51.756]   TOCSIZE: ".\levels\global\pak\GmodelsPC.txd" not in TOC -- using its real size 33320 bytes instead of the 12 MB fallback
+[15:15:51.795]   TOCSIZE: "./levels/global/pak/GmodelsPC.dff" not in TOC -- using its real size 56189 bytes instead of the 12 MB fallback
+[15:15:51.808]   [VIEW #3]
+[15:15:51.808]            -1.0000       0.0000       0.0000       0.0000
+[15:15:51.808]            -0.0000       1.0000       0.0000       0.0000
+[15:15:51.808]            -0.0000       0.0000       1.0000       0.0000
+[15:15:51.808]             0.0000      -0.0000      -0.0000       1.0000
+[15:15:51.808]   [PROJECTION #3]
+[15:15:51.808]             1.4286       0.0000       0.0000       0.0000
+[15:15:51.808]             0.0000       1.8286       0.0000       0.0000
+[15:15:51.808]             0.0000       0.0000       1.0007       1.0000
+[15:15:51.808]            -0.0000      -0.0000      -0.1001       0.0000
+[15:15:51.808]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:15:51.813]   TOCSIZE: "./levels/global/PC_Text/PC_GAME.GXT" not in TOC -- using its real size 34112 bytes instead of the 12 MB fallback
+[15:15:52.534]   [VIEW #4]
+[15:15:52.534]            -1.0000       0.0000       0.0000       0.0000
+[15:15:52.534]            -0.0000       1.0000       0.0000       0.0000
+[15:15:52.534]            -0.0000       0.0000       1.0000       0.0000
+[15:15:52.534]            -0.0000       0.0000       0.0000       1.0000
+[15:16:57.601]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:16:57.639]   TOCSIZE: "LEVELS\Jury_Turf\Jury_Turf_n.SUB" not in TOC -- using its real size 284 bytes instead of the 12 MB fallback
+[15:18:33.812]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:33.812]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:33.823]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:33.841]   [PROJECTION #7]
+[15:18:33.841]             1.4286       0.0000       0.0000       0.0000
+[15:18:33.841]             0.0000       1.8286       0.0000       0.0000
+[15:18:33.841]             0.0000       0.0000       1.0004       1.0000
+[15:18:33.841]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:33.841]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:33.944]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:33.944]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:33.945]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:33.945]   [PROJECTION #8]
+[15:18:33.945]             1.4286       0.0000       0.0000       0.0000
+[15:18:33.945]             0.0000       1.8286       0.0000       0.0000
+[15:18:33.945]             0.0000       0.0000       1.0007       1.0000
+[15:18:33.945]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:33.945]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:33.947]   [PROJECTION #9]
+[15:18:33.947]             1.4286       0.0000       0.0000       0.0000
+[15:18:33.947]             0.0000       1.8286       0.0000       0.0000
+[15:18:33.947]             0.0000       0.0000       1.0004       1.0000
+[15:18:33.947]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:33.947]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:33.970]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:33.971]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:33.971]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:33.971]   [PROJECTION #10]
+[15:18:33.971]             1.4286       0.0000       0.0000       0.0000
+[15:18:33.971]             0.0000       1.8286       0.0000       0.0000
+[15:18:33.971]             0.0000       0.0000       1.0007       1.0000
+[15:18:33.971]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:33.971]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:33.974]   [PROJECTION #11]
+[15:18:33.975]             1.4286       0.0000       0.0000       0.0000
+[15:18:33.975]             0.0000       1.8286       0.0000       0.0000
+[15:18:33.975]             0.0000       0.0000       1.0004       1.0000
+[15:18:33.975]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:33.975]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.001]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.001]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.002]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.002]   [PROJECTION #12]
+[15:18:34.002]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.002]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.002]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.002]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.002]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.004]   [PROJECTION #13]
+[15:18:34.004]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.004]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.004]             0.0000       0.0000       1.0004       1.0000
+[15:18:34.004]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:34.004]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.023]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.023]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.023]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.023]   [PROJECTION #14]
+[15:18:34.023]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.023]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.023]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.023]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.023]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.026]   [PROJECTION #15]
+[15:18:34.026]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.026]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.026]             0.0000       0.0000       1.0004       1.0000
+[15:18:34.026]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:34.026]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.057]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.057]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.057]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.057]   [PROJECTION #16]
+[15:18:34.057]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.057]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.057]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.057]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.058]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.060]   [PROJECTION #17]
+[15:18:34.060]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.060]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.060]             0.0000       0.0000       1.0004       1.0000
+[15:18:34.060]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:34.060]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.095]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.095]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.096]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.096]   [PROJECTION #18]
+[15:18:34.096]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.096]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.096]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.096]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.096]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.098]   [PROJECTION #19]
+[15:18:34.098]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.098]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.098]             0.0000       0.0000       1.0004       1.0000
+[15:18:34.098]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:34.098]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.128]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.128]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.128]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.128]   [PROJECTION #20]
+[15:18:34.128]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.128]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.128]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.128]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.128]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.130]   [PROJECTION #21]
+[15:18:34.130]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.130]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.130]             0.0000       0.0000       1.0004       1.0000
+[15:18:34.130]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:34.131]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.153]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.153]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.153]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.154]   [PROJECTION #22]
+[15:18:34.154]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.154]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.154]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.154]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.154]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.156]   [PROJECTION #23]
+[15:18:34.156]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.156]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.156]             0.0000       0.0000       1.0004       1.0000
+[15:18:34.156]            -0.0000      -0.0000      -0.1000       0.0000
+[15:18:34.156]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.183]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.183]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.184]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.184]   [PROJECTION #24]
+[15:18:34.184]             1.4286       0.0000       0.0000       0.0000
+[15:18:34.184]             0.0000       1.8286       0.0000       0.0000
+[15:18:34.184]             0.0000       0.0000       1.0007       1.0000
+[15:18:34.184]            -0.0000      -0.0000      -0.1001       0.0000
+[15:18:34.184]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:18:34.211]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.211]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.211]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.233]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.233]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.233]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.260]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.260]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.261]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.281]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.281]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.281]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.306]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:18:34.306]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:18:34.307]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:18:34.319] === CRASH: EXCEPTION_ACCESS_VIOLATION at 00496C4F ===
+[15:18:34.319]   access=WRITE faulting-address=00000004
+[15:18:34.319]   EAX=00000002 EBX=00000000 ECX=00000000 EDX=001003E8 ESI=0019FA98 EDI=0019F9FE EBP=00000000 ESP=0019F9E4 EIP=00496C4F
+[15:18:34.319]   bytes at EIP: 66 89 55 04 6A 01 8D 74 24 13 56 FF B4 24 D8 00 
+[15:18:34.331]   dumped manhunt_crash_code_dump: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_code_dump.bin (base=0049694F, 768 bytes before center, 256 after)
+[15:18:34.332]   dumped manhunt_crash_stack_dump: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_stack_dump.bin (base=0019F9E4, 0 bytes before center, 512 after)
+[15:18:34.332]   possible caller #0: stack[ESP+0x5C]=00730065 (inside module range)
+[15:18:34.332]   dumped manhunt_crash_caller_0_at_00730065: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_0_at_00730065.bin (base=00730005, 96 bytes before center, 32 after)
+[15:18:34.332]   possible caller #1: stack[ESP+0x60]=007392C0 (inside module range)
+[15:18:34.333]   dumped manhunt_crash_caller_1_at_007392C0: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_1_at_007392C0.bin (base=00739260, 96 bytes before center, 32 after)
+[15:18:34.333]   possible caller #2: stack[ESP+0x64]=0067D000 (inside module range)
+[15:18:34.350]   dumped manhunt_crash_caller_2_at_0067D000: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_2_at_0067D000.bin (base=0067CFA0, 96 bytes before center, 32 after)
+[15:18:34.350]   possible caller #3: stack[ESP+0x68]=0067D000 (inside module range)
+[15:18:34.350]   dumped manhunt_crash_caller_3_at_0067D000: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_3_at_0067D000.bin (base=0067CFA0, 96 bytes before center, 32 after)
+[15:18:34.350]   possible caller #4: stack[ESP+0x74]=004013DF (inside module range)
+[15:18:34.353]   dumped manhunt_crash_caller_4_at_004013DF: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_4_at_004013DF.bin (base=0040137F, 96 bytes before center, 32 after)
+[15:18:34.353]   possible caller #5: stack[ESP+0x90]=004F264E (inside module range)
+[15:18:34.354]   dumped manhunt_crash_caller_5_at_004F264E: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_5_at_004F264E.bin (base=004F25EE, 96 bytes before center, 32 after)
+[15:18:34.354]   OBJ ESI = 0019FA98 (private/heap), [+0]=0x3F333333  <- vtable ptr identifies the class
+[15:18:34.354]     ESI @ 0019FA98:
+[15:18:34.354]       +0x000: 1060320051  183092624          0    1703492  121086336          0    4811268  121086336
+[15:18:34.354]       fields +0x1C8..+0x1D4 @ 0019FC60:
+[15:18:34.354]       +0x000:    8980902          0    1703492  170842288
+[15:18:34.354]   OBJ EDI = 0019F9FE (private/heap), [+0]=0x001003E8  <- vtable ptr identifies the class
+[15:18:34.354]     EDI @ 0019F9FE:
+[15:18:34.354]       +0x000:    1049576          0          0 1163067392    7689553   18020115   18681146          0
+[15:18:34.354]       fields +0x1C8..+0x1D4 @ 0019FBC6:
+[15:18:34.354]       +0x000: 1718777172 2729639983 2705093850       3641
+[15:18:34.354]   manhunt.exe module base=00400000, EIP module-relative offset=00096C4F
+[15:18:34.354]   LEVELLOAD: step=4 splines=750 err=9 appstate=3 level=0 table="Jury_Turf" cur="" loaderName="" tocfixes=62
