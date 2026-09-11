@@ -1,0 +1,30 @@
+[16:27:21.269] === CRASH: EXCEPTION_ACCESS_VIOLATION at 00431820 ===
+[16:27:21.269]   access=READ faulting-address=0000007C
+[16:27:21.269]   EAX=00000024 EBX=00000000 ECX=00000000 EDX=00000024 ESI=08C96910 EDI=00000026 EBP=0019F914 ESP=0019F8B0 EIP=00431820
+[16:27:21.269]   bytes at EIP: 8B 49 7C 8B 41 04 C3 90 90 90 90 90 90 90 90 90 
+[16:27:21.285]   dumped manhunt_crash_code_dump: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_code_dump.bin (base=00431520, 768 bytes before center, 256 after)
+[16:27:21.286]   dumped manhunt_crash_stack_dump: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_stack_dump.bin (base=0019F8B0, 0 bytes before center, 512 after)
+[16:27:21.286]   possible caller #0: stack[ESP+0x0]=0042DD70 (inside module range)
+[16:27:21.288]   dumped manhunt_crash_caller_0_at_0042DD70: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_0_at_0042DD70.bin (base=0042DD10, 96 bytes before center, 32 after)
+[16:27:21.288]   possible caller #1: stack[ESP+0x4]=004728FC (inside module range)
+[16:27:21.289]   dumped manhunt_crash_caller_1_at_004728FC: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_1_at_004728FC.bin (base=0047289C, 96 bytes before center, 32 after)
+[16:27:21.290]   possible caller #2: stack[ESP+0x18]=00614C63 (inside module range)
+[16:27:21.290]   dumped manhunt_crash_caller_2_at_00614C63: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_2_at_00614C63.bin (base=00614C03, 96 bytes before center, 32 after)
+[16:27:21.290]   possible caller #3: stack[ESP+0x1C]=00614B10 (inside module range)
+[16:27:21.291]   dumped manhunt_crash_caller_3_at_00614B10: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_3_at_00614B10.bin (base=00614AB0, 96 bytes before center, 32 after)
+[16:27:21.291]   possible caller #4: stack[ESP+0x24]=0069B64A (inside module range)
+[16:27:21.291]   dumped manhunt_crash_caller_4_at_0069B64A: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_4_at_0069B64A.bin (base=0069B5EA, 96 bytes before center, 32 after)
+[16:27:21.291]   possible caller #5: stack[ESP+0x40]=00614CC9 (inside module range)
+[16:27:21.292]   dumped manhunt_crash_caller_5_at_00614CC9: D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_crash_caller_5_at_00614CC9.bin (base=00614C69, 96 bytes before center, 32 after)
+[16:27:21.292]   OBJ EBP = 0019F914 (private/heap), [+0]=0x61206F4E  <- vtable ptr identifies the class
+[16:27:21.292]     EBP @ 0019F914:
+[16:27:21.292]       +0x000: 1629515598 1701340018 1701869940  543584032 1936287860 1835101728 2019893349 1937011561
+[16:27:21.292]       fields +0x1C8..+0x1D4 @ 0019FADC:
+[16:27:21.292]       +0x000:    1702592 4033195226    1702732 2007506896
+[16:27:21.292]   OBJ ESI = 08C96910 (private/heap), [+0]=0x00000040  <- vtable ptr identifies the class
+[16:27:21.292]     ESI @ 08C96910:
+[16:27:21.293]       +0x000:         64         64         64         64         64         64         84         84
+[16:27:21.293]       fields +0x1C8..+0x1D4 @ 08C96AD8:
+[16:27:21.293]       +0x000:         68         68         68         68
+[16:27:21.293]   manhunt.exe module base=00400000, EIP module-relative offset=00031820
+[16:27:21.295]   LEVELLOAD: step=4 splines=50 err=0 appstate=4 level=0 table="Jury_Turf" cur="Jury_Turf" loaderName="Jury_Turf" tocfixes=29
