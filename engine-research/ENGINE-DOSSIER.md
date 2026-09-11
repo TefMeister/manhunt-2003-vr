@@ -853,10 +853,25 @@ From the reader's drop `inbox/2026-09-11-mod-reader-direct-start-crash-0061166A.
   `[0x007E9084]` and app state `[0x00755E4C]`. ⚠️ It removes the crash **site**; if the first attempt
   fails for another reason, the retry loop just runs longer.
 
-**What settles it, no rebuild needed:** (1) `SKIP_MENU 1` + `START_LEVEL 0` — BORN AGAIN by direct
-start; (2) `SKIP_MENU 0` + `START_LEVEL 1`, then NEW GAME — Derelict through the menu. **This now
-matters for players, not just for a debug shortcut**: if Derelict fails its first load through the
-menu too, the transition from BORN AGAIN to the second level is at risk in an ordinary play-through.
+**Both settling runs were made the same afternoon** `[verified-live 2026-09-11, n=1 each]`:
+
+1. **`SKIP_MENU 1` + `START_LEVEL 0` — BORN AGAIN by direct start — crashes too**, at `0x0061166A`
+   with identical registers and caller trail, and `ESI` on `pc_jury_turf.gxt` (`"TKEY", 0x558,
+   0x42AE, "1GOA…"`). **So the direct start crashes on both levels, while a menu start of the same
+   BORN AGAIN has never crashed** (three launches over two days, up to ~70 minutes). The fault is the
+   **route**, not Derelict — which contradicts "the menu creates nothing `SKIP_MENU` skips".
+   ⚠️ And the level was visibly **running** before the crash: its in-engine intro cutscene played for
+   ~1.5 minutes and died at about the point where a menu start carries on. That does not fit "the
+   first StartupLevel attempt fails and is retried every frame" either. Both are back with the reader.
+2. **`SKIP_MENU 0` + `START_LEVEL 1`, then main-menu PLAY — starts BORN AGAIN, not Derelict.** PLAY
+   ignores `START_LEVEL`. It ran 2.5 minutes without a crash. SELECT SCENE offers only BORN AGAIN
+   (the rest read `???`), and the only save (`MANHUNT0.SAV`, 25 Aug, "SCENE 1 BORN AGAIN (IN
+   PROGRESS) HARDCORE") loads back into BORN AGAIN — it loaded fine through LOAD GAME, with a posted
+   `Enter` confirming. **Derelict cannot be reached through the menu without finishing BORN AGAIN.**
+
+**For players this is reassuring rather than alarming**: every `0x0061166A` crash so far came from
+the debug shortcut. Whether Derelict loads after BORN AGAIN in a real play-through is still
+unknown, but nothing points at it any more.
 
 ## 11f. ⚠️⚠️ TWO MEASUREMENT DEFECTS INVALIDATED EVERY "THIS GAME IGNORES INPUT" FINDING (2026-09-10b)
 

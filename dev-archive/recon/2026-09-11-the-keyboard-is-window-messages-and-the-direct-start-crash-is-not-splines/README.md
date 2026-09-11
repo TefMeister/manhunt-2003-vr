@@ -10,6 +10,8 @@ Distilled: dossier §11d-ter and §11g.
 | File | What it shows |
 | --- | --- |
 | `log-1-skipmenu-level1-crash-0061166A-no-table-full.txt` | `SKIP_MENU 1` + `START_LEVEL 1`, build `f75d527f`. `SPLINERELOC` applied (table at `0x02D60000`, 1,024 slots), **no "table FULL", no `0x00471FFB`**, then `0x0061166A` at 13:25:30 with registers and caller trail identical to both 2026-09-10 runs. |
+| `log-3-play-with-start-level-1-gives-born-again.txt` | `SKIP_MENU 0` + `START_LEVEL 1`, main-menu PLAY: it starts BORN AGAIN anyway (PLAY ignores `START_LEVEL`). 2.5 min, no crash. |
+| `log-4-skipmenu-level0-born-again-crash-0061166A.txt` | `SKIP_MENU 1` + `START_LEVEL 0`: BORN AGAIN by direct start **also** crashes at `0x0061166A`, the stream holding `pc_jury_turf.gxt`. The direct start crashes on both levels; the menu start never has. |
 | `log-2-menu-to-born-again-walking-by-posted-keys.txt` | Normal boot → click skips the intro → SELECT SCENE → `BORN AGAIN`. DRM hits in play: #4, #1, #6 (×5), and for the first time **#11 Broken Level Initialization 1** and **#5 Ignore Control 1**. Two `REPORT` blocks show the keyboard read ~200×/s in gameplay. Snapshot taken mid-session; the game was still running. |
 
 ## Scripts
@@ -40,3 +42,6 @@ folder).
 | `play-06.png` | Walked over the Plastic Bag and picked it up. |
 | `run-during.png` | Shift + W: the red noise pulse on the radar — running. |
 | `mb1-held.png` | Right mouse held: arms come up (bound to INVENTORY SWAP). |
+| `t1-skipmenu-born-again-cutscene-just-before-crash.png` | BORN AGAIN by direct start, its in-engine intro running, seconds before the `0x0061166A` crash: the level had loaded. |
+| `play-with-start-level-1-is-born-again.png` | PLAY with `START_LEVEL 1` lands in BORN AGAIN's first alley. |
+| `load-game-only-save-is-scene-1.png` | The only save: SCENE 1 BORN AGAIN, in progress, Hardcore, 25 Aug 2026. |
