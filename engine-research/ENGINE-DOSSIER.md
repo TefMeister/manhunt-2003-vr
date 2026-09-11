@@ -790,6 +790,34 @@ the spline loader never uses `RwStream` — it parses text tokens `[verified-num
 (`0x00472200`) returns **0** on a miss and both callers (`0x0057A9D7`, `0x0057AA47`, in the
 level-script command dispatcher) store the result with **no null check**
 `[verified-numerically 2026-09-10]`; the link to this memcpy is `[hypothesis]`.
+**⚠️ That link is contradicted on 2026-09-11 — see §11d-ter.** A direct start with the relocated
+table dropped no spline at all and still crashed here, identically.
+
+### ⚠️ 11d-ter. THE DIRECT START STILL CRASHES — AT `0x0061166A`, AND NOT BECAUSE OF SPLINES (2026-09-11)
+
+The board's `[FLAT]` row asked for exactly one run: `SKIP_MENU 1` + `START_LEVEL 1` with
+`SPLINERELOC` active. Result `[verified-live 2026-09-11, n=1]`:
+
+- **No `"spline table FULL"` and no fault at `0x00471FFB`.** The relocation (1,024 slots, this run
+  at `0x02D60000`) holds on the path where the original overflow crash happened. That half of §11d is
+  closed.
+- **But it still crashed at `0x0061166A`, about 1 min 55 s after the proxy loaded**, during or just
+  after the level's intro credits. Registers and the whole six-entry caller trail are **identical**
+  to both 2026-09-10 runs that crashed there with only `SPLINEGUARD` (`EAX=0 ECX=0x400 EDX=EDI=0x40
+  EBP=0x00C00000 ESP=0x0019FBB8`; callers `0x0062857A`, `0x006110E4`, `0x007392BC`, `0x00828138`,
+  `0x00628363`, `0x00611CBE`) — **n=3 across two days, one of them with nothing dropped.**
+- **So dropped splines are not the cause.** On 2026-09-10 the guard had fired before every
+  `0x0061166A` crash, which made the two look linked; today the guard never fired and the crash did
+  not change by a byte. `[disproved 2026-09-11]` for "a dropped spline causes `0x0061166A`".
+- **The same level through the menu is fine** — `BORN AGAIN` via SELECT SCENE ran 50+ minutes today,
+  and ~8 minutes on 2026-09-10. So this is a **direct-start-only** fault: something the frontend
+  creates that `SKIP_MENU` skips. `[hypothesis]`
+- New detail from the crash dump: `EBX` looks like an `RwStream` (`[+0]=0x75`, then `0x006114C4`,
+  `10`, `0`, `1`, `0`, `0`, `4096`) and the source (`ESI`) points into stream data beginning with
+  the ASCII tag **`TKEY`**. Handed to the reader for static work.
+
+**Priority drops.** The menu route is now fully drivable (§11f, §11g), so `SKIP_MENU` is a debug
+shortcut rather than the only way in. The row is kept, demoted to `[PD]`.
 
 ## 11f. ⚠️⚠️ TWO MEASUREMENT DEFECTS INVALIDATED EVERY "THIS GAME IGNORES INPUT" FINDING (2026-09-10b)
 
@@ -861,8 +889,8 @@ finding about the game.
 | Route | Verdict |
 | --- | --- |
 | Proxy-side synthetic **`DIMOUSESTATE2`** (deltas + buttons) into `GetDeviceState` | ✅ **WORKS** — drives the frontend cursor, the menu highlight, menu clicks, and the in-game camera `[verified-live 2026-09-10, n=1 session]` |
-| Proxy-side synthetic **DirectInput keyboard** | ⛔ no effect — the device is called with `cbData = 0` and never returns state |
-| **`SendInput`** scancodes (with the struct size fixed) | ⛔ no effect on character movement; `W` (`0x11`) held 6 s and `Up` (`0x48`, extended) held 4 s both left the scene unchanged `[verified-live 2026-09-10, n=2]` |
+| Proxy-side synthetic **DirectInput keyboard** | ⛔ no effect — the device is called with `cbData = 0` and never returns state. **Explained in §11g: the game never reads keys through DirectInput at all, so this route can never work.** |
+| **`SendInput`** scancodes (with the struct size fixed) | ⛔ no effect on character movement; `W` (`0x11`) held 6 s and `Up` (`0x48`, extended) held 4 s both left the scene unchanged `[verified-live 2026-09-10, n=2]`. **Still true on 2026-09-11 (n=3), but the keys were right — `WM_KEYDOWN` posted to the window walks him. See §11g.** |
 
 ⚠️ **Do not record the `SendInput` row as settled.** It is now a *correct* negative for two
 specific scancodes in one place in one level — not the old sweeping claim. The keys this game
@@ -901,6 +929,98 @@ movement than the same gesture on a real mouse. `input.c` therefore hands moveme
 **ticks at a real-mouse report rate** (default 8 ms, ~125 Hz), spread across a duration the script
 asks for. Buttons are the opposite — they are a *level*, so they are ORed on **every** poll, since
 a button missed for one frame reads as a dropped click.
+
+## ⭐⭐ 11g. THE KEYBOARD IS WINDOW MESSAGES — AND A POSTED `WM_KEYDOWN` WALKS HIM (2026-09-11)
+
+**Supersedes:** §11f's keyboard rows (the observations stand; this explains them), and the claim in
+§11f / the 2026-09-10b note that the keyboard call count "freezes once gameplay starts". Folded in
+from the reader's drop `inbox/2026-09-11-mod-reader-keyboard-bindings.md` (static), then tested live
+the same session.
+
+### What the game actually does `[verified-numerically 2026-09-11]` unless marked
+
+- **DirectInput is never used to read keys.** The keyboard device is created once (`0x004C39A0`,
+  flags `0x16` = `NONEXCLUSIVE | BACKGROUND | NOWINKEY`, i.e. only to block the Windows key). The only
+  keyboard `GetDeviceState` in the whole image is `0x00492376`: **`GetDeviceState(kbd, 0, NULL)`**, a
+  once-a-frame "am I still acquired?" probe with a re-`Acquire` loop. So `cbData = 0` is the game's
+  own argument, and our hook reads it correctly. No call site pushes `0x100`. The mouse reads are
+  `0x004C1D7C` / `0x004C1DD6` (`cbData = 0x14`), the joystick read `0x004C1F86` (`0x110`).
+  **Proxy-side synthetic DIK state can never press a key in this game**, and `input.c`'s header
+  comment claiming otherwise is wrong for the keyboard.
+- **The count does not freeze in gameplay.** It pauses during the level load and resumes: 12,981 →
+  12,981 across the 2026-09-10 load, then 67,074 `[measured 2026-09-11]`; live today 44,865 → 50,110
+  in 26 s of gameplay, ~200 calls/s — the frame rate `[measured 2026-09-11, n=1]`. The mouse drops
+  from ~64,000 reads/s in the menu to the same ~200/s in play.
+- **Keys arrive as ordinary window messages** `[inferred-static]`, through the GTA3-era RenderWare
+  skeleton: window procedure `0x004C01E0` → virtual key to game key code `0x004C2A00` (reads
+  `wParam` and `lParam` bit 24 only) → keyboard handler `0x004C3370` → input event sink `0x00491DB0`
+  → **held-key list at `0x00725698`** (10 × `{code, pressedThisFrame, released}`), aged each frame by
+  `0x00492230`. No `GetAsyncKeyState` / `GetKeyState` / `GetKeyboardState` import or string. Key
+  codes are GTA3's `RsKeyCodes`. ⚠️ **Arrow keys need `lParam` bit 24 (extended)** or they read as
+  the numpad keys.
+- **The bindings are the built-in defaults** — `Documents\Manhunt User Files\SaveGames\Settings.dat`
+  is byte-identical to the tables at `.data 0x00710994` / `0x00710A2C`:
+
+| Action | Main key | Second key |
+| --- | --- | --- |
+| Forward / back | Up / Down (extended) | **W** / S |
+| Strafe left / right | Left / Right (extended) | A / D |
+| Run | Right Ctrl (extended) | **Shift** |
+| Sneak | Numpad 0 | Left Ctrl ⚠️ plain Ctrl is SNEAK, not run |
+| Use | **Enter** | **Space** |
+| Attack / grab | Left mouse | Left mouse |
+| Action 2 | Middle mouse | Middle mouse |
+| Reload | Numpad 1 | R |
+| Inventory swap | Right mouse | Tab |
+| Look back | Numpad 4 | F |
+| Peek left / right | Delete / Page Down | Q / E |
+| First person | End | X |
+| Pause / menu | Esc | Esc |
+| Inventory item 1–4 | 1–4 | 1–4 |
+| Inventory up / down | Wheel up | Wheel down |
+
+- **Held vs edge** (per-action table `0x007108FC`): movement, run, sneak, peek and inventory are
+  held; use, reload, pause, first person and items 1–4 fire on the key-down frame. One `WM_KEYDOWN`
+  and a later `WM_KEYUP` serves both — **confirmed live: a single posted key-down with no auto-repeat
+  walked him** `[verified-live 2026-09-11, n=1]`.
+- **How FORWARD becomes movement** `[inferred-static]`: the player controller `0x00460140` stores
+  each action at `player + 0x4C8 + 4 × action` (FORWARD `+0x500`); the walking state sets the move
+  vector at `0x004629A2` (`+0x494 = +1.0` forward). Master "player input on" switch `[0x00725710]`
+  (scripts toggle it; the "Ignore Control" copy protection zeroes it when `[0x0075625C] == 2`, and
+  both writers of that 2 are among the sixteen patched sites). The look / first-person lock
+  `[0x007CF2D4]` clears the movement flags. `[0x00715B9C]` is very probably the player.
+
+### What the live test showed `[verified-live 2026-09-11]`
+
+With the game in `BORN AGAIN`, window confirmed foreground, all from the same 64-bit PowerShell:
+
+| Route | Result |
+| --- | --- |
+| **`PostMessage(WM_KEYDOWN, 'W')`** + auto-repeat, 2 s, then `WM_KEYUP` | ✅ **walks forward** (n=1) |
+| The same with **no auto-repeat** (one key-down, 2 s, key-up) | ✅ walks forward (n=1) |
+| Posted `D` / `S` / `A` | ✅ strafe right / back / strafe left (n=1 each) |
+| Posted **Shift + W** | ✅ runs — the radar shows the red noise pulse the tutorial says running makes (n=1) |
+| **`SendInput` `W`** (scancode, 40-byte `INPUT`, return value **1** for both down and up) | ⛔ **no movement** — n=3 across two days, and this time straight after the posted W had walked him |
+| Walk over an item | ✅ picks it up (the Plastic Bag) |
+| Right mouse (synthetic) | arms come up on screen; the binding table says INVENTORY SWAP (n=1) |
+
+**So the keys were right all along, and delivery was the problem.** `SendInput` returns success but
+the key never reaches the game; a message posted to the window does. **Why `SendInput` fails is still
+open** — candidates: the injected key goes to whichever thread Windows thinks has keyboard focus,
+which is not necessarily the foreground window's; or something on this machine filters injected
+input. `[hypothesis]` for both. It does not matter for driving the game: **post the messages.** The
+reader's `kbdprobe.c` (in `staging`, compiled, not wired) can separate the two if it ever matters —
+its `KI` command sends from *inside* the process.
+
+### Two more copy-protection sites fired live for the first time
+
+`#11 Broken Level Initialization 1` (`GetLastError @0x004D7E7A`, `ret=0x26`) at 9 min 27 s after
+the proxy loaded, and **`#5 Ignore Control 1`** (`GetVersion @0x00474EB7`) exactly **10 minutes**
+after that — a timer. Both were already patched, and **the player still had full control when
+tested 24–34 minutes after "Ignore Control" fired** (13:47 → 14:11–14:21) `[verified-live
+2026-09-11, n=1]`. Control was not tested in between, so this shows the repair holds, not the
+exact moment the unpatched check would have bitten. That is the first live evidence
+that the Ignore Control repair holds. Sites seen live in gameplay so far: #1, #4, #5, #6, #11.
 
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
