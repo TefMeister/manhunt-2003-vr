@@ -930,3 +930,5 @@
 [15:45:26.253]   INPUT: after script -- GetDeviceState=23521496 (keyboard=0, mouse=23437015, other=0), GetDeviceData=0, devices=2, distinct vtables=2
 [15:45:26.253]   INPUT:   device 0 SysMouse     state=23437016   data=0        lastCb=20
 [15:45:26.253]   INPUT:   device 1 SysKeyboard  state=84480      data=0        lastCb=0
+[15:54:19.454]   DRMLOG #5 hit 1: GetVersion @0x00474EB7 [Ignore Control 1] -> ret=0x23F00206  | eax=0x08C51110 ecx=0x00000000 edx=0x000DBBA3 ebx=0x00000000 esi=0x00735EC4
+[15:58:34.713] === manhunt-2003-vr proxy d3d8.dll unloading (process exit) ===
