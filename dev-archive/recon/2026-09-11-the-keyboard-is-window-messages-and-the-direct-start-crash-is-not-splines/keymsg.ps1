@@ -5,6 +5,7 @@ param(
   [switch]$Extended,
   [switch]$NoRepeat,
   [switch]$WithShift,
+  [switch]$WithCtrl,   # Left Ctrl = SNEAK in Manhunt (scan 0x1D, not extended)
   [ValidateSet("post","sendinput")][string]$Via = "post",
   [string]$ShotDuring = "", [string]$ShotAfter = ""
 )
@@ -38,6 +39,7 @@ if ($Via -eq "post") {
   $down = 1 -bor ($Scan -shl 16) -bor ($ext -shl 24)
   $up   = $down -bor (1 -shl 30) -bor (1 -shl 31)
   if ($WithShift) { [void][KM]::PostMessage($h, 0x0100, [IntPtr]0x10, [IntPtr][int](1 -bor (0x2A -shl 16))) }
+  if ($WithCtrl) { [void][KM]::PostMessage($h, 0x0100, [IntPtr]0x11, [IntPtr][int](1 -bor (0x1D -shl 16))) }
   $ok1 = [KM]::PostMessage($h, 0x0100, [IntPtr]$Vk, [IntPtr][int]$down)
   $t = Get-Date
   if ($ShotDuring) { Start-Sleep -Milliseconds ([int]($HoldMs/2)); & "$s\drive.ps1" -Action shot -Out (Join-Path $s $ShotDuring) }
@@ -47,6 +49,7 @@ if ($Via -eq "post") {
     Start-Sleep -Milliseconds 33
   }
   $ok2 = [KM]::PostMessage($h, 0x0101, [IntPtr]$Vk, [IntPtr][int]$up)
+  if ($WithCtrl) { [void][KM]::PostMessage($h, 0x0101, [IntPtr]0x11, [IntPtr][int](1 -bor (0x1D -shl 16) -bor (1 -shl 30) -bor (1 -shl 31))) }
   if ($WithShift) { [void][KM]::PostMessage($h, 0x0101, [IntPtr]0x10, [IntPtr][int](1 -bor (0x2A -shl 16) -bor (1 -shl 30) -bor (1 -shl 31))) }
   "posted down=$ok1 up=$ok2 held=$HoldMs ms"
 } else {

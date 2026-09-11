@@ -123,6 +123,34 @@ Six more launches, all mine, all closed cleanly. Dossier §11d-quinquies and §1
   so the next step is the level's own route network (with the reader).
 - **Posted `Enter` and `Esc` work in the menus too** (Enter loaded the save).
 
+## 7. Evening: Tefa play-tests, a crash of our own making, and a stealth kill by automation
+
+Dossier §11k–§11m, §11l in particular. Evidence: `.../crash-1627-0x00431820/README.md`.
+
+- **Tefa came to the PC and played.** Gates open, saving writes, the item swap works — the three
+  SecuROM symptoms this board has waited on since August — with `#8 Broken Doors`, `#15 Broken
+  SaveGame Button`, `#9 Broken Health 2` and `#0` firing and holding `[reported 2026-09-11]`.
+- **One crash in her play was ours.** Our patch for `#1 Broken SaveGame EntityData` had switched the
+  sabotage *on*: every snapshot the game writes got one record 12 bytes short, so every restart
+  after death and every load of a save written by our builds crashed. Her 16:39 save was poisoned.
+  A day of mis-steps on the way: I first read "leaving the site stock crashes a fresh start" — it
+  was PLAY quietly continuing her poisoned save. The reader caught it from a register value in the
+  log at the same moment I caught it by moving the save aside.
+- **Fixed and proven:** snapshots written right, poisoned ones repaired on the way in; her save
+  loaded, a restart after death worked, a true fresh start worked, and a one-byte offline repair of
+  her save loads cleanly and is now back in place.
+- **⭐ The first stealth execution by automation.** `HUNTERS` says where each hunter is and whether
+  Cash is behind him; `stalk.ps1` sneaks up in ≤25° turns (Tefa's advice, live, while watching)
+  and holds the attack button at ~1.1 m. hBackAlley went down with the bag. A second attempt
+  walked in front of a car-park hunter and lost the fist fight — which gave the restart test.
+- **Also this evening:** the widened view (`manhunt_vr_fix_aspect`) sets the world camera to the
+  window's shape exactly (`m11/m00 = 1.3333` at 800×600); the reader traced the render camera to the
+  D3D view matrix and named the per-eye hook point; the level walkthrough came from the script's
+  own embedded source code.
+- **Two lessons worth keeping.** When a game pauses itself on focus loss, a person typing to me
+  steals focus from the game — check for the pause menu before reading "nothing moved" as stuck.
+  And a "fresh start" is only fresh if nothing can be continued: check the loader's own tell.
+
 ## Not established
 
 - Whether the doors/gates stick, whether the item swap still crashes, and whether saving works.
