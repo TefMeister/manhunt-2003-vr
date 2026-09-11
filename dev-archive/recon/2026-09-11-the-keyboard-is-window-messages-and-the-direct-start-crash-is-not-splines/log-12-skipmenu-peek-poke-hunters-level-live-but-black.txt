@@ -1,0 +1,573 @@
+[16:46:28.861] === manhunt-2003-vr proxy d3d8.dll loaded, PID=18620 ===
+[16:46:28.864] real d3d8.dll loaded from C:\Windows\system32\d3d8.dll; Direct3DCreate8=74D8C0E0
+[16:46:28.864]   INPUT: IAT patched -- DirectInput8Create real=74EB33F0 hook=74E73990
+[16:46:28.864]   INPUT: script watcher started (manhunt_vr_input.txt, one-shot)
+[16:46:28.880]   DRMFIX: watching 16 SecuROM-remnant site(s) for unpacking
+[16:46:28.880]   DRMLOG: table self-check OK -- 16 passthrough sites, stubs at 74E74D50..74E750F7
+[16:46:29.266]   INPUT: DirectInput8Create(ver=0x800) -> hr=0x00000000 obj=009F74B0
+[16:46:29.266]   INPUT: IDirectInput8::CreateDevice hooked (real=741BB9E0)
+[16:46:29.266]   INPUT: CreateDevice(SysMouse) -> hr=0x00000000 dev=02C046E0
+[16:46:29.266]   INPUT: SysMouse GetDeviceState hooked (vt=742395F4 real=741BB310)
+[16:46:29.266]   INPUT: SysMouse GetDeviceData hooked (vt=742395F4 real=741BB2B0) -- buffered path armed
+[16:46:29.308]   INPUT: CreateDevice(SysKeyboard) -> hr=0x00000000 dev=02BB2578
+[16:46:29.308]   INPUT: SysKeyboard GetDeviceState hooked (vt=74239570 real=741BDF80)
+[16:46:29.308]   INPUT: SysKeyboard GetDeviceData hooked (vt=74239570 real=741BDB80) -- buffered path armed
+[16:46:29.396]   DRMFIX: PATCHED Drop Item Timer (GetVersion @0x004C78A0)
+[16:46:29.396]       at 0x004C78A9: 74 -> EB   (skips 'mov [0x0073731C], 0xFE' by taking the game's own pass branch)
+[16:46:29.396]   DRMFIX: PATCHED Item Swap Crash (poisoned pointer @0x004C9AA0)
+[16:46:29.396]       at 0x004C9A92: 90 -> 83   (widens the game's own null check to 'edx <= 0x10' so a sabotage sentinel returns 0 instead of faulting)
+[16:46:29.396]   DRMFIX: PATCHED (unnamed) GetLastError @0x0042BDC3
+[16:46:29.396]       at 0x0042BDCC: 74 -> EB   (takes the game's own pass branch: [0x0069A5A0] = 0x1F instead of 0 (0 makes its reader bail out early))
+[16:46:29.396]   DRMFIX: PATCHED Broken SaveGame EntityData: IsBadReadPtr @0x0043A005
+[16:46:29.396]       at 0x0043A013: 00 -> 01   (restores [0x0069B914] = 1 (its static value) instead of 0, so the entity-0x25 size adjustment still happens)
+[16:46:29.396]   DRMFIX: PATCHED DropDeadBody Crash: GetVersion @0x004667DC
+[16:46:29.396]       at 0x004667E7: 74 -> EB   (takes the game's own pass branch: [0x00756244] = 0 instead of 2)
+[16:46:29.396]   DRMFIX: PATCHED More Damage: IsBadCodePtr @0x0046D688
+[16:46:29.396]       at 0x0046D6A2: 74 -> EB   (skips 'mov [0x007105A4], 0'; leaving it at 1 makes its reader skip the damage multiply)
+[16:46:29.396]   DRMFIX: PATCHED Broken Health 1: GetLastError @0x004732AA
+[16:46:29.396]       at 0x004732B5: 74 -> EB   (skips 'mov [0x00755E50], 1'; its reader bails out on any non-zero)
+[16:46:29.396]   DRMFIX: PATCHED Ignore Control 1: GetVersion @0x00474EB7
+[16:46:29.396]       at 0x00474ED1: 74 -> EB   (takes the game's own pass branch: [0x0075625C] = 1 instead of 2)
+[16:46:29.396]   DRMFIX: PATCHED Broken Doors: GetCurrentThread @0x004CC48C
+[16:46:29.396]       at 0x004CC46F: C7 -> 90   (stops the block NULLing the live pointer in [0x007387A0]; the stub used to put it back)
+[16:46:29.396]   DRMFIX: PATCHED Broken Health 2: GetCurrentThread @0x004D26F4
+[16:46:29.396]       at 0x004D2701: 75 -> EB   (skips 'mov [0x00755E50], 2'; its reader bails out on any non-zero)
+[16:46:29.396]   DRMFIX: PATCHED Broken Useables: IsBadReadPtr @0x004D4063
+[16:46:29.397]       at 0x004D407D: 74 -> EB   (takes the game's own pass branch: [0x00739080] = 1 instead of 0 (0 makes its reader return failure))
+[16:46:29.397]   DRMFIX: PATCHED Broken Level Initialization 1: GetLastError @0x004D7E7A
+[16:46:29.397]       at 0x004D7E83: 74 -> EB   (takes the game's own pass branch: [0x00755978] = 0 instead of 1 (1 makes its reader bail out))
+[16:46:29.397]   DRMFIX: PATCHED Broken Level Initialization 2: IsBadCodePtr @0x004D84DE
+[16:46:29.397]       at 0x004D84B8: 01 -> 00   (writes 0 not 1 into [0x00755978]; the stub used to overwrite the 1, and 1 makes the reader bail out)
+[16:46:29.397]   DRMFIX: PATCHED Ignore Control 2: IsBadWritePtr @0x004F222E
+[16:46:29.397]       at 0x004F2245: 75 -> EB   (skips 'mov [0x0075625C], 2'; 2 makes its reader zero [0x00725710])
+[16:46:29.397]   DRMFIX: PATCHED Less Ammo: IsBadReadPtr @0x004F9B5C
+[16:46:29.397]       at 0x004F9B62: FF -> 90   (stops the block decrementing [0x00821540] back to 0; at 1 the ammo drain and the divide-by-2 are both no-ops)
+[16:46:29.397]   DRMFIX: PATCHED Broken SaveGame Button: GetVersion @0x005FFCE6
+[16:46:29.397]       at 0x005FFCF1: 74 -> EB   (takes the game's own pass branch: [0x007D6148] = 0x2E instead of 0x2D (its reader tests for 0x2E))
+[16:46:29.397]   DRMLOG: redirected GetLastError @0x0042BDC3 [(unnamed 1)] -> stub 74E74D50 (ret cleans 0 bytes)
+[16:46:29.397]   DRMLOG: redirected IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] -> stub 74E74D8B (ret cleans 8 bytes)
+[16:46:29.397]   DRMLOG: redirected GetVersion @0x004667DC [DropDeadBody Crash] -> stub 74E74DCE (ret cleans 0 bytes)
+[16:46:29.397]   DRMLOG: redirected IsBadCodePtr @0x0046D688 [More Damage] -> stub 74E74E09 (ret cleans 4 bytes)
+[16:46:29.397]   DRMLOG: redirected GetLastError @0x004732AA [Broken Health 1] -> stub 74E74E49 (ret cleans 0 bytes)
+[16:46:29.397]   DRMLOG: redirected GetVersion @0x00474EB7 [Ignore Control 1] -> stub 74E74E84 (ret cleans 0 bytes)
+[16:46:29.397]   DRMLOG: redirected IsBadWritePtr @0x0047D05C [Help Text Crash] -> stub 74E74EBF (ret cleans 8 bytes)
+[16:46:29.397]   DRMLOG: redirected GetVersion @0x004C78A0 [Drop Item Timer] -> stub 74E74F02 (ret cleans 0 bytes)
+[16:46:29.397]   DRMLOG: redirected GetCurrentThread @0x004CC48C [Broken Doors] -> stub 74E74F3D (ret cleans 0 bytes)
+[16:46:29.398]   DRMLOG: redirected GetCurrentThread @0x004D26F4 [Broken Health 2] -> stub 74E74F78 (ret cleans 0 bytes)
+[16:46:29.398]   DRMLOG: redirected IsBadReadPtr @0x004D4063 [Broken Useables] -> stub 74E74FB3 (ret cleans 8 bytes)
+[16:46:29.398]   DRMLOG: redirected GetLastError @0x004D7E7A [Broken Level Initialization 1] -> stub 74E74FF6 (ret cleans 0 bytes)
+[16:46:29.398]   DRMLOG: redirected IsBadCodePtr @0x004D84DE [Broken Level Initialization 2] -> stub 74E75031 (ret cleans 4 bytes)
+[16:46:29.398]   DRMLOG: redirected IsBadWritePtr @0x004F222E [Ignore Control 2] -> stub 74E75071 (ret cleans 8 bytes)
+[16:46:29.398]   DRMLOG: redirected IsBadReadPtr @0x004F9B5C [Less Ammo] -> stub 74E750B4 (ret cleans 8 bytes)
+[16:46:29.398]   DRMLOG: redirected GetVersion @0x005FFCE6 [Broken SaveGame Button] -> stub 74E750F7 (ret cleans 0 bytes)
+[16:46:29.398]   SPLINERELOC: spline table moved 0x007134F4 -> 0x0B460000, 1024 slots (was 100); six references rewritten at 0x00471FB8, 0x004721A3, 0x004721B3, 0x004721C1, 0x00472223, 0x00472239. Count stays at 0x00713684 and is no longer adjacent to the table, so the 101st spline can no longer overwrite it.
+[16:46:29.398]   SPLINEGUARD: INSTALLED at 0x004720D9 -- spline count clamped to 1023 slots (stub at 74E74180); stops the loader writing over its own counter at 0x00713684
+[16:46:29.398]   TOCSIZE: INSTALLED at 0x004D50D4 -- files missing from toc.txt now load with their real size instead of a 12 MB buffer
+[16:46:29.398]   LEVELNAME: INSTALLED at 0x004D7CEB -- StartupLevel now re-applies SetLevel when the level name was copied before levels.txt was read (SKIP_MENU)
+[16:46:29.398]   DRMLOG: 16/16 sites redirected
+[16:46:29.566] Direct3DCreate8 called: SDKVersion=0xDC
+[16:46:29.767]   -> returned 02BD74F0
+[16:46:29.767]   CreateDevice vtable hook installed: real=741B1210 hook=74E71B20
+[16:46:31.459] Direct3DCreate8 called: SDKVersion=0xDC
+[16:46:31.662]   -> returned 02BD7400
+[16:46:31.662] CreateDevice called: Adapter=0 DeviceType=1 hFocusWindow=00240828 BehaviorFlags=0x00000050
+[16:46:31.662]   --- RenderWare video-mode recon ---
+[16:46:31.663]     engine ptr slot 0x0082279C @ 0082279C:
+[16:46:31.663]       +0x000:  120639312   46061608          0          0       1364          0          0          0
+[16:46:31.663]     global 0x008243A8 @ 008243A8:
+[16:46:31.663]       +0x000:          0          0          0          0          0          0          0          0
+[16:46:31.663]     engine instance = 0x0730CF50
+[16:46:31.663]     engine instance struct @ 0730CF50:
+[16:46:31.663]       +0x000:          0          0          0          0 1065353216    6550112          0 1065353216
+[16:46:31.663]       +0x020:    6668912    6664496    6657664    6658176    6658768    6659392          0          0
+[16:46:31.663]       +0x040:          0          0    6555248    6560992    6684288    6684880    6679632    6682624
+[16:46:31.663]       +0x060:    6685376    6687664    6683616    6686928    6564128    6677392    6683632    6675744
+[16:46:31.663]       +0x080:    6677328    6671680    6672560    6673504    6675712    6675680    6564416    6555680
+[16:46:31.663]       +0x0A0:    6555248    6673216    6673360    6577056    6578000    6577200    6683488          0
+[16:46:31.663]       +0x0C0:          0    6590432    6452272    6451920    6456128    6456880    6453680    6454368
+[16:46:31.663]       +0x0E0:    6641024    6453360    6452048    6453072    6376608    6376576    6362992    6363024
+[16:46:31.663]       +0x100:    6363088    6363136    6597472    6597440    6363760    6363200    6363264    6597264
+[16:46:31.664]       +0x120:    6362960    6597344    6597392    6363456    6546960    4970880    4970848    4970816
+[16:46:31.664]       +0x140:    4970784    6360992    6361280          0          2    1024000          0          0
+[16:46:31.664]       +0x160:          0          0          0          0          0          0          0          0
+[16:46:31.664]     device state 0x00828440 @ 00828440:
+[16:46:31.664]       +0x000:          0          0          0          0          0          0          0          0
+[16:46:31.664]       +0x020:          0          0          0          0          0  120639620          0         85
+[16:46:31.664]       +0x040:          0          0          0          0        800        600         22          1
+[16:46:31.664]       +0x060:          0          2    2361384          0          1         75          0         60
+[16:46:31.664]       +0x080: 2147483648          0          0          0          0          0          0          0
+[16:46:31.664]       +0x0A0:          0          0          0          0          0          0          0          0
+[16:46:31.664]       +0x0C0:          0          0          0          0          0          0          0          0
+[16:46:31.664]       +0x0E0:          0          0          0          0          0          0          0          0
+[16:46:31.664]     candidate mode-array pointer = 0x00000000
+[16:46:31.664]     engine device function table:
+[16:46:31.664]       [engine+0x058] = 0x0065EC50   raster-create callback (the one FAILING for 800x600)
+[16:46:31.664]       [engine+0x074] = 0x0065E390   called at +0x0063CDE0 / +0x0063CD0F
+[16:46:31.664]       [engine+0x078] = 0x0065FBF0   called right after the patched site (+0x0063CEB1)
+[16:46:31.664]       [engine+0x088] = 0x0065D0B0   called at +0x0063CC7F
+[16:46:31.664]       [engine+0x0A4] = 0x0065D340   called at +0x0063CD94
+[16:46:31.664]       [engine+0x0A8] = 0x0065D3D0   called at +0x0063CC9F
+[16:46:31.664]       [engine+0x0B8] = 0x0065FB60   called at +0x0063CE1D
+[16:46:31.664]       [engine+0x098] = 0x00642A40   called at +0x0063CE47
+[16:46:31.664]       [engine+0x144] = 0x00610FA0   allocator (returns the NULL raster)
+[16:46:31.664]       [engine+0x148] = 0x006110C0   free/destroy counterpart
+[16:46:31.664]       [engine+0x05C] = 0x0065F800   adjacent to raster-create
+[16:46:31.664]   --- RenderWare video-mode TABLE (via game wrapper 0x612710, read-only) ---
+[16:46:31.664]     registry-driven globals: Device=0 Mode=4 Index=3  (0x735EB0/B4/B8)
+[16:46:31.664]     idx  ret        width  height depth flags      refRate format   note
+[16:46:31.664]      0   0x0019F6A8  1920   1080    32  0x00000000     60    1536   WINDOWED
+[16:46:31.664]      1   0x0019F6A8   640    480    32  0x00000001     75    1536   exclusive(fullscreen)
+[16:46:31.664]      2   0x0019F6A8   720    480    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]      3   0x0019F6A8   720    576    32  0x00000001     50    1536   exclusive(fullscreen)
+[16:46:31.664]      4   0x0019F6A8   800    600    32  0x00000001     75    1536   exclusive(fullscreen)  <- current registry Mode
+[16:46:31.664]      5   0x0019F6A8  1024    768    32  0x00000001     75    1536   exclusive(fullscreen)
+[16:46:31.664]      6   0x0019F6A8  1152    864    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]      7   0x0019F6A8  1176    664    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]      8   0x0019F6A8  1280    720    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]      9   0x0019F6A8  1280    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     10   0x0019F6A8  1280    800    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     11   0x0019F6A8  1280    960    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     12   0x0019F6A8  1280   1024    32  0x00000001     75    1536   exclusive(fullscreen)
+[16:46:31.664]     13   0x0019F6A8  1360    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     14   0x0019F6A8  1366    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     15   0x0019F6A8  1440   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     16   0x0019F6A8  1600    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     17   0x0019F6A8  1600   1024    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.664]     18   0x0019F6A8  1680   1050    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.665]     19   0x0019F6A8  1920   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.665]     20   0x0019F6A8  1440    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[16:46:31.665]     21   ret=0 -> end of table
+[16:46:31.665]     1 windowed (flags&1==0) entries seen. Set HKCU\SOFTWARE\Rockstar Games\Manhunt\Video\Mode to one of them to have RenderWare pick windowed itself.
+[16:46:31.665]   --- end video-mode recon ---
+[16:46:31.665]   original: Windowed=0 BackBufferWidth=800 BackBufferHeight=600 BackBufferFormat=22 FullScreen_RefreshRateInHz=60
+[16:46:31.665]   original (cont.): BackBufferCount=1 MultiSampleType=0 SwapEffect=2 hDeviceWindow=00240828 EnableAutoDepthStencil=1 AutoDepthStencilFormat=75 Flags=0x00000000 FullScreen_PresentationInterval=2147483648
+[16:46:31.665]   desktop adapter mode: 1920x1080 @ 60Hz format=22
+[16:46:31.665]   BackBufferFormat already matches the desktop format, no override needed
+[16:46:31.665]   CheckDeviceType(windowed=TRUE, DisplayFormat=22, BackBufferFormat=22) -> hr=0x00000000
+[16:46:31.665]   SwapEffect is D3DSWAPEFFECT_FLIP, which D3D8 disallows for windowed swap chains -- overriding to D3DSWAPEFFECT_DISCARD
+[16:46:31.665]   FullScreen_PresentationInterval is D3DPRESENT_INTERVAL_IMMEDIATE, which this driver rejects for windowed mode (confirmed via probe sweep) -- overriding to D3DPRESENT_INTERVAL_DEFAULT
+[16:46:31.665]   forced: Windowed=TRUE, FullScreen_RefreshRateInHz=0, BackBufferFormat=22, SwapEffect=1, FullScreen_PresentationInterval=0 (everything else unchanged)
+[16:46:31.833]   -> hr=0x00000000 device=0C33D598
+[16:46:31.833]   DISPLAY-FORMAT FIX: [0x00829590] was 22, [0x00829594] was 32
+[16:46:31.833]   DISPLAY-FORMAT FIX: set [0x00829590]=22 (D3DFORMAT), [0x00829594]=32 (bpp) -- replicates the engine's own windowed fallback at +0x006416D8, which our first-try CreateDevice success had skipped
+[16:46:31.833]   WINDOW FIX: client area is 640x480, camera raster needs 800x600
+[16:46:31.834]   WINDOW FIX: resized -- client area is now 800x600 (style=0x04CF0000)
+[16:46:31.834]   CAMERA: vtable sanity check passed (slot37=741AC450, Present=741AFB10, both mapped code)
+[16:46:31.834]   CAMERA: SetTransform hook installed (real=741AC450 hook=74E72AD0) -- logging VIEW/PROJECTION
+[16:46:31.834]   CAMERA: SetVertexShaderConstant hooked (real=741B1B20) -- watching for the world/view-projection matrix (SetTransform proved unused in 3D)
+[16:46:31.841]   TOCSIZE: "pictures/title/TITLE_PC.TXD" not in TOC -- using its real size 1048744 bytes instead of the 12 MB fallback
+[16:46:31.844]   [VIEW #1]
+[16:46:31.844]            -1.0000       0.0000       0.0000       0.0000
+[16:46:31.844]            -0.0000       1.0000       0.0000       0.0000
+[16:46:31.844]            -0.0000       0.0000       1.0000       0.0000
+[16:46:31.844]            -0.0000       0.0000       0.0000       1.0000
+[16:46:31.844]   [PROJECTION #1]
+[16:46:31.844]             1.4286       0.0000       0.0000       0.0000
+[16:46:31.844]             0.0000       1.8286       0.0000       0.0000
+[16:46:31.844]             0.0000       0.0000       1.0050       1.0000
+[16:46:31.844]            -0.0000      -0.0000      -0.0503       0.0000
+[16:46:31.844]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:46:32.175] === camera/FOV globals populated after ~500 ms ===
+[16:46:32.175]   --- CAMERA / FOV globals (ALL [reported], from MHWSF; verifying, not trusting) ---
+[16:46:32.175]     CCamera::m_aspectRatio  0x007A164C = 1.280000
+[16:46:32.175]     CCamera::m_viewWindow   0x007A1650 = (0.700000, 69.984039)   [RW FOV = 2*atan(viewWindow)]
+[16:46:32.175]     CScene::m_viewWindowOriginal 0x00715C98 = (0.000000, 0.000000)
+[16:46:32.175]     CScene::ms_viewWinScale 0x00715CDC = 0.000000
+[16:46:32.175]     CFrontend::ms_scrn 0x007D3440: w=800.00 h=600.00 invW=0.001250 invH=0.001667 wScale=1.2500 hScale=1.2500 hudStretch=0.7500
+[16:46:32.175]       pCamera(RwCamera*)=0x00000020  pFrameBuffer=0x0731D3BC  pZBuffer=0x07320518
+[16:46:32.175]       STRIDE CHECK: 1/w = 0.001250 vs invW field 0.001250 -> AGREES (layout corroborated)
+[16:46:32.175]       (compare w/h against the resolution actually running: a match is the second half of the corroboration)
+[16:46:34.897]   TOCSIZE: "initscripts/fonts/FONT.DAT" not in TOC -- using its real size 14220 bytes instead of the 12 MB fallback
+[16:46:34.897]   TOCSIZE: "initscripts/frontend/settings.txt" not in TOC -- using its real size 2199 bytes instead of the 12 MB fallback
+[16:46:34.897]   TOCSIZE: "initscripts/frontend/_key1.txt" not in TOC -- using its real size 2684 bytes instead of the 12 MB fallback
+[16:46:34.897]   TOCSIZE: "initscripts/frontend/_key2.txt" not in TOC -- using its real size 1942 bytes instead of the 12 MB fallback
+[16:46:34.897]   TOCSIZE: "initscripts/frontend/_key3.txt" not in TOC -- using its real size 1832 bytes instead of the 12 MB fallback
+[16:46:34.898]   TOCSIZE: "pictures/frontend_pc.txd" not in TOC -- using its real size 2585848 bytes instead of the 12 MB fallback
+[16:46:34.906]   TOCSIZE: "initscripts/levels/levels.txt" not in TOC -- using its real size 1417 bytes instead of the 12 MB fallback
+[16:46:34.906]   TOCSIZE: ".\levels\global\data\ManHunt.Pak" not in TOC -- using its real size 1299317 bytes instead of the 12 MB fallback
+[16:46:34.909]   TOCSIZE: "./levels/global/PC_Text/PC_GAME.GXT" not in TOC -- using its real size 34112 bytes instead of the 12 MB fallback
+[16:46:34.909]   TOCSIZE: ".\levels\global\SFX\SFX_PC.txd" not in TOC -- using its real size 69544 bytes instead of the 12 MB fallback
+[16:46:34.910]   TOCSIZE: ".\levels\\global\sfx\MH_FX_PC.txd" not in TOC -- using its real size 183976 bytes instead of the 12 MB fallback
+[16:46:34.920]   TOCSIZE: ".\levels\global\pak\GmodelsPC.txd" not in TOC -- using its real size 33320 bytes instead of the 12 MB fallback
+[16:46:34.920]   TOCSIZE: "./levels/global/pak/GmodelsPC.dff" not in TOC -- using its real size 56189 bytes instead of the 12 MB fallback
+[16:46:34.920]   [VIEW #3]
+[16:46:34.920]            -1.0000       0.0000       0.0000       0.0000
+[16:46:34.920]            -0.0000       1.0000       0.0000       0.0000
+[16:46:34.920]            -0.0000       0.0000       1.0000       0.0000
+[16:46:34.920]             0.0000      -0.0000      -0.0000       1.0000
+[16:46:34.920]   [PROJECTION #3]
+[16:46:34.920]             1.4286       0.0000       0.0000       0.0000
+[16:46:34.920]             0.0000       1.8286       0.0000       0.0000
+[16:46:34.920]             0.0000       0.0000       1.0007       1.0000
+[16:46:34.920]            -0.0000      -0.0000      -0.1001       0.0000
+[16:46:34.920]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:46:34.923]   TOCSIZE: "./levels/global/PC_Text/PC_GAME.GXT" not in TOC -- using its real size 34112 bytes instead of the 12 MB fallback
+[16:46:35.374]   [VIEW #4]
+[16:46:35.374]            -1.0000       0.0000       0.0000       0.0000
+[16:46:35.374]            -0.0000       1.0000       0.0000       0.0000
+[16:46:35.374]            -0.0000       0.0000       1.0000       0.0000
+[16:46:35.374]            -0.0000       0.0000       0.0000       1.0000
+[16:47:40.442]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[16:47:40.464]   TOCSIZE: "LEVELS\Jury_Turf\Jury_Turf_n.SUB" not in TOC -- using its real size 284 bytes instead of the 12 MB fallback
+[16:49:16.603]   LEVELNAME: level 0 name was "", re-applied SetLevel -> "Jury_Turf" before StartupLevel
+[16:49:16.603]   LEVELNAME: checkpoint level [0x007D6AE8] was 0, set to -1 as PLAY does -- so the level script takes its new-start branch (fade-in)
+[16:49:16.603]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[16:49:16.603]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[16:49:16.604]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[16:49:16.607]   [PROJECTION #7]
+[16:49:16.607]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.607]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.607]             0.0000       0.0000       1.0004       1.0000
+[16:49:16.607]            -0.0000      -0.0000      -0.1000       0.0000
+[16:49:16.607]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:16.625]   TOCSIZE: "./levels/Jury_Turf/pak/scene1PC.txd" not in TOC -- using its real size 4223912 bytes instead of the 12 MB fallback
+[16:49:16.638]   [VIEW #7]
+[16:49:16.638]            -1.0000       0.0000       0.0000       0.0000
+[16:49:16.638]            -0.0000       1.0000       0.0000       0.0000
+[16:49:16.638]            -0.0000       0.0000       1.0000       0.0000
+[16:49:16.638]             0.0000      -0.0000      -0.0000       1.0000
+[16:49:16.638]   [PROJECTION #8]
+[16:49:16.638]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.638]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.638]             0.0000       0.0000   20005.8848       1.0000
+[16:49:16.638]            -0.0000      -0.0000 -40011768.0000       0.0000
+[16:49:16.638]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -40009768.000, zfar ~ -40011768.0
+[16:49:16.643]   [PROJECTION #9]
+[16:49:16.643]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.643]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.643]             0.0000       0.0000       1.0004       1.0000
+[16:49:16.643]            -0.0000      -0.0000      -0.1000       0.0000
+[16:49:16.643]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:16.644]   DRMLOG #4 hit 1: GetLastError @0x004732AA [Broken Health 1] -> ret=0x00000000  | eax=0x0731BEE4 ecx=0x0000203D edx=0x00000506 ebx=0x00001CBA esi=0x0731BEE4
+[16:49:16.644]   [PROJECTION #10]
+[16:49:16.644]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.644]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.644]             0.0000       0.0000       1.0010       1.0000
+[16:49:16.644]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:16.644]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:16.654]   TOCSIZE: ".\levels\Jury_Turf\pak\modelsPC.txd" not in TOC -- using its real size 3937064 bytes instead of the 12 MB fallback
+[16:49:16.662]   TOCSIZE: "./levels/Jury_Turf/pak/modelsPC.dff" not in TOC -- using its real size 1959674 bytes instead of the 12 MB fallback
+[16:49:16.665]   TOCSIZE: ".\levels\\global\charpak\CASH_PC.TXD" not in TOC -- using its real size 65832 bytes instead of the 12 MB fallback
+[16:49:16.665]   TOCSIZE: "./levels//global/charpak/CASH_PC.DFF" not in TOC -- using its real size 166246 bytes instead of the 12 MB fallback
+[16:49:16.665]   [PROJECTION #11]
+[16:49:16.666]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.666]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.666]             0.0000       0.0000    2001.0000       1.0000
+[16:49:16.666]            -0.0000      -0.0000 -4002000.0000       0.0000
+[16:49:16.666]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -4000000.000, zfar ~ -4002000.0
+[16:49:16.670]   [PROJECTION #12]
+[16:49:16.670]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.670]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.670]             0.0000       0.0000       1.0010       1.0000
+[16:49:16.670]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:16.670]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:16.673]   [VIEW #8]
+[16:49:16.673]            -1.0000      -0.0000       0.0000       0.0000
+[16:49:16.673]             0.0000       1.0000      -0.0000       0.0000
+[16:49:16.673]            -0.0000      -0.0000       1.0000       0.0000
+[16:49:16.673]           363.4701     -16.9173      83.5536       1.0000
+[16:49:16.684]   DRMLOG #1 hit 1: IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] arg0=0x0069B914 arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00001008 edx=0x000020A0 ebx=0x0069BCA0 esi=0x0043A01C
+[16:49:16.704]   [VIEW #9]
+[16:49:16.704]            -1.0000       0.0000       0.0000       0.0000
+[16:49:16.704]            -0.0000       1.0000       0.0000       0.0000
+[16:49:16.704]            -0.0000       0.0000       1.0000       0.0000
+[16:49:16.704]            -0.0000       0.0000       0.0000       1.0000
+[16:49:16.704]   [PROJECTION #13]
+[16:49:16.704]             1.4286       0.0000       0.0000       0.0000
+[16:49:16.704]             0.0000       1.8286       0.0000       0.0000
+[16:49:16.704]             0.0000       0.0000       1.0007       1.0000
+[16:49:16.704]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:16.704]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.462]   [VIEW #10]
+[16:49:17.462]             0.9295      -0.0318       0.3672       0.0000
+[16:49:17.462]            -0.0000       0.9962       0.0862       0.0000
+[16:49:17.462]             0.3686       0.0801      -0.9260       0.0000
+[16:49:17.462]          -302.6948      12.0471    -144.5196       1.0000
+[16:49:17.462]   [PROJECTION #14]
+[16:49:17.462]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.462]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.462]             0.0000       0.0000       1.0010       1.0000
+[16:49:17.462]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.462]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.569]   [PROJECTION #15]
+[16:49:17.569]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.569]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.569]             0.0000       0.0000       1.0005       1.0000
+[16:49:17.569]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.569]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.574]   [VIEW #11]
+[16:49:17.574]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.574]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.574]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.574]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.574]   [PROJECTION #16]
+[16:49:17.574]             1.0000       0.0000       0.0000       0.0000
+[16:49:17.574]             0.0000       1.0000       0.0000       0.0000
+[16:49:17.574]             0.0000       0.0000       0.0500       0.0000
+[16:49:17.574]            -0.0000      -0.0000      -0.0001       1.0000
+[16:49:17.574]       -> fovY ~ 90.00 deg, aspect-ish m00/m11 = 1.0000, znear ~ 0.001, zfar ~ -0.0
+[16:49:17.577]   [VIEW #12]
+[16:49:17.577]             0.9295      -0.0318       0.3672       0.0000
+[16:49:17.577]            -0.0000       0.9962       0.0862       0.0000
+[16:49:17.577]             0.3686       0.0801      -0.9260       0.0000
+[16:49:17.577]          -302.6948      12.0471    -144.5196       1.0000
+[16:49:17.577]   [PROJECTION #17]
+[16:49:17.577]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.577]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.577]             0.0000       0.0000       1.0005       1.0000
+[16:49:17.577]            -0.0000      -0.0000      -0.1021       0.0000
+[16:49:17.577]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.579]   [PROJECTION #18]
+[16:49:17.579]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.579]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.579]             0.0000       0.0000       1.0005       1.0000
+[16:49:17.579]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.579]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.582]   [VIEW #13]
+[16:49:17.582]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.583]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.583]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.583]            -0.0000       0.0000       0.0000       1.0000
+[16:49:17.583]   [PROJECTION #19]
+[16:49:17.583]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.583]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.583]             0.0000       0.0000       1.0007       1.0000
+[16:49:17.583]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.583]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.583]   [VIEW #14]
+[16:49:17.583]             0.9295      -0.0318       0.3672       0.0000
+[16:49:17.583]            -0.0000       0.9962       0.0862       0.0000
+[16:49:17.583]             0.3686       0.0801      -0.9260       0.0000
+[16:49:17.583]          -302.6948      12.0471    -144.5196       1.0000
+[16:49:17.583]   [PROJECTION #20]
+[16:49:17.583]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.583]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.583]             0.0000       0.0000       1.0005       1.0000
+[16:49:17.583]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.583]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.586]   [VIEW #15]
+[16:49:17.586]             0.9330      -0.0311       0.3585       0.0000
+[16:49:17.586]            -0.0000       0.9963       0.0865       0.0000
+[16:49:17.586]             0.3598       0.0807      -0.9295       0.0000
+[16:49:17.586]          -304.0669      11.8490    -141.6673       1.0000
+[16:49:17.595]   [VIEW #16]
+[16:49:17.595]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.595]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.595]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.595]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.595]   [PROJECTION #21]
+[16:49:17.595]             1.0000       0.0000       0.0000       0.0000
+[16:49:17.595]             0.0000       1.0000       0.0000       0.0000
+[16:49:17.595]             0.0000       0.0000       0.0500       0.0000
+[16:49:17.595]            -0.0000      -0.0000      -0.0001       1.0000
+[16:49:17.596]       -> fovY ~ 90.00 deg, aspect-ish m00/m11 = 1.0000, znear ~ 0.001, zfar ~ -0.0
+[16:49:17.596]   [VIEW #17]
+[16:49:17.596]             0.9330      -0.0311       0.3585       0.0000
+[16:49:17.596]            -0.0000       0.9963       0.0865       0.0000
+[16:49:17.596]             0.3598       0.0807      -0.9295       0.0000
+[16:49:17.596]          -304.0669      11.8490    -141.6673       1.0000
+[16:49:17.596]   [PROJECTION #22]
+[16:49:17.596]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.596]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.596]             0.0000       0.0000       1.0005       1.0000
+[16:49:17.596]            -0.0000      -0.0000      -0.1021       0.0000
+[16:49:17.596]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.596]   [PROJECTION #23]
+[16:49:17.596]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.596]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.596]             0.0000       0.0000       1.0005       1.0000
+[16:49:17.596]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.596]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.597]   [VIEW #18]
+[16:49:17.597]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.597]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.597]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.597]            -0.0000       0.0000       0.0000       1.0000
+[16:49:17.597]   [PROJECTION #24]
+[16:49:17.597]             1.4286       0.0000       0.0000       0.0000
+[16:49:17.597]             0.0000       1.8286       0.0000       0.0000
+[16:49:17.597]             0.0000       0.0000       1.0007       1.0000
+[16:49:17.597]            -0.0000      -0.0000      -0.1001       0.0000
+[16:49:17.597]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[16:49:17.597]   [VIEW #19]
+[16:49:17.597]             0.9330      -0.0311       0.3585       0.0000
+[16:49:17.597]            -0.0000       0.9963       0.0865       0.0000
+[16:49:17.597]             0.3598       0.0807      -0.9295       0.0000
+[16:49:17.597]          -304.0669      11.8490    -141.6673       1.0000
+[16:49:17.599]   [VIEW #20]
+[16:49:17.599]             0.9334      -0.0311       0.3574       0.0000
+[16:49:17.599]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.600]             0.3587       0.0808      -0.9299       0.0000
+[16:49:17.600]          -304.2300      11.8244    -141.3171       1.0000
+[16:49:17.602]   [VIEW #21]
+[16:49:17.602]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.602]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.602]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.602]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.603]   [VIEW #22]
+[16:49:17.603]             0.9334      -0.0311       0.3574       0.0000
+[16:49:17.603]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.603]             0.3587       0.0808      -0.9299       0.0000
+[16:49:17.603]          -304.2300      11.8244    -141.3171       1.0000
+[16:49:17.603]   [VIEW #23]
+[16:49:17.603]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.603]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.603]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.603]            -0.0000       0.0000       0.0000       1.0000
+[16:49:17.603]   [VIEW #24]
+[16:49:17.603]             0.9334      -0.0311       0.3574       0.0000
+[16:49:17.603]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.603]             0.3587       0.0808      -0.9299       0.0000
+[16:49:17.603]          -304.2300      11.8244    -141.3171       1.0000
+[16:49:17.605]   [VIEW #25]
+[16:49:17.605]             0.9336      -0.0310       0.3570       0.0000
+[16:49:17.605]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.605]             0.3584       0.0808      -0.9301       0.0000
+[16:49:17.605]          -304.3089      11.8155    -141.1995       1.0000
+[16:49:17.607]   [VIEW #26]
+[16:49:17.607]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.607]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.607]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.607]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.607]   [VIEW #27]
+[16:49:17.607]             0.9336      -0.0310       0.3570       0.0000
+[16:49:17.607]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.607]             0.3584       0.0808      -0.9301       0.0000
+[16:49:17.607]          -304.3089      11.8155    -141.1995       1.0000
+[16:49:17.607]   [VIEW #28]
+[16:49:17.607]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.608]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.608]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.608]            -0.0000       0.0000       0.0000       1.0000
+[16:49:17.608]   [VIEW #29]
+[16:49:17.608]             0.9336      -0.0310       0.3570       0.0000
+[16:49:17.608]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.608]             0.3584       0.0808      -0.9301       0.0000
+[16:49:17.608]          -304.3089      11.8155    -141.1995       1.0000
+[16:49:17.609]   [VIEW #30]
+[16:49:17.609]             0.9337      -0.0310       0.3567       0.0000
+[16:49:17.609]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.609]             0.3580       0.0809      -0.9303       0.0000
+[16:49:17.609]          -304.3503      11.8067    -141.0827       1.0000
+[16:49:17.611]   [VIEW #31]
+[16:49:17.611]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.611]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.611]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.611]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.611]   [VIEW #32]
+[16:49:17.611]             0.9337      -0.0310       0.3567       0.0000
+[16:49:17.611]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.611]             0.3580       0.0809      -0.9303       0.0000
+[16:49:17.611]          -304.3503      11.8067    -141.0827       1.0000
+[16:49:17.611]   [VIEW #33]
+[16:49:17.611]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.611]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.611]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.612]            -0.0000       0.0000       0.0000       1.0000
+[16:49:17.612]   [VIEW #34]
+[16:49:17.612]             0.9337      -0.0310       0.3567       0.0000
+[16:49:17.612]            -0.0000       0.9963       0.0866       0.0000
+[16:49:17.612]             0.3580       0.0809      -0.9303       0.0000
+[16:49:17.612]          -304.3503      11.8067    -141.0827       1.0000
+[16:49:17.614]   [VIEW #35]
+[16:49:17.614]             0.9339      -0.0310       0.3562       0.0000
+[16:49:17.614]            -0.0000       0.9962       0.0866       0.0000
+[16:49:17.614]             0.3576       0.0809      -0.9303       0.0000
+[16:49:17.614]          -304.4326      11.7966    -140.9310       1.0000
+[16:49:17.616]   [VIEW #36]
+[16:49:17.616]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.616]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.616]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.616]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.616]   [VIEW #37]
+[16:49:17.616]             0.9339      -0.0310       0.3562       0.0000
+[16:49:17.616]            -0.0000       0.9962       0.0866       0.0000
+[16:49:17.616]             0.3576       0.0809      -0.9303       0.0000
+[16:49:17.616]          -304.4326      11.7966    -140.9310       1.0000
+[16:49:17.617]   [VIEW #38]
+[16:49:17.617]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.617]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.617]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.617]            -0.0000       0.0000       0.0000       1.0000
+[16:49:17.617]   [VIEW #39]
+[16:49:17.617]             0.9339      -0.0310       0.3562       0.0000
+[16:49:17.617]            -0.0000       0.9962       0.0866       0.0000
+[16:49:17.617]             0.3576       0.0809      -0.9303       0.0000
+[16:49:17.617]          -304.4326      11.7966    -140.9310       1.0000
+[16:49:17.619]   [VIEW #40]
+[16:49:17.619]             0.9340      -0.0309       0.3558       0.0000
+[16:49:17.619]            -0.0000       0.9962       0.0866       0.0000
+[16:49:17.619]             0.3572       0.0809      -0.9305       0.0000
+[16:49:17.619]          -304.4745      11.7875    -140.8107       1.0000
+[16:49:17.621]   [VIEW #41]
+[16:49:17.621]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.621]            -0.0000       0.0000      -1.0000       0.0000
+[16:49:17.621]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.621]           335.4344      33.7265       9.7050       1.0000
+[16:49:17.622]   [VIEW #42]
+[16:49:17.622]             0.9340      -0.0309       0.3558       0.0000
+[16:49:17.622]            -0.0000       0.9962       0.0866       0.0000
+[16:49:17.622]             0.3572       0.0809      -0.9305       0.0000
+[16:49:17.622]          -304.4745      11.7875    -140.8107       1.0000
+[16:49:17.622]   [VIEW #43]
+[16:49:17.622]            -1.0000       0.0000       0.0000       0.0000
+[16:49:17.622]            -0.0000       1.0000       0.0000       0.0000
+[16:49:17.622]            -0.0000       0.0000       1.0000       0.0000
+[16:49:17.622]            -0.0000       0.0000       0.0000       1.0000
+[16:49:37.863]   DRMLOG #6 hit 1: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085CDC30 esi=0x0019F98C
+[16:49:45.864]   DRMLOG #6 hit 2: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085CDC30 esi=0x0019F98C
+[16:49:52.868]   DRMLOG #6 hit 3: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085CDC30 esi=0x0019F98C
+[16:49:56.678]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[16:49:56.678]   INPUT: before script -- GetDeviceState=30466456 (keyboard=0, mouse=30458526, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:49:56.678]   INPUT:   device 0 SysMouse     state=30458527   data=0        lastCb=20
+[16:49:56.678]   INPUT:   device 1 SysKeyboard  state=7929       data=0        lastCb=0
+[16:49:56.678]   PEEK 007A13DC: 01 00 00 00 74 DA 4C BD B8 69 31 07 
+[16:49:56.678]   PEEK 00755E4C: 04 00 00 00 
+[16:49:56.679]   PEEK 00715CA8: 05 00 00 00 
+[16:49:56.679]   PEEK 007B7E1C: 00 00 00 00 
+[16:49:56.679]   PEEK 007CF0E0: 00 00 00 00 
+[16:49:56.679]   PEEK 007D34F8: 02 00 00 00 
+[16:49:56.679]   INPUT: after script -- GetDeviceState=30466456 (keyboard=0, mouse=30458526, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:49:56.679]   INPUT:   device 0 SysMouse     state=30458527   data=0        lastCb=20
+[16:49:56.679]   INPUT:   device 1 SysKeyboard  state=7929       data=0        lastCb=0
+[16:49:57.867]   DRMLOG #6 hit 4: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085CDC30 esi=0x0019F98C
+[16:50:39.793]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[16:50:39.793]   INPUT: before script -- GetDeviceState=30483655 (keyboard=0, mouse=30467125, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:50:39.793]   INPUT:   device 0 SysMouse     state=30467126   data=0        lastCb=20
+[16:50:39.793]   INPUT:   device 1 SysKeyboard  state=16529      data=0        lastCb=0
+[16:50:39.793]   POKE *** WROTE byte [007A13DC] 01 -> 00 ***
+[16:50:39.844]   POKE check +50ms [007A13DC] = 00
+[16:50:40.294]   POKE check +500ms [007A13DC] = 00
+[16:50:41.795]   POKE check +2000ms [007A13DC] = 00
+[16:50:41.795]   INPUT: after script -- GetDeviceState=30484455 (keyboard=0, mouse=30467525, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:50:41.795]   INPUT:   device 0 SysMouse     state=30467526   data=0        lastCb=20
+[16:50:41.795]   INPUT:   device 1 SysKeyboard  state=16929      data=0        lastCb=0
+[16:51:08.858]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[16:51:08.858]   INPUT: before script -- GetDeviceState=30495248 (keyboard=0, mouse=30472922, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:51:08.858]   INPUT:   device 0 SysMouse     state=30472923   data=0        lastCb=20
+[16:51:08.858]   INPUT:   device 1 SysKeyboard  state=22325      data=0        lastCb=0
+[16:51:08.859]   POS player map=(427.15, 108.27, -0.20) yaw=-90.0  eng=(427.15, -0.20, -108.27) at=(0.000, 0.000, 1.000)  [player=08C3A110 frame=08C2D464]
+[16:51:08.859]   POS camera map=(426.85, 111.98, 3.01) yaw=-90.0 pitch=-18.0  eng at=(0.000, -0.309, 0.951)  [camera=0731D568 frame=0731BE18]
+[16:51:08.859]   HUNTERS: lists A=[0069BBE4]->07458368 B=[0069BBF4]->0744EF18 player=08C3A110
+[16:51:08.917]   HUNTERS A hPatrol        map=(293.88, 36.98, 6.49) yaw=-5.0 health=100.0 state=0x0  player: 151.1 m away (dz -6.7), IN FRONT (33 deg off his facing); bearing to him -151.9 [ent=08C25B20]
+[16:51:08.918]   HUNTERS A hLeader        map=(435.86, 73.60, 0.70) yaw=-33.4 health=100.0 state=0x0  player: 35.7 m away (dz -0.9), BEHIND him (137 deg off his facing); bearing to him -75.9 [ent=08C12BC0]
+[16:51:08.919]   HUNTERS A hExit          map=(276.05, 38.17, 6.45) yaw=-0.0 health=100.0 state=0x0  player: 166.6 m away (dz -6.7), IN FRONT (25 deg off his facing); bearing to him -155.1 [ent=08BFF530]
+[16:51:08.921]   HUNTERS A hDummy         map=(389.77, 42.77, -0.20) yaw=93.6 health=100.0 state=0x0  player: 75.4 m away (dz -0.0), IN FRONT (33 deg off his facing); bearing to him -119.7 [ent=08BEBBC0]
+[16:51:08.922]   HUNTERS A hCarPark2      map=(335.43, 33.73, -0.30) yaw=-84.8 health=100.0 state=0x0  player: 118.2 m away (dz 0.1), BEHIND him (124 deg off his facing); bearing to him -140.9 [ent=08BD7D70]
+[16:51:08.923]   HUNTERS A hCarPark1      map=(329.27, 51.67, -0.30) yaw=148.9 health=100.0 state=0x0  player: 113.1 m away (dz 0.1), to his side (119 deg off his facing); bearing to him -150.0 [ent=08C9EB50]
+[16:51:08.924]   HUNTERS A hBackAlley     map=(370.57, 60.81, -6.42) yaw=4.3 health=100.0 state=0x0  player: 73.8 m away (dz 6.2), IN FRONT (36 deg off his facing); bearing to him -140.0 [ent=08C92190]
+[16:51:08.925]   HUNTERS A hArena         map=(390.53, 93.69, -5.36) yaw=3.5 health=100.0 state=0x0  player: 39.4 m away (dz 5.2), IN FRONT (18 deg off his facing); bearing to him -158.3 [ent=08CBF710]
+[16:51:09.438]   HUNTERS: 8 character(s) listed, 8 line(s)
+[16:51:09.439]   INPUT: after script -- GetDeviceState=30495478 (keyboard=0, mouse=30473037, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:51:09.439]   INPUT:   device 0 SysMouse     state=30473038   data=0        lastCb=20
+[16:51:09.439]   INPUT:   device 1 SysKeyboard  state=22440      data=0        lastCb=0
+[16:51:29.741]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[16:51:29.741]   INPUT: before script -- GetDeviceState=30503586 (keyboard=0, mouse=30477091, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:51:29.741]   INPUT:   device 0 SysMouse     state=30477092   data=0        lastCb=20
+[16:51:29.741]   INPUT:   device 1 SysKeyboard  state=26494      data=0        lastCb=0
+[16:51:29.742]   POS player map=(427.14, 104.08, -0.20) yaw=-90.0  eng=(427.14, -0.20, -104.08) at=(0.000, 0.000, 1.000)  [player=08C3A110 frame=08C2D464]
+[16:51:29.742]   POS camera map=(426.84, 107.94, 2.34) yaw=-90.0 pitch=-8.0  eng at=(0.000, -0.139, 0.990)  [camera=0731D568 frame=0731BE18]
+[16:51:29.742]   INPUT: after script -- GetDeviceState=30503586 (keyboard=0, mouse=30477091, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[16:51:29.742]   INPUT:   device 0 SysMouse     state=30477092   data=0        lastCb=20
+[16:51:29.743]   INPUT:   device 1 SysKeyboard  state=26494      data=0        lastCb=0
+[16:52:17.932] === manhunt-2003-vr proxy d3d8.dll unloading (process exit) ===

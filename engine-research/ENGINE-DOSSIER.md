@@ -986,6 +986,62 @@ From the reader's drop `inbox/2026-09-11-mod-reader-jury-turf-route-graph.md`.
     of exactly its size). `[hypothesis]` for all three; with the reader. Evidence:
     `dev-archive/recon/2026-09-11-.../crash-1627-0x00431820/`.
 
+## ⚠️⚠️ 11l. OUR SITE-#1 PATCH POISONS RESTARTS AND SAVES — AND "STOCK" BREAKS THE FRESH LOAD (2026-09-11)
+
+From the reader's drop `inbox/2026-09-11-mod-reader-crash-00431820.md`, which **supersedes** the
+§11c site-table row #1 (`0x0043A013` `00`→`01`) and its "the reader needs non-zero" reasoning — and
+then **partly disproved live** the same evening.
+
+- **The crash** (`0x00431820`, "No archetype of this name exists : d") is a desync in the game's
+  **entity snapshot** (`0xD800`-byte buffer `0x0069BCA0`, written by the serializer `0x0043A2C0`
+  after every level load and at every checkpoint, the checkpoint copy going into the save). With
+  **`[0x0069B914] != 0`** the serializer records **entity #37's size 12 bytes short**
+  (`0x0043A8F3`–`0x0043A903`); a re-parse lands mid-record at #38, reads type `"d"` with an empty
+  name, the archetype lookup fails and the NULL is used `[verified-numerically 2026-09-11]` (the
+  12-byte slip reproduced byte for byte from `entity.inst`: #37 is `Gen_E_L_MeshGLeft_(D)05`,
+  exactly the stale name on the crash stack).
+- **Live** `[verified-live 2026-09-11, n=1 each]`: loading **Tefa's `MANHUNT1.SAV`** (written 16:39
+  with our patch on) **reproduces the crash** — twice, once with TOCSIZE disabled (**TOCSIZE ruled
+  out**); the August `MANHUNT0.SAV` loads and plays fine. So restarts after "Scene Failed!" and
+  loads of saves written by our builds crash; the 16:27 crash in Tefa's play fits a restart.
+  **`MANHUNT1.SAV` is poisoned** (backed up as `MANHUNT1.SAV.bak-2026-09-11-lm`).
+- **⚠️ But the reader's fix — leave site #1 stock (`manhunt_vr_site1_stock`) — crashes a FRESH new
+  game** on the very first level load, same site, in the same millisecond as `DRMLOG #1` returned
+  the real `IsBadReadPtr` result (`log-16`) `[verified-live 2026-09-11, n=1]`. So: **patched (1) →
+  fresh load works, restart/load crashes; stock (0) → fresh load crashes.** Neither single value is
+  right; the fix must make the serializer and the parser agree. Back with the reader.
+- Consequence for players: **this is the most important open bug on the project.** Every restart
+  after death and every save load is a crash risk on every build since 2026-09-10.
+
+## 11m. The rest of the reader's evening drops, in brief (2026-09-11)
+
+- **The level walkthrough** — the level script carries its own **source code** (`MHSC` → `DBUG` →
+  `SRCE` chunks in `jury_turf.mls`), so objectives, locks and all 20 trigger volumes are read, not
+  guessed. Full ordered checklist with coordinates: `modding-notes/2026-09-11c-...`. Key facts:
+  the arena gate unlocks only when **hArena walks into a hunter-only trigger 4.6 m beyond it** after
+  the hide-in-the-shadows step (which is what Tefa saw); required kills are TRAINING_GUY,
+  hBackAlley, both car-park hunters, hPatrol and hExit; the level ends by dropping down the chute at
+  (272.2, 38.2). Script builtin `0x289` = `GetPlayerLevelRestarts`, `0x2D9` = `WhiteNoiseSetVal`.
+  `[inferred-static]`
+- **Board #6 "Help Text Crash" residue: CLOSED, harmless** — the block sets `ebp` itself, the
+  shared epilogue never reads it before `pop ebp` restores it `[inferred-static]`.
+- **#8 fires inside the swing-door handler** as a door swings (two hits = the two gate halves); #0 is
+  in inventory-slot code (fits the bag pickup) `[inferred-static]`.
+- **VR groundwork** (full note: `modding-notes/2026-09-11d-...`): the **1.28 aspect is a baked
+  constant** in `.data` (`0x007A164C` = 1.28, view window 0.7), read once when the world camera is
+  created per level (`0x004739A0` → creator `0x00593210` → `RwCameraSetViewWindow`); an opt-in
+  **Hor+ fix** (`manhunt_vr_fix_aspect`, 88.4° horizontal at 16:9) is built, not yet run.
+  **`[0x00715B94]` is the world render camera**, traced end to end to `D3DTS_VIEW` through
+  RenderWare's D3D8 begin-update `0x00641CE0` and a cached `_rwD3D8SetTransform` `0x00643330`.
+  **Per-eye hook:** the world is drawn once per frame in pass 1 of `0x00475EA0`; set each eye's
+  view window/offset/frame at the call `0x00475F6E` and re-run pass 1 (`0x00475F9D`…`0x0047609D`)
+  for the second eye; HUD once. `RwCameraSetViewOffset` `0x006260F0` exists for off-axis
+  projection. `[inferred-static]`; the render-only status of pass 1's calls is `[hypothesis]`.
+- **SKIP_MENU black world:** live PEEKs showed the white-noise flag already cleared (timer counted
+  down), so the intro script did run; the prime suspect is now a full-screen **fade rectangle
+  `[0x00715CFC]`** drawn after the HUD pass, then world pointer / camera rasters. Next PEEK list in
+  the drop (kept in the reader's notes). `[hypothesis]`
+
 ## ⭐⭐ 11i. WHERE THE PLAYER IS — `POS`, AND STEERING BY MAP COORDINATES (2026-09-11)
 
 From the reader's drop `inbox/2026-09-11-mod-reader-player-position-and-jury-turf-map.md`, then
