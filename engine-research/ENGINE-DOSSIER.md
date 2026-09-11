@@ -961,6 +961,14 @@ From the reader's drop `inbox/2026-09-11-mod-reader-jury-turf-route-graph.md`.
   is at its first stealth-kill step, and the gate is presumably **script-locked** until it is done —
   which is not the same as the SecuROM "stuck gates" symptom. The reader is decoding the level
   script's objective order to tell the two apart.
+- **⭐ Then Tefa took over at the PC and played the step — and the gates opened** `[reported
+  2026-09-11, n=1]` (Cash died shortly after: "Scene Failed!"). The log shows **`#8 Broken Doors`
+  firing for the first time ever, twice, at 16:18:36** (`GetCurrentThread @0x004CC48C`, the
+  `eax=0xABBA ecx=0xBABA` marker) with the patch applied, and the player's position passing the gate
+  line (y 83.5 → 87.8) `[verified-live 2026-09-11, n=1]`. **First live evidence that the "Broken
+  Doors" repair holds.** Earlier in the same run **`#0 (unnamed 1)` fired** (16:11:30, the
+  `DEAD/FEED/BEEF` marker that preceded both 2026-09-09 item-swap crashes) — no crash followed.
+  Sites seen live in gameplay now: #0, #1, #4, #5, #6, #8, #11.
 
 ## ⭐⭐ 11i. WHERE THE PLAYER IS — `POS`, AND STEERING BY MAP COORDINATES (2026-09-11)
 

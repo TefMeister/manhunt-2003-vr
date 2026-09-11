@@ -48,7 +48,7 @@ folder).
 | `play-06.png` | Walked over the Plastic Bag and picked it up. |
 | `run-during.png` | Shift + W: the red noise pulse on the radar — running. |
 | `mb1-held.png` | Right mouse held: arms come up (bound to INVENTORY SWAP). |
-| `t1-skipmenu-born-again-cutscene-just-before-crash.png` | BORN AGAIN by direct start, its in-engine intro running, seconds before the `0x0061166A` crash: the level had loaded. |
+| `t1-skipmenu-born-again-cutscene-just-before-crash.png` | BORN AGAIN by direct start, seconds before the `0x0061166A` crash. ⚠️ This is the level's intro **Bink movie**, not the loaded level: the crash comes at the loading screen after it (dossier §11d-quinquies). |
 | `play-with-start-level-1-is-born-again.png` | PLAY with `START_LEVEL 1` lands in BORN AGAIN's first alley. |
 | `t2-levelname-fix-help-text-on-black.png` | Direct start with the level-name fix: no crash, the tutorial help box draws, everything else is black. |
 | `t3-newbuild-menu-play-gameplay.png` | Normal start on the TOCSIZE build: gameplay as usual. |
