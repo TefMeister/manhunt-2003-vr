@@ -916,6 +916,52 @@ From the reader's drop `inbox/2026-09-11-mod-reader-level-load-retry-and-toc-siz
   `MANHUNT0.SAV` (69,620 B) is BORN AGAIN in progress with nothing completed
   `[verified-numerically 2026-09-11]` for its label.
 
+### 11d-sexies. The SKIP_MENU black screen — the camera's "black" flag, cause still open (2026-09-11)
+
+From the reader's drop `inbox/2026-09-11-mod-reader-skipmenu-black-screen.md`.
+
+- **What draws black** `[inferred-static]`: the in-game render `0x00475EA0` checks TheCamera's black
+  flag, byte `[0x007A13DD]` (TheCamera `0x007A0FAC` + 0x431), at `0x00475F06`; while it is set it
+  skips world, HUD and overlay, draws only the frontend overlay camera (hence the help boxes), and
+  pause is refused (`0x005EA2C0`). It starts **set** from TheCamera's static constructor
+  (`0x0058B342`–`0x0058B350`, timer 0) and only a positive "black for N" call clears it:
+  `0x005920F0(n)` (camera code) or level-script function `0x2D9` → `0x00592180(n)`. Jury_Turf's level
+  script calls `0x2D9` three times (5, 5, 10), all after its one call to script function `0x289`
+  ("resuming at a checkpoint in this level?": `[0x007D6AE8] == current level`).
+- **The reader's fix — reset `[0x007D6AE8]` to −1 as PLAY does — did not cure it**
+  `[disproved 2026-09-11]` as the cause: the value was **−2**, not the predicted 0, so `0x289` was
+  already false; the screen stayed black 80 s after (build `cc8aa567`, `log-10`). Next: poke
+  `[0x007A13DD]` to 0 live, which separates "the flag is the cause" from "something upstream".
+- **2026-09-10's "SKIP_MENU lands in live 3D" is withdrawn** `[measured 2026-09-11]`: that log ends
+  at the intro movie's start with none of a level load's projection burst, and its screenshot is the
+  reporter's camcorder movie (tape timecode `00:00:38:18`, crosshair, two tape counters).
+
+## 11k. WALKABLE ROUTES — the level's own AI path graph (2026-09-11)
+
+From the reader's drop `inbox/2026-09-11-mod-reader-jury-turf-route-graph.md`.
+
+- **`levels/jury_turf/mapAI.grf` decoded** `[verified-numerically 2026-09-11]` to match the game's
+  `LoadGraph` `0x00403340`: **1,358 nodes, 7,442 links, in MAP coordinates** (same as `POS`), per-node
+  area (`aiarena`, `aistairs`, `aistart`, `aicarpark`, `aicarpark2`, `aiend`, `aiend2`), per-direction
+  link flags (28 flag-0 links sit exactly at gate crossings and drops), and a link `extra` that is the
+  `entity.inst` index of the door or trigger on it. `staging/.../offline-analysis/grf_decode.py` +
+  `route.py` (A*, `--doors`, always pass `--z1`/`--z2`: floors at −7, −3, 0, +7.5). The decoded
+  graph is regenerated locally, not committed.
+- **The gates are the portals between regions**: with normal links the graph splits into A (start,
+  street, east lower yard, arena), B (west lower yard, car parks), C (end area and rooftops); A↔B
+  only through mesh gates 01 (386.1, 71.4) / 05, B↔C through mesh gate 06, C↔chute through
+  `CJ_JuryChute_(D)`. All doors are `SWINGDOOR_PHYS` — **pushed open by walking into them**; USE is
+  for searchables and executions `[inferred-static]`.
+- **Live** `[verified-live 2026-09-11, n=1]`: following the waypoints walked start → `Bag_(CT)`
+  (picked up) → through the court, down the steps, across the lower yard and up to
+  **`JT_Gate_(D)01`, which stays shut** — walking into it and pressing Enter do nothing — and from
+  there **no route reaches the first save point without a door**. Two tutorial cut-aways interrupt
+  the walk (at (397, 38.6): the radar lesson; beside the gate: a hunter stepping out of a dark
+  doorway, "The icon will flash red when you are in danger or have been spotted"). So the tutorial
+  is at its first stealth-kill step, and the gate is presumably **script-locked** until it is done —
+  which is not the same as the SecuROM "stuck gates" symptom. The reader is decoding the level
+  script's objective order to tell the two apart.
+
 ## ⭐⭐ 11i. WHERE THE PLAYER IS — `POS`, AND STEERING BY MAP COORDINATES (2026-09-11)
 
 From the reader's drop `inbox/2026-09-11-mod-reader-player-position-and-jury-turf-map.md`, then
