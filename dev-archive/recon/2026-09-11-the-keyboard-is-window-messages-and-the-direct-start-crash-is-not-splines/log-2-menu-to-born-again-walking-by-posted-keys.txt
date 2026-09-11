@@ -587,3 +587,41 @@
 [14:20:46.985]   INPUT: after script -- GetDeviceState=24212926 (keyboard=0, mouse=23604923, other=0), GetDeviceData=0, devices=2, distinct vtables=2
 [14:20:46.985]   INPUT:   device 0 SysMouse     state=23604924   data=0        lastCb=20
 [14:20:46.985]   INPUT:   device 1 SysKeyboard  state=608002     data=0        lastCb=0
+[14:34:20.988]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[14:34:20.988]   INPUT: before script -- GetDeviceState=24538436 (keyboard=0, mouse=23767678, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:34:20.988]   INPUT:   device 0 SysMouse     state=23767679   data=0        lastCb=20
+[14:34:20.988]   INPUT:   device 1 SysKeyboard  state=770757     data=0        lastCb=0
+[14:34:20.988]   INPUT: mouse move dx=250 dy=0 dz=0 over 500ms (step 5/1/1 per 8ms)
+[14:34:21.770]   INPUT: after script -- GetDeviceState=24538746 (keyboard=0, mouse=23767833, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:34:21.770]   INPUT:   device 0 SysMouse     state=23767834   data=0        lastCb=20
+[14:34:21.770]   INPUT:   device 1 SysKeyboard  state=770912     data=0        lastCb=0
+[14:35:32.699]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[14:35:32.699]   INPUT: before script -- GetDeviceState=24566938 (keyboard=0, mouse=23781929, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:35:32.699]   INPUT:   device 0 SysMouse     state=23781930   data=0        lastCb=20
+[14:35:32.699]   INPUT:   device 1 SysKeyboard  state=785008     data=0        lastCb=0
+[14:35:32.699]   INPUT: mouse move dx=-160 dy=0 dz=0 over 400ms (step 4/1/1 per 8ms)
+[14:35:33.314]   INPUT: after script -- GetDeviceState=24567184 (keyboard=0, mouse=23782052, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:35:33.314]   INPUT:   device 0 SysMouse     state=23782053   data=0        lastCb=20
+[14:35:33.314]   INPUT:   device 1 SysKeyboard  state=785131     data=0        lastCb=0
+[14:36:13.003]   DRMLOG #6 hit 9: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F99C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x08D20DB0 esi=0x0019F99C
+[14:36:21.011]   DRMLOG #6 hit 10: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x08D20DB0 esi=0x0019F98C
+[14:36:29.016]   DRMLOG #6 hit 11: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x08D20DB0 esi=0x0019F98C
+[14:36:38.020]   DRMLOG #6 hit 12: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x08D20DB0 esi=0x0019F98C
+[14:36:38.020]   DRMLOG #6: 12 hits -- now logging every 500th only
+[14:38:18.229]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[14:38:18.229]   INPUT: before script -- GetDeviceState=24632812 (keyboard=0, mouse=23814866, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:38:18.229]   INPUT:   device 0 SysMouse     state=23814867   data=0        lastCb=20
+[14:38:18.229]   INPUT:   device 1 SysKeyboard  state=817945     data=0        lastCb=0
+[14:38:18.229]   INPUT: mouse move dx=50 dy=0 dz=0 over 200ms (step 3/1/1 per 8ms)
+[14:38:18.488]   INPUT: after script -- GetDeviceState=24632916 (keyboard=0, mouse=23814918, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:38:18.488]   INPUT:   device 0 SysMouse     state=23814919   data=0        lastCb=20
+[14:38:18.488]   INPUT:   device 1 SysKeyboard  state=817997     data=0        lastCb=0
+[14:38:48.808]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[14:38:48.808]   INPUT: before script -- GetDeviceState=24644980 (keyboard=0, mouse=23820950, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:38:48.808]   INPUT:   device 0 SysMouse     state=23820951   data=0        lastCb=20
+[14:38:48.808]   INPUT:   device 1 SysKeyboard  state=824029     data=0        lastCb=0
+[14:38:48.808]   INPUT: mouse move dx=40 dy=0 dz=0 over 200ms (step 2/1/1 per 8ms)
+[14:38:49.115]   INPUT: after script -- GetDeviceState=24645102 (keyboard=0, mouse=23821011, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[14:38:49.115]   INPUT:   device 0 SysMouse     state=23821012   data=0        lastCb=20
+[14:38:49.115]   INPUT:   device 1 SysKeyboard  state=824090     data=0        lastCb=0
+[14:43:56.760] === manhunt-2003-vr proxy d3d8.dll unloading (process exit) ===
