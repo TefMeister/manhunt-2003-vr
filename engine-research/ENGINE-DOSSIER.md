@@ -1005,13 +1005,32 @@ then **partly disproved live** the same evening.
   out**); the August `MANHUNT0.SAV` loads and plays fine. So restarts after "Scene Failed!" and
   loads of saves written by our builds crash; the 16:27 crash in Tefa's play fits a restart.
   **`MANHUNT1.SAV` is poisoned** (backed up as `MANHUNT1.SAV.bak-2026-09-11-lm`).
-- **⚠️ But the reader's fix — leave site #1 stock (`manhunt_vr_site1_stock`) — crashes a FRESH new
-  game** on the very first level load, same site, in the same millisecond as `DRMLOG #1` returned
-  the real `IsBadReadPtr` result (`log-16`) `[verified-live 2026-09-11, n=1]`. So: **patched (1) →
-  fresh load works, restart/load crashes; stock (0) → fresh load crashes.** Neither single value is
-  right; the fix must make the serializer and the parser agree. Back with the reader.
-- Consequence for players: **this is the most important open bug on the project.** Every restart
-  after death and every save load is a crash risk on every build since 2026-09-10.
+- ~~"Leaving site #1 stock crashes a FRESH new game."~~ **Withdrawn the same evening — those runs were
+  never fresh.** **Main-menu PLAY auto-continues the newest save** (the slot picker at startup
+  loads the save with the newest *internal* timestamp, snapshot and profile included, and PLAY on a
+  profile with a level-0 checkpoint continues it) `[inferred-static]`, so with Tefa's poisoned save
+  present every PLAY re-parsed that snapshot. With both saves set aside, PLAY showed the brightness
+  and difficulty screens and a new-game save prompt, then loaded **from disk** `[verified-live
+  2026-09-11, n=1]`. **The tell in any log:** the `DRMLOG #1` line's `eax` is **`0x00000001`** for a
+  load from `entity.inst` on disk and a **heap pointer** for a snapshot re-parse (continue, load,
+  restart). The flag `[0x0069B914]` is read in exactly one place — the serializer — so it only ever
+  decides whether a snapshot is *written* poisoned; parsing never looks at it `[inferred-static]`.
+- **✅ THE FIX, `manhunt_vr_fix_entitydata` (build `fa8d777d7156`, deployed on the dev PC with the
+  flag file present):** site #1 left stock, so snapshots are written right; and `entityfix.c` checks
+  every snapshot before a restart/continue/load re-parses it (hook `0x004376A0`), repairing **only**
+  the exact 12-byte fault. **All live, `[verified-live 2026-09-11, n=1 each]`:**
+  1. Tefa's poisoned save loads: `ENTITYFIX: snapshot had 30 bad record(s) from entity #38 on;
+     entity #37's size 84 was 12 short -- repaired to 96`, and the level plays.
+  2. Die → "Scene Failed!" → Continue: no crash, nothing to repair.
+  3. A true fresh new game (`eax=0x00000001`): no crash.
+  4. **The save repaired offline** (`fix_save_entity37.py`: one byte at file offset `0x1214`,
+     84 → 96; the save format has **no checksum** — seven raw blocks, 69,620 B) loads with nothing to
+     repair. **Installed as Tefa's `MANHUNT1.SAV`**; the poisoned original is kept as
+     `MANHUNT1.SAV.bak-2026-09-11-lm`.
+  - **Not yet tested:** saving at a save point mid-level, then loading that save. After that,
+    make both halves the default (drop site #1 from `g_sites`, install ENTITYFIX unconditionally).
+- The August `MANHUNT0.SAV` has an empty snapshot and always loads by the file path, which is why
+  it was never affected.
 
 ## 11m. The rest of the reader's evening drops, in brief (2026-09-11)
 

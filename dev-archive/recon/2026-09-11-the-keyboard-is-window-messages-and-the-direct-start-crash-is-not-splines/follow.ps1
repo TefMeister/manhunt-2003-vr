@@ -26,7 +26,7 @@ foreach ($line in $out) {
 $i = 0
 foreach ($w in $wps) {
   $i++
-  $navArgs = @{ X = $w.x; Y = $w.y; Tol = $Tol; MaxSteps = 8 }
+  $navArgs = @{ X = $w.x; Y = $w.y; Tol = $Tol; MaxSteps = 14 }
   if ($Run) { $navArgs.Run = $true }
   $r = & "$dir\nav.ps1" @navArgs
   $lastLine = $r | Select-Object -Last 1
