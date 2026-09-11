@@ -968,7 +968,23 @@ From the reader's drop `inbox/2026-09-11-mod-reader-jury-turf-route-graph.md`.
   line (y 83.5 → 87.8) `[verified-live 2026-09-11, n=1]`. **First live evidence that the "Broken
   Doors" repair holds.** Earlier in the same run **`#0 (unnamed 1)` fired** (16:11:30, the
   `DEAD/FEED/BEEF` marker that preceded both 2026-09-09 item-swap crashes) — no crash followed.
-  Sites seen live in gameplay now: #0, #1, #4, #5, #6, #8, #11.
+  Sites seen live in gameplay now: #0, #1, #4, #5, #6, #8, #9, #11, #15.
+- **⭐⭐ THE THREE DRM SYMPTOMS THE BOARD WAS WAITING ON ALL CHECK OUT — Tefa's own play, build
+  `cc8aa567`, 2026-09-11 16:04–16:45** `[reported 2026-09-11, n=1]` for what they saw, with the log
+  as the measured half:
+  - **Gates open** — twice (16:18 and again at 16:34, when `#8 Broken Doors` fired 12× and held).
+  - **Saving works** — at a save point *and* from the Esc menu. `#15 Broken SaveGame Button` fired at
+    16:39:34 and `MANHUNT1.SAV` (69,620 B) was written at 16:39:37 `[verified-live 2026-09-11, n=1]`.
+  - **Item swap works** — no crash.
+  - Also fired and held: `#9 Broken Health 2` (16:37:01).
+  - **⚠️ But one crash on the normal path**: at 16:27:21, `0x00431820` (`mov ecx,[ecx+0x7C]` with
+    `ECX = 0`), with the stack string **"No archetype of this name exists"** beside it — a failed
+    entity lookup by name whose NULL result was used. Tefa relaunched 22 s later and played on.
+    Level state at the crash was normal (`appstate=4`, name set, first load). What they were doing
+    is not yet known. Not seen before; could be a retail bug, a sabotage symptom no site covers, or
+    something our TOCSIZE change introduced (a text file parsed as a C string now sits in a buffer
+    of exactly its size). `[hypothesis]` for all three; with the reader. Evidence:
+    `dev-archive/recon/2026-09-11-.../crash-1627-0x00431820/`.
 
 ## ⭐⭐ 11i. WHERE THE PLAYER IS — `POS`, AND STEERING BY MAP COORDINATES (2026-09-11)
 
