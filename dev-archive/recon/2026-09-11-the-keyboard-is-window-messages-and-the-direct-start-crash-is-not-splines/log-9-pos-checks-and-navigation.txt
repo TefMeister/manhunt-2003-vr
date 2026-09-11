@@ -1,0 +1,932 @@
+[15:35:59.268] === manhunt-2003-vr proxy d3d8.dll loaded, PID=5820 ===
+[15:35:59.272] real d3d8.dll loaded from C:\Windows\system32\d3d8.dll; Direct3DCreate8=74D8C0E0
+[15:35:59.273]   INPUT: IAT patched -- DirectInput8Create real=74EB33F0 hook=74E73970
+[15:35:59.273]   INPUT: script watcher started (manhunt_vr_input.txt, one-shot)
+[15:35:59.274]   DRMFIX: watching 16 SecuROM-remnant site(s) for unpacking
+[15:35:59.274]   DRMLOG: table self-check OK -- 16 passthrough sites, stubs at 74E74D30..74E750D7
+[15:35:59.275]   LEVELNAME: off (create manhunt_vr_fix_levelname beside the exe to enable)
+[15:35:59.689]   INPUT: DirectInput8Create(ver=0x800) -> hr=0x00000000 obj=009642B0
+[15:35:59.689]   INPUT: IDirectInput8::CreateDevice hooked (real=741BB9E0)
+[15:35:59.690]   INPUT: CreateDevice(SysMouse) -> hr=0x00000000 dev=02C0D318
+[15:35:59.690]   INPUT: SysMouse GetDeviceState hooked (vt=742395F4 real=741BB310)
+[15:35:59.690]   INPUT: SysMouse GetDeviceData hooked (vt=742395F4 real=741BB2B0) -- buffered path armed
+[15:35:59.731]   INPUT: CreateDevice(SysKeyboard) -> hr=0x00000000 dev=00A16EE0
+[15:35:59.731]   INPUT: SysKeyboard GetDeviceState hooked (vt=74239570 real=741BDF80)
+[15:35:59.731]   INPUT: SysKeyboard GetDeviceData hooked (vt=74239570 real=741BDB80) -- buffered path armed
+[15:35:59.780]   DRMFIX: PATCHED Drop Item Timer (GetVersion @0x004C78A0)
+[15:35:59.780]       at 0x004C78A9: 74 -> EB   (skips 'mov [0x0073731C], 0xFE' by taking the game's own pass branch)
+[15:35:59.780]   DRMFIX: PATCHED Item Swap Crash (poisoned pointer @0x004C9AA0)
+[15:35:59.780]       at 0x004C9A92: 90 -> 83   (widens the game's own null check to 'edx <= 0x10' so a sabotage sentinel returns 0 instead of faulting)
+[15:35:59.780]   DRMFIX: PATCHED (unnamed) GetLastError @0x0042BDC3
+[15:35:59.780]       at 0x0042BDCC: 74 -> EB   (takes the game's own pass branch: [0x0069A5A0] = 0x1F instead of 0 (0 makes its reader bail out early))
+[15:35:59.780]   DRMFIX: PATCHED Broken SaveGame EntityData: IsBadReadPtr @0x0043A005
+[15:35:59.780]       at 0x0043A013: 00 -> 01   (restores [0x0069B914] = 1 (its static value) instead of 0, so the entity-0x25 size adjustment still happens)
+[15:35:59.780]   DRMFIX: PATCHED DropDeadBody Crash: GetVersion @0x004667DC
+[15:35:59.780]       at 0x004667E7: 74 -> EB   (takes the game's own pass branch: [0x00756244] = 0 instead of 2)
+[15:35:59.780]   DRMFIX: PATCHED More Damage: IsBadCodePtr @0x0046D688
+[15:35:59.780]       at 0x0046D6A2: 74 -> EB   (skips 'mov [0x007105A4], 0'; leaving it at 1 makes its reader skip the damage multiply)
+[15:35:59.780]   DRMFIX: PATCHED Broken Health 1: GetLastError @0x004732AA
+[15:35:59.780]       at 0x004732B5: 74 -> EB   (skips 'mov [0x00755E50], 1'; its reader bails out on any non-zero)
+[15:35:59.780]   DRMFIX: PATCHED Ignore Control 1: GetVersion @0x00474EB7
+[15:35:59.780]       at 0x00474ED1: 74 -> EB   (takes the game's own pass branch: [0x0075625C] = 1 instead of 2)
+[15:35:59.780]   DRMFIX: PATCHED Broken Doors: GetCurrentThread @0x004CC48C
+[15:35:59.780]       at 0x004CC46F: C7 -> 90   (stops the block NULLing the live pointer in [0x007387A0]; the stub used to put it back)
+[15:35:59.780]   DRMFIX: PATCHED Broken Health 2: GetCurrentThread @0x004D26F4
+[15:35:59.780]       at 0x004D2701: 75 -> EB   (skips 'mov [0x00755E50], 2'; its reader bails out on any non-zero)
+[15:35:59.780]   DRMFIX: PATCHED Broken Useables: IsBadReadPtr @0x004D4063
+[15:35:59.780]       at 0x004D407D: 74 -> EB   (takes the game's own pass branch: [0x00739080] = 1 instead of 0 (0 makes its reader return failure))
+[15:35:59.781]   DRMFIX: PATCHED Broken Level Initialization 1: GetLastError @0x004D7E7A
+[15:35:59.781]       at 0x004D7E83: 74 -> EB   (takes the game's own pass branch: [0x00755978] = 0 instead of 1 (1 makes its reader bail out))
+[15:35:59.781]   DRMFIX: PATCHED Broken Level Initialization 2: IsBadCodePtr @0x004D84DE
+[15:35:59.781]       at 0x004D84B8: 01 -> 00   (writes 0 not 1 into [0x00755978]; the stub used to overwrite the 1, and 1 makes the reader bail out)
+[15:35:59.781]   DRMFIX: PATCHED Ignore Control 2: IsBadWritePtr @0x004F222E
+[15:35:59.781]       at 0x004F2245: 75 -> EB   (skips 'mov [0x0075625C], 2'; 2 makes its reader zero [0x00725710])
+[15:35:59.781]   DRMFIX: PATCHED Less Ammo: IsBadReadPtr @0x004F9B5C
+[15:35:59.781]       at 0x004F9B62: FF -> 90   (stops the block decrementing [0x00821540] back to 0; at 1 the ammo drain and the divide-by-2 are both no-ops)
+[15:35:59.781]   DRMFIX: PATCHED Broken SaveGame Button: GetVersion @0x005FFCE6
+[15:35:59.781]       at 0x005FFCF1: 74 -> EB   (takes the game's own pass branch: [0x007D6148] = 0x2E instead of 0x2D (its reader tests for 0x2E))
+[15:35:59.781]   DRMLOG: redirected GetLastError @0x0042BDC3 [(unnamed 1)] -> stub 74E74D30 (ret cleans 0 bytes)
+[15:35:59.781]   DRMLOG: redirected IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] -> stub 74E74D6B (ret cleans 8 bytes)
+[15:35:59.781]   DRMLOG: redirected GetVersion @0x004667DC [DropDeadBody Crash] -> stub 74E74DAE (ret cleans 0 bytes)
+[15:35:59.781]   DRMLOG: redirected IsBadCodePtr @0x0046D688 [More Damage] -> stub 74E74DE9 (ret cleans 4 bytes)
+[15:35:59.781]   DRMLOG: redirected GetLastError @0x004732AA [Broken Health 1] -> stub 74E74E29 (ret cleans 0 bytes)
+[15:35:59.782]   DRMLOG: redirected GetVersion @0x00474EB7 [Ignore Control 1] -> stub 74E74E64 (ret cleans 0 bytes)
+[15:35:59.782]   DRMLOG: redirected IsBadWritePtr @0x0047D05C [Help Text Crash] -> stub 74E74E9F (ret cleans 8 bytes)
+[15:35:59.782]   DRMLOG: redirected GetVersion @0x004C78A0 [Drop Item Timer] -> stub 74E74EE2 (ret cleans 0 bytes)
+[15:35:59.782]   DRMLOG: redirected GetCurrentThread @0x004CC48C [Broken Doors] -> stub 74E74F1D (ret cleans 0 bytes)
+[15:35:59.782]   DRMLOG: redirected GetCurrentThread @0x004D26F4 [Broken Health 2] -> stub 74E74F58 (ret cleans 0 bytes)
+[15:35:59.782]   DRMLOG: redirected IsBadReadPtr @0x004D4063 [Broken Useables] -> stub 74E74F93 (ret cleans 8 bytes)
+[15:35:59.782]   DRMLOG: redirected GetLastError @0x004D7E7A [Broken Level Initialization 1] -> stub 74E74FD6 (ret cleans 0 bytes)
+[15:35:59.782]   DRMLOG: redirected IsBadCodePtr @0x004D84DE [Broken Level Initialization 2] -> stub 74E75011 (ret cleans 4 bytes)
+[15:35:59.782]   DRMLOG: redirected IsBadWritePtr @0x004F222E [Ignore Control 2] -> stub 74E75051 (ret cleans 8 bytes)
+[15:35:59.782]   DRMLOG: redirected IsBadReadPtr @0x004F9B5C [Less Ammo] -> stub 74E75094 (ret cleans 8 bytes)
+[15:35:59.782]   DRMLOG: redirected GetVersion @0x005FFCE6 [Broken SaveGame Button] -> stub 74E750D7 (ret cleans 0 bytes)
+[15:35:59.782]   SPLINERELOC: spline table moved 0x007134F4 -> 0x04A00000, 1024 slots (was 100); six references rewritten at 0x00471FB8, 0x004721A3, 0x004721B3, 0x004721C1, 0x00472223, 0x00472239. Count stays at 0x00713684 and is no longer adjacent to the table, so the 101st spline can no longer overwrite it.
+[15:35:59.782]   SPLINEGUARD: INSTALLED at 0x004720D9 -- spline count clamped to 1023 slots (stub at 74E74160); stops the loader writing over its own counter at 0x00713684
+[15:35:59.782]   TOCSIZE: INSTALLED at 0x004D50D4 -- files missing from toc.txt now load with their real size instead of a 12 MB buffer
+[15:35:59.782]   DRMLOG: 16/16 sites redirected
+[15:36:00.027] Direct3DCreate8 called: SDKVersion=0xDC
+[15:36:00.257]   -> returned 02BF1D80
+[15:36:00.257]   CreateDevice vtable hook installed: real=741B1210 hook=74E71B20
+[15:36:03.811] Direct3DCreate8 called: SDKVersion=0xDC
+[15:36:04.086]   -> returned 02BF1EF0
+[15:36:04.087] CreateDevice called: Adapter=0 DeviceType=1 hFocusWindow=003909D2 BehaviorFlags=0x00000050
+[15:36:04.087]   --- RenderWare video-mode recon ---
+[15:36:04.087]     engine ptr slot 0x0082279C @ 0082279C:
+[15:36:04.087]       +0x000:  120733520   46293000          0          0       1364          0          0          0
+[15:36:04.087]     global 0x008243A8 @ 008243A8:
+[15:36:04.087]       +0x000:          0          0          0          0          0          0          0          0
+[15:36:04.087]     engine instance = 0x07323F50
+[15:36:04.087]     engine instance struct @ 07323F50:
+[15:36:04.087]       +0x000:          0          0          0          0 1065353216    6550112          0 1065353216
+[15:36:04.087]       +0x020:    6668912    6664496    6657664    6658176    6658768    6659392          0          0
+[15:36:04.087]       +0x040:          0          0    6555248    6560992    6684288    6684880    6679632    6682624
+[15:36:04.087]       +0x060:    6685376    6687664    6683616    6686928    6564128    6677392    6683632    6675744
+[15:36:04.088]       +0x080:    6677328    6671680    6672560    6673504    6675712    6675680    6564416    6555680
+[15:36:04.088]       +0x0A0:    6555248    6673216    6673360    6577056    6578000    6577200    6683488          0
+[15:36:04.088]       +0x0C0:          0    6590432    6452272    6451920    6456128    6456880    6453680    6454368
+[15:36:04.088]       +0x0E0:    6641024    6453360    6452048    6453072    6376608    6376576    6362992    6363024
+[15:36:04.088]       +0x100:    6363088    6363136    6597472    6597440    6363760    6363200    6363264    6597264
+[15:36:04.088]       +0x120:    6362960    6597344    6597392    6363456    6546960    4970880    4970848    4970816
+[15:36:04.088]       +0x140:    4970784    6360992    6361280          0          2    1024000          0          0
+[15:36:04.089]       +0x160:          0          0          0          0          0          0          0          0
+[15:36:04.089]     device state 0x00828440 @ 00828440:
+[15:36:04.089]       +0x000:          0          0          0          0          0          0          0          0
+[15:36:04.089]       +0x020:          0          0          0          0          0  120733828          0         85
+[15:36:04.089]       +0x040:          0          0          0          0        800        600         22          1
+[15:36:04.089]       +0x060:          0          2    3738066          0          1         75          0         60
+[15:36:04.089]       +0x080: 2147483648          0          0          0          0          0          0          0
+[15:36:04.089]       +0x0A0:          0          0          0          0          0          0          0          0
+[15:36:04.089]       +0x0C0:          0          0          0          0          0          0          0          0
+[15:36:04.089]       +0x0E0:          0          0          0          0          0          0          0          0
+[15:36:04.089]     candidate mode-array pointer = 0x00000000
+[15:36:04.089]     engine device function table:
+[15:36:04.089]       [engine+0x058] = 0x0065EC50   raster-create callback (the one FAILING for 800x600)
+[15:36:04.089]       [engine+0x074] = 0x0065E390   called at +0x0063CDE0 / +0x0063CD0F
+[15:36:04.089]       [engine+0x078] = 0x0065FBF0   called right after the patched site (+0x0063CEB1)
+[15:36:04.089]       [engine+0x088] = 0x0065D0B0   called at +0x0063CC7F
+[15:36:04.089]       [engine+0x0A4] = 0x0065D340   called at +0x0063CD94
+[15:36:04.089]       [engine+0x0A8] = 0x0065D3D0   called at +0x0063CC9F
+[15:36:04.089]       [engine+0x0B8] = 0x0065FB60   called at +0x0063CE1D
+[15:36:04.089]       [engine+0x098] = 0x00642A40   called at +0x0063CE47
+[15:36:04.089]       [engine+0x144] = 0x00610FA0   allocator (returns the NULL raster)
+[15:36:04.089]       [engine+0x148] = 0x006110C0   free/destroy counterpart
+[15:36:04.089]       [engine+0x05C] = 0x0065F800   adjacent to raster-create
+[15:36:04.089]   --- RenderWare video-mode TABLE (via game wrapper 0x612710, read-only) ---
+[15:36:04.089]     registry-driven globals: Device=0 Mode=4 Index=3  (0x735EB0/B4/B8)
+[15:36:04.089]     idx  ret        width  height depth flags      refRate format   note
+[15:36:04.089]      0   0x0019F6A8  1920   1080    32  0x00000000     60    1536   WINDOWED
+[15:36:04.089]      1   0x0019F6A8   640    480    32  0x00000001     75    1536   exclusive(fullscreen)
+[15:36:04.089]      2   0x0019F6A8   720    480    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]      3   0x0019F6A8   720    576    32  0x00000001     50    1536   exclusive(fullscreen)
+[15:36:04.089]      4   0x0019F6A8   800    600    32  0x00000001     75    1536   exclusive(fullscreen)  <- current registry Mode
+[15:36:04.089]      5   0x0019F6A8  1024    768    32  0x00000001     75    1536   exclusive(fullscreen)
+[15:36:04.089]      6   0x0019F6A8  1152    864    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]      7   0x0019F6A8  1176    664    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]      8   0x0019F6A8  1280    720    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]      9   0x0019F6A8  1280    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     10   0x0019F6A8  1280    800    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     11   0x0019F6A8  1280    960    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     12   0x0019F6A8  1280   1024    32  0x00000001     75    1536   exclusive(fullscreen)
+[15:36:04.089]     13   0x0019F6A8  1360    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     14   0x0019F6A8  1366    768    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     15   0x0019F6A8  1440   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     16   0x0019F6A8  1600    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     17   0x0019F6A8  1600   1024    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     18   0x0019F6A8  1680   1050    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.089]     19   0x0019F6A8  1920   1080    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.090]     20   0x0019F6A8  1440    900    32  0x00000001     60    1536   exclusive(fullscreen)
+[15:36:04.090]     21   ret=0 -> end of table
+[15:36:04.090]     1 windowed (flags&1==0) entries seen. Set HKCU\SOFTWARE\Rockstar Games\Manhunt\Video\Mode to one of them to have RenderWare pick windowed itself.
+[15:36:04.090]   --- end video-mode recon ---
+[15:36:04.090]   original: Windowed=0 BackBufferWidth=800 BackBufferHeight=600 BackBufferFormat=22 FullScreen_RefreshRateInHz=60
+[15:36:04.090]   original (cont.): BackBufferCount=1 MultiSampleType=0 SwapEffect=2 hDeviceWindow=003909D2 EnableAutoDepthStencil=1 AutoDepthStencilFormat=75 Flags=0x00000000 FullScreen_PresentationInterval=2147483648
+[15:36:04.090]   desktop adapter mode: 1920x1080 @ 60Hz format=22
+[15:36:04.090]   BackBufferFormat already matches the desktop format, no override needed
+[15:36:04.090]   CheckDeviceType(windowed=TRUE, DisplayFormat=22, BackBufferFormat=22) -> hr=0x00000000
+[15:36:04.090]   SwapEffect is D3DSWAPEFFECT_FLIP, which D3D8 disallows for windowed swap chains -- overriding to D3DSWAPEFFECT_DISCARD
+[15:36:04.090]   FullScreen_PresentationInterval is D3DPRESENT_INTERVAL_IMMEDIATE, which this driver rejects for windowed mode (confirmed via probe sweep) -- overriding to D3DPRESENT_INTERVAL_DEFAULT
+[15:36:04.090]   forced: Windowed=TRUE, FullScreen_RefreshRateInHz=0, BackBufferFormat=22, SwapEffect=1, FullScreen_PresentationInterval=0 (everything else unchanged)
+[15:36:04.266]   -> hr=0x00000000 device=0E390C90
+[15:36:04.266]   DISPLAY-FORMAT FIX: [0x00829590] was 22, [0x00829594] was 32
+[15:36:04.266]   DISPLAY-FORMAT FIX: set [0x00829590]=22 (D3DFORMAT), [0x00829594]=32 (bpp) -- replicates the engine's own windowed fallback at +0x006416D8, which our first-try CreateDevice success had skipped
+[15:36:04.266]   WINDOW FIX: client area is 640x480, camera raster needs 800x600
+[15:36:04.267]   WINDOW FIX: resized -- client area is now 800x600 (style=0x04CF0000)
+[15:36:04.267]   CAMERA: vtable sanity check passed (slot37=741AC450, Present=741AFB10, both mapped code)
+[15:36:04.267]   CAMERA: SetTransform hook installed (real=741AC450 hook=74E72AD0) -- logging VIEW/PROJECTION
+[15:36:04.267]   CAMERA: SetVertexShaderConstant hooked (real=741B1B20) -- watching for the world/view-projection matrix (SetTransform proved unused in 3D)
+[15:36:04.275]   TOCSIZE: "pictures/title/TITLE_PC.TXD" not in TOC -- using its real size 1048744 bytes instead of the 12 MB fallback
+[15:36:04.277]   [VIEW #1]
+[15:36:04.277]            -1.0000       0.0000       0.0000       0.0000
+[15:36:04.277]            -0.0000       1.0000       0.0000       0.0000
+[15:36:04.277]            -0.0000       0.0000       1.0000       0.0000
+[15:36:04.277]            -0.0000       0.0000       0.0000       1.0000
+[15:36:04.277]   [PROJECTION #1]
+[15:36:04.277]             1.4286       0.0000       0.0000       0.0000
+[15:36:04.277]             0.0000       1.8286       0.0000       0.0000
+[15:36:04.277]             0.0000       0.0000       1.0050       1.0000
+[15:36:04.277]            -0.0000      -0.0000      -0.0503       0.0000
+[15:36:04.277]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:36:04.594] === camera/FOV globals populated after ~500 ms ===
+[15:36:04.594]   --- CAMERA / FOV globals (ALL [reported], from MHWSF; verifying, not trusting) ---
+[15:36:04.594]     CCamera::m_aspectRatio  0x007A164C = 1.280000
+[15:36:04.594]     CCamera::m_viewWindow   0x007A1650 = (0.700000, 69.984039)   [RW FOV = 2*atan(viewWindow)]
+[15:36:04.594]     CScene::m_viewWindowOriginal 0x00715C98 = (0.000000, 0.000000)
+[15:36:04.594]     CScene::ms_viewWinScale 0x00715CDC = 0.000000
+[15:36:04.594]     CFrontend::ms_scrn 0x007D3440: w=800.00 h=600.00 invW=0.001250 invH=0.001667 wScale=1.2500 hScale=1.2500 hudStretch=0.7500
+[15:36:04.594]       pCamera(RwCamera*)=0x00000020  pFrameBuffer=0x073343BC  pZBuffer=0x07337518
+[15:36:04.594]       STRIDE CHECK: 1/w = 0.001250 vs invW field 0.001250 -> AGREES (layout corroborated)
+[15:36:04.594]       (compare w/h against the resolution actually running: a match is the second half of the corroboration)
+[15:36:07.332]   TOCSIZE: "initscripts/fonts/FONT.DAT" not in TOC -- using its real size 14220 bytes instead of the 12 MB fallback
+[15:36:07.332]   TOCSIZE: "initscripts/frontend/settings.txt" not in TOC -- using its real size 2199 bytes instead of the 12 MB fallback
+[15:36:07.332]   TOCSIZE: "initscripts/frontend/_key1.txt" not in TOC -- using its real size 2684 bytes instead of the 12 MB fallback
+[15:36:07.333]   TOCSIZE: "initscripts/frontend/_key2.txt" not in TOC -- using its real size 1942 bytes instead of the 12 MB fallback
+[15:36:07.333]   TOCSIZE: "initscripts/frontend/_key3.txt" not in TOC -- using its real size 1832 bytes instead of the 12 MB fallback
+[15:36:07.333]   TOCSIZE: "pictures/frontend_pc.txd" not in TOC -- using its real size 2585848 bytes instead of the 12 MB fallback
+[15:36:07.345]   TOCSIZE: "initscripts/levels/levels.txt" not in TOC -- using its real size 1417 bytes instead of the 12 MB fallback
+[15:36:07.345]   TOCSIZE: ".\levels\global\data\ManHunt.Pak" not in TOC -- using its real size 1299317 bytes instead of the 12 MB fallback
+[15:36:07.349]   TOCSIZE: "./levels/global/PC_Text/PC_GAME.GXT" not in TOC -- using its real size 34112 bytes instead of the 12 MB fallback
+[15:36:07.349]   TOCSIZE: ".\levels\global\SFX\SFX_PC.txd" not in TOC -- using its real size 69544 bytes instead of the 12 MB fallback
+[15:36:07.351]   TOCSIZE: ".\levels\\global\sfx\MH_FX_PC.txd" not in TOC -- using its real size 183976 bytes instead of the 12 MB fallback
+[15:36:07.364]   TOCSIZE: ".\levels\global\pak\GmodelsPC.txd" not in TOC -- using its real size 33320 bytes instead of the 12 MB fallback
+[15:36:07.365]   TOCSIZE: "./levels/global/pak/GmodelsPC.dff" not in TOC -- using its real size 56189 bytes instead of the 12 MB fallback
+[15:36:07.365]   [VIEW #3]
+[15:36:07.365]            -1.0000       0.0000       0.0000       0.0000
+[15:36:07.365]            -0.0000       1.0000       0.0000       0.0000
+[15:36:07.365]            -0.0000       0.0000       1.0000       0.0000
+[15:36:07.365]             0.0000      -0.0000      -0.0000       1.0000
+[15:36:07.365]   [PROJECTION #3]
+[15:36:07.365]             1.4286       0.0000       0.0000       0.0000
+[15:36:07.365]             0.0000       1.8286       0.0000       0.0000
+[15:36:07.365]             0.0000       0.0000       1.0007       1.0000
+[15:36:07.365]            -0.0000      -0.0000      -0.1001       0.0000
+[15:36:07.365]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:36:07.367]   TOCSIZE: "./levels/global/PC_Text/PC_GAME.GXT" not in TOC -- using its real size 34112 bytes instead of the 12 MB fallback
+[15:36:07.858]   [VIEW #4]
+[15:36:07.858]            -1.0000       0.0000       0.0000       0.0000
+[15:36:07.858]            -0.0000       1.0000       0.0000       0.0000
+[15:36:07.858]            -0.0000       0.0000       1.0000       0.0000
+[15:36:07.858]            -0.0000       0.0000       0.0000       1.0000
+[15:36:46.248]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:36:46.248]   INPUT: before script -- GetDeviceState=6428802 (keyboard=0, mouse=6428801, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:36:46.248]   INPUT:   device 0 SysMouse     state=6428805    data=0        lastCb=20
+[15:36:46.248]   INPUT:   device 1 SysKeyboard  state=0          data=0        lastCb=0
+[15:36:46.248]   INPUT: mouse button 0 for 120ms
+[15:36:46.253]   TOCSIZE: "pictures/menu/MAIN_EP.TXD" not in TOC -- using its real size 344616 bytes instead of the 12 MB fallback
+[15:36:46.519]   INPUT: after script -- GetDeviceState=6428923 (keyboard=0, mouse=6428872, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:36:46.519]   INPUT:   device 0 SysMouse     state=6428873    data=0        lastCb=20
+[15:36:46.519]   INPUT:   device 1 SysKeyboard  state=50         data=0        lastCb=0
+[15:37:01.804]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:37:01.804]   INPUT: before script -- GetDeviceState=6435031 (keyboard=0, mouse=6431926, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:37:01.804]   INPUT:   device 0 SysMouse     state=6431927    data=0        lastCb=20
+[15:37:01.804]   INPUT:   device 1 SysKeyboard  state=3104       data=0        lastCb=0
+[15:37:01.804]   INPUT: mouse move dx=45 dy=-37 dz=0 over 300ms (step 2/2/1 per 8ms)
+[15:37:02.151]   INPUT: after script -- GetDeviceState=6435171 (keyboard=0, mouse=6431996, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:37:02.151]   INPUT:   device 0 SysMouse     state=6431997    data=0        lastCb=20
+[15:37:02.151]   INPUT:   device 1 SysKeyboard  state=3174       data=0        lastCb=0
+[15:37:43.502]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:37:43.502]   INPUT: before script -- GetDeviceState=6451691 (keyboard=0, mouse=6440256, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:37:43.502]   INPUT:   device 0 SysMouse     state=6440257    data=0        lastCb=20
+[15:37:43.502]   INPUT:   device 1 SysKeyboard  state=11434      data=0        lastCb=0
+[15:37:43.502]   INPUT: mouse button 0 for 120ms
+[15:37:43.514]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:37:43.544]   TOCSIZE: "LEVELS\Jury_Turf\Jury_Turf_n.SUB" not in TOC -- using its real size 284 bytes instead of the 12 MB fallback
+[15:37:43.773]   INPUT: after script -- GetDeviceState=6493487 (keyboard=0, mouse=6482049, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:37:43.773]   INPUT:   device 0 SysMouse     state=6482055    data=0        lastCb=20
+[15:37:43.773]   INPUT:   device 1 SysKeyboard  state=11437      data=0        lastCb=0
+[15:39:19.684]   TOCSIZE: "./levels/Jury_Turf/PC_Text/PC_Jury_Turf.GXT" not in TOC -- using its real size 18486 bytes instead of the 12 MB fallback
+[15:39:19.684]   TOCSIZE: "pictures/load/LOAD_PC.TXD" not in TOC -- using its real size 148136 bytes instead of the 12 MB fallback
+[15:39:19.684]   TOCSIZE: "./levels/Jury_Turf/PICLOAD_PC.TXD" not in TOC -- using its real size 131240 bytes instead of the 12 MB fallback
+[15:39:19.687]   [PROJECTION #8]
+[15:39:19.687]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.687]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.687]             0.0000       0.0000       1.0004       1.0000
+[15:39:19.687]            -0.0000      -0.0000      -0.1000       0.0000
+[15:39:19.687]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:19.704]   TOCSIZE: "./levels/Jury_Turf/pak/scene1PC.txd" not in TOC -- using its real size 4223912 bytes instead of the 12 MB fallback
+[15:39:19.718]   [VIEW #8]
+[15:39:19.718]            -1.0000       0.0000       0.0000       0.0000
+[15:39:19.718]            -0.0000       1.0000       0.0000       0.0000
+[15:39:19.718]            -0.0000       0.0000       1.0000       0.0000
+[15:39:19.718]             0.0000      -0.0000      -0.0000       1.0000
+[15:39:19.718]   [PROJECTION #9]
+[15:39:19.718]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.718]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.718]             0.0000       0.0000   20005.8848       1.0000
+[15:39:19.718]            -0.0000      -0.0000 -40011768.0000       0.0000
+[15:39:19.718]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -40009768.000, zfar ~ -40011768.0
+[15:39:19.724]   [PROJECTION #10]
+[15:39:19.724]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.724]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.724]             0.0000       0.0000       1.0004       1.0000
+[15:39:19.724]            -0.0000      -0.0000      -0.1000       0.0000
+[15:39:19.724]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:19.724]   DRMLOG #4 hit 1: GetLastError @0x004732AA [Broken Health 1] -> ret=0x00000000  | eax=0x07332EE4 ecx=0x0000203D edx=0x00000506 ebx=0x00001CBA esi=0x07332EE4
+[15:39:19.725]   [PROJECTION #11]
+[15:39:19.725]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.725]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.725]             0.0000       0.0000       1.0010       1.0000
+[15:39:19.725]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:19.725]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:19.733]   TOCSIZE: ".\levels\Jury_Turf\pak\modelsPC.txd" not in TOC -- using its real size 3937064 bytes instead of the 12 MB fallback
+[15:39:19.741]   TOCSIZE: "./levels/Jury_Turf/pak/modelsPC.dff" not in TOC -- using its real size 1959674 bytes instead of the 12 MB fallback
+[15:39:19.744]   TOCSIZE: ".\levels\\global\charpak\CASH_PC.TXD" not in TOC -- using its real size 65832 bytes instead of the 12 MB fallback
+[15:39:19.744]   TOCSIZE: "./levels//global/charpak/CASH_PC.DFF" not in TOC -- using its real size 166246 bytes instead of the 12 MB fallback
+[15:39:19.744]   [PROJECTION #12]
+[15:39:19.744]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.744]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.744]             0.0000       0.0000    2001.0000       1.0000
+[15:39:19.744]            -0.0000      -0.0000 -4002000.0000       0.0000
+[15:39:19.744]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -4000000.000, zfar ~ -4002000.0
+[15:39:19.749]   [PROJECTION #13]
+[15:39:19.749]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.749]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.749]             0.0000       0.0000       1.0010       1.0000
+[15:39:19.749]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:19.749]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:19.751]   [VIEW #9]
+[15:39:19.751]            -1.0000      -0.0000       0.0000       0.0000
+[15:39:19.751]             0.0000       1.0000      -0.0000       0.0000
+[15:39:19.751]            -0.0000      -0.0000       1.0000       0.0000
+[15:39:19.751]           363.4701     -16.9173      83.5536       1.0000
+[15:39:19.767]   DRMLOG #1 hit 1: IsBadReadPtr @0x0043A005 [Broken SaveGame EntityData] arg0=0x0069B914 arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00001008 edx=0x000020A0 ebx=0x0069BCA0 esi=0x0043A01C
+[15:39:19.785]   [VIEW #10]
+[15:39:19.785]            -1.0000       0.0000       0.0000       0.0000
+[15:39:19.785]            -0.0000       1.0000       0.0000       0.0000
+[15:39:19.785]            -0.0000       0.0000       1.0000       0.0000
+[15:39:19.785]            -0.0000       0.0000       0.0000       1.0000
+[15:39:19.785]   [PROJECTION #14]
+[15:39:19.785]             1.4286       0.0000       0.0000       0.0000
+[15:39:19.785]             0.0000       1.8286       0.0000       0.0000
+[15:39:19.785]             0.0000       0.0000       1.0007       1.0000
+[15:39:19.785]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:19.785]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.549]   [VIEW #11]
+[15:39:20.549]             0.9296      -0.0318       0.3670       0.0000
+[15:39:20.549]            -0.0000       0.9962       0.0862       0.0000
+[15:39:20.549]             0.3684       0.0801      -0.9262       0.0000
+[15:39:20.549]          -302.7331      12.0409    -144.4500       1.0000
+[15:39:20.549]   [PROJECTION #15]
+[15:39:20.549]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.549]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.549]             0.0000       0.0000       1.0010       1.0000
+[15:39:20.549]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.550]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.652]   [PROJECTION #16]
+[15:39:20.652]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.652]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.652]             0.0000       0.0000       1.0005       1.0000
+[15:39:20.652]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.652]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.659]   [VIEW #12]
+[15:39:20.659]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.659]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.659]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.659]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.659]   [PROJECTION #17]
+[15:39:20.659]             1.0000       0.0000       0.0000       0.0000
+[15:39:20.659]             0.0000       1.0000       0.0000       0.0000
+[15:39:20.659]             0.0000       0.0000       0.0500       0.0000
+[15:39:20.659]            -0.0000      -0.0000      -0.0001       1.0000
+[15:39:20.659]       -> fovY ~ 90.00 deg, aspect-ish m00/m11 = 1.0000, znear ~ 0.001, zfar ~ -0.0
+[15:39:20.662]   [VIEW #13]
+[15:39:20.662]             0.9296      -0.0318       0.3670       0.0000
+[15:39:20.662]            -0.0000       0.9962       0.0862       0.0000
+[15:39:20.662]             0.3684       0.0801      -0.9262       0.0000
+[15:39:20.662]          -302.7331      12.0409    -144.4500       1.0000
+[15:39:20.662]   [PROJECTION #18]
+[15:39:20.662]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.662]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.662]             0.0000       0.0000       1.0005       1.0000
+[15:39:20.662]            -0.0000      -0.0000      -0.1021       0.0000
+[15:39:20.662]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.663]   [PROJECTION #19]
+[15:39:20.664]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.664]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.664]             0.0000       0.0000       1.0005       1.0000
+[15:39:20.664]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.664]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.665]   [VIEW #14]
+[15:39:20.665]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.665]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.665]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.665]            -0.0000       0.0000       0.0000       1.0000
+[15:39:20.665]   [PROJECTION #20]
+[15:39:20.665]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.665]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.665]             0.0000       0.0000       1.0007       1.0000
+[15:39:20.665]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.665]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.665]   [VIEW #15]
+[15:39:20.666]             0.9296      -0.0318       0.3670       0.0000
+[15:39:20.666]            -0.0000       0.9962       0.0862       0.0000
+[15:39:20.666]             0.3684       0.0801      -0.9262       0.0000
+[15:39:20.666]          -302.7331      12.0409    -144.4500       1.0000
+[15:39:20.666]   [PROJECTION #21]
+[15:39:20.666]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.666]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.666]             0.0000       0.0000       1.0005       1.0000
+[15:39:20.666]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.666]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.669]   [VIEW #16]
+[15:39:20.669]             0.9330      -0.0311       0.3585       0.0000
+[15:39:20.669]            -0.0000       0.9962       0.0865       0.0000
+[15:39:20.669]             0.3599       0.0807      -0.9295       0.0000
+[15:39:20.669]          -304.0654      11.8499    -141.6948       1.0000
+[15:39:20.679]   [VIEW #17]
+[15:39:20.679]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.679]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.679]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.679]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.679]   [PROJECTION #22]
+[15:39:20.679]             1.0000       0.0000       0.0000       0.0000
+[15:39:20.679]             0.0000       1.0000       0.0000       0.0000
+[15:39:20.679]             0.0000       0.0000       0.0500       0.0000
+[15:39:20.679]            -0.0000      -0.0000      -0.0001       1.0000
+[15:39:20.679]       -> fovY ~ 90.00 deg, aspect-ish m00/m11 = 1.0000, znear ~ 0.001, zfar ~ -0.0
+[15:39:20.679]   [VIEW #18]
+[15:39:20.679]             0.9330      -0.0311       0.3585       0.0000
+[15:39:20.679]            -0.0000       0.9962       0.0865       0.0000
+[15:39:20.679]             0.3599       0.0807      -0.9295       0.0000
+[15:39:20.679]          -304.0654      11.8499    -141.6948       1.0000
+[15:39:20.679]   [PROJECTION #23]
+[15:39:20.679]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.679]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.680]             0.0000       0.0000       1.0005       1.0000
+[15:39:20.680]            -0.0000      -0.0000      -0.1021       0.0000
+[15:39:20.680]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.680]   [PROJECTION #24]
+[15:39:20.680]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.680]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.680]             0.0000       0.0000       1.0005       1.0000
+[15:39:20.680]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.680]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.680]   [VIEW #19]
+[15:39:20.680]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.680]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.680]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.680]            -0.0000       0.0000       0.0000       1.0000
+[15:39:20.680]   [PROJECTION #25]
+[15:39:20.680]             1.4286       0.0000       0.0000       0.0000
+[15:39:20.680]             0.0000       1.8286       0.0000       0.0000
+[15:39:20.680]             0.0000       0.0000       1.0007       1.0000
+[15:39:20.681]            -0.0000      -0.0000      -0.1001       0.0000
+[15:39:20.681]       -> fovY ~ 57.35 deg, aspect-ish m00/m11 = 0.7812, znear ~ -0.000, zfar ~ -0.1
+[15:39:20.681]   [VIEW #20]
+[15:39:20.681]             0.9330      -0.0311       0.3585       0.0000
+[15:39:20.681]            -0.0000       0.9962       0.0865       0.0000
+[15:39:20.681]             0.3599       0.0807      -0.9295       0.0000
+[15:39:20.681]          -304.0654      11.8499    -141.6948       1.0000
+[15:39:20.683]   [VIEW #21]
+[15:39:20.683]             0.9334      -0.0311       0.3574       0.0000
+[15:39:20.683]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.683]             0.3587       0.0808      -0.9299       0.0000
+[15:39:20.683]          -304.2300      11.8244    -141.3171       1.0000
+[15:39:20.684]   [VIEW #22]
+[15:39:20.684]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.685]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.685]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.685]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.685]   [VIEW #23]
+[15:39:20.685]             0.9334      -0.0311       0.3574       0.0000
+[15:39:20.685]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.685]             0.3587       0.0808      -0.9299       0.0000
+[15:39:20.685]          -304.2300      11.8244    -141.3171       1.0000
+[15:39:20.685]   [VIEW #24]
+[15:39:20.685]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.685]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.685]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.685]            -0.0000       0.0000       0.0000       1.0000
+[15:39:20.686]   [VIEW #25]
+[15:39:20.686]             0.9334      -0.0311       0.3574       0.0000
+[15:39:20.686]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.686]             0.3587       0.0808      -0.9299       0.0000
+[15:39:20.686]          -304.2300      11.8244    -141.3171       1.0000
+[15:39:20.687]   [VIEW #26]
+[15:39:20.688]             0.9336      -0.0310       0.3570       0.0000
+[15:39:20.688]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.688]             0.3584       0.0808      -0.9301       0.0000
+[15:39:20.688]          -304.3089      11.8155    -141.1995       1.0000
+[15:39:20.690]   [VIEW #27]
+[15:39:20.690]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.690]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.690]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.690]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.690]   [VIEW #28]
+[15:39:20.690]             0.9336      -0.0310       0.3570       0.0000
+[15:39:20.690]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.690]             0.3584       0.0808      -0.9301       0.0000
+[15:39:20.690]          -304.3089      11.8155    -141.1995       1.0000
+[15:39:20.690]   [VIEW #29]
+[15:39:20.690]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.690]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.691]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.691]            -0.0000       0.0000       0.0000       1.0000
+[15:39:20.691]   [VIEW #30]
+[15:39:20.691]             0.9336      -0.0310       0.3570       0.0000
+[15:39:20.691]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.691]             0.3584       0.0808      -0.9301       0.0000
+[15:39:20.691]          -304.3089      11.8155    -141.1995       1.0000
+[15:39:20.693]   [VIEW #31]
+[15:39:20.693]             0.9337      -0.0310       0.3567       0.0000
+[15:39:20.693]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.693]             0.3580       0.0809      -0.9303       0.0000
+[15:39:20.693]          -304.3503      11.8067    -141.0827       1.0000
+[15:39:20.695]   [VIEW #32]
+[15:39:20.695]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.695]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.695]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.695]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.695]   [VIEW #33]
+[15:39:20.695]             0.9337      -0.0310       0.3567       0.0000
+[15:39:20.695]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.695]             0.3580       0.0809      -0.9303       0.0000
+[15:39:20.696]          -304.3503      11.8067    -141.0827       1.0000
+[15:39:20.696]   [VIEW #34]
+[15:39:20.696]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.696]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.696]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.696]            -0.0000       0.0000       0.0000       1.0000
+[15:39:20.696]   [VIEW #35]
+[15:39:20.696]             0.9337      -0.0310       0.3567       0.0000
+[15:39:20.696]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.696]             0.3580       0.0809      -0.9303       0.0000
+[15:39:20.696]          -304.3503      11.8067    -141.0827       1.0000
+[15:39:20.698]   [VIEW #36]
+[15:39:20.698]             0.9339      -0.0310       0.3562       0.0000
+[15:39:20.698]            -0.0000       0.9964       0.0866       0.0000
+[15:39:20.698]             0.3575       0.0809      -0.9305       0.0000
+[15:39:20.698]          -304.4307      11.7967    -140.9349       1.0000
+[15:39:20.700]   [VIEW #37]
+[15:39:20.700]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.700]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.700]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.700]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.700]   [VIEW #38]
+[15:39:20.701]             0.9339      -0.0310       0.3562       0.0000
+[15:39:20.701]            -0.0000       0.9964       0.0866       0.0000
+[15:39:20.701]             0.3575       0.0809      -0.9305       0.0000
+[15:39:20.701]          -304.4307      11.7967    -140.9349       1.0000
+[15:39:20.701]   [VIEW #39]
+[15:39:20.701]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.701]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.701]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.701]            -0.0000       0.0000       0.0000       1.0000
+[15:39:20.701]   [VIEW #40]
+[15:39:20.701]             0.9339      -0.0310       0.3562       0.0000
+[15:39:20.701]            -0.0000       0.9964       0.0866       0.0000
+[15:39:20.701]             0.3575       0.0809      -0.9305       0.0000
+[15:39:20.701]          -304.4307      11.7967    -140.9349       1.0000
+[15:39:20.703]   [VIEW #41]
+[15:39:20.703]             0.9340      -0.0309       0.3557       0.0000
+[15:39:20.704]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.704]             0.3571       0.0809      -0.9305       0.0000
+[15:39:20.704]          -304.4758      11.7864    -140.7814       1.0000
+[15:39:20.705]   [VIEW #42]
+[15:39:20.705]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.705]            -0.0000       0.0000      -1.0000       0.0000
+[15:39:20.705]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.705]           335.4344      33.7265       9.7050       1.0000
+[15:39:20.706]   [VIEW #43]
+[15:39:20.706]             0.9340      -0.0309       0.3557       0.0000
+[15:39:20.706]            -0.0000       0.9963       0.0866       0.0000
+[15:39:20.706]             0.3571       0.0809      -0.9305       0.0000
+[15:39:20.706]          -304.4758      11.7864    -140.7814       1.0000
+[15:39:20.706]   [VIEW #44]
+[15:39:20.706]            -1.0000       0.0000       0.0000       0.0000
+[15:39:20.706]            -0.0000       1.0000       0.0000       0.0000
+[15:39:20.706]            -0.0000       0.0000       1.0000       0.0000
+[15:39:20.706]            -0.0000       0.0000       0.0000       1.0000
+[15:39:40.942]   DRMLOG #6 hit 1: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085E4C30 esi=0x0019F98C
+[15:39:48.945]   DRMLOG #6 hit 2: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085E4C30 esi=0x0019F98C
+[15:39:55.947]   DRMLOG #6 hit 3: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085E4C30 esi=0x0019F98C
+[15:40:00.949]   DRMLOG #6 hit 4: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085E4C30 esi=0x0019F98C
+[15:40:52.736]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:40:52.736]   INPUT: before script -- GetDeviceState=23412399 (keyboard=0, mouse=23382467, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:40:52.736]   INPUT:   device 0 SysMouse     state=23382468   data=0        lastCb=20
+[15:40:52.736]   INPUT:   device 1 SysKeyboard  state=29931      data=0        lastCb=0
+[15:40:52.738]   POS player map=(427.15, 108.27, -0.20) yaw=-90.0  eng=(427.15, -0.20, -108.27) at=(0.000, 0.000, 1.000)  [player=08C51110 frame=08C44464]
+[15:40:52.738]   POS camera map=(426.85, 111.98, 3.01) yaw=-90.0 pitch=-18.0  eng at=(0.000, -0.309, 0.951)  [camera=07334568 frame=07332E18]
+[15:40:52.738]   INPUT: after script -- GetDeviceState=23412399 (keyboard=0, mouse=23382467, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:40:52.738]   INPUT:   device 0 SysMouse     state=23382468   data=0        lastCb=20
+[15:40:52.738]   INPUT:   device 1 SysKeyboard  state=29931      data=0        lastCb=0
+[15:40:53.491]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:40:53.491]   INPUT: before script -- GetDeviceState=23412701 (keyboard=0, mouse=23382618, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:40:53.491]   INPUT:   device 0 SysMouse     state=23382619   data=0        lastCb=20
+[15:40:53.491]   INPUT:   device 1 SysKeyboard  state=30082      data=0        lastCb=0
+[15:40:53.491]   INPUT: mouse move dx=100 dy=0 dz=0 over 300ms (step 3/1/1 per 8ms)
+[15:40:54.010]   INPUT: after script -- GetDeviceState=23412909 (keyboard=0, mouse=23382722, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:40:54.010]   INPUT:   device 0 SysMouse     state=23382723   data=0        lastCb=20
+[15:40:54.010]   INPUT:   device 1 SysKeyboard  state=30186      data=0        lastCb=0
+[15:40:55.011]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:40:55.011]   INPUT: before script -- GetDeviceState=23413305 (keyboard=0, mouse=23382920, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:40:55.011]   INPUT:   device 0 SysMouse     state=23382921   data=0        lastCb=20
+[15:40:55.011]   INPUT:   device 1 SysKeyboard  state=30384      data=0        lastCb=0
+[15:40:55.012]   POS player map=(427.15, 108.27, -0.20) yaw=-124.3  eng=(427.15, -0.20, -108.27) at=(-0.564, 0.000, 0.826)  [player=08C51110 frame=08C44464]
+[15:40:55.012]   POS camera map=(428.68, 111.04, 2.82) yaw=-124.3 pitch=-18.0  eng at=(-0.536, -0.309, 0.786)  [camera=07334568 frame=07332E18]
+[15:40:55.012]   INPUT: after script -- GetDeviceState=23413305 (keyboard=0, mouse=23382920, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:40:55.012]   INPUT:   device 0 SysMouse     state=23382921   data=0        lastCb=20
+[15:40:55.012]   INPUT:   device 1 SysKeyboard  state=30384      data=0        lastCb=0
+[15:41:27.343]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:41:27.343]   INPUT: before script -- GetDeviceState=23426131 (keyboard=0, mouse=23389333, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:41:27.343]   INPUT:   device 0 SysMouse     state=23389334   data=0        lastCb=20
+[15:41:27.343]   INPUT:   device 1 SysKeyboard  state=36797      data=0        lastCb=0
+[15:41:27.344]   POS player map=(425.35, 105.48, -0.20) yaw=-124.3  eng=(425.35, -0.20, -105.48) at=(-0.564, 0.000, 0.826)  [player=08C51110 frame=08C44464]
+[15:41:27.344]   POS camera map=(426.88, 108.25, 2.82) yaw=-124.3 pitch=-18.0  eng at=(-0.536, -0.309, 0.786)  [camera=07334568 frame=07332E18]
+[15:41:27.344]   INPUT: after script -- GetDeviceState=23426132 (keyboard=0, mouse=23389333, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:41:27.344]   INPUT:   device 0 SysMouse     state=23389334   data=0        lastCb=20
+[15:41:27.344]   INPUT:   device 1 SysKeyboard  state=36798      data=0        lastCb=0
+[15:42:20.229]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:20.229]   INPUT: before script -- GetDeviceState=23447117 (keyboard=0, mouse=23399826, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:20.229]   INPUT:   device 0 SysMouse     state=23399827   data=0        lastCb=20
+[15:42:20.229]   INPUT:   device 1 SysKeyboard  state=47290      data=0        lastCb=0
+[15:42:20.230]   POS player map=(425.26, 105.33, -0.20) yaw=-124.3  eng=(425.26, -0.20, -105.33) at=(-0.564, 0.000, 0.826)  [player=08C51110 frame=08C44464]
+[15:42:20.230]   POS camera map=(426.79, 108.10, 2.82) yaw=-124.3 pitch=-18.0  eng at=(-0.536, -0.309, 0.786)  [camera=07334568 frame=07332E18]
+[15:42:20.230]   INPUT: after script -- GetDeviceState=23447118 (keyboard=0, mouse=23399826, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:20.230]   INPUT:   device 0 SysMouse     state=23399827   data=0        lastCb=20
+[15:42:20.230]   INPUT:   device 1 SysKeyboard  state=47291      data=0        lastCb=0
+[15:42:20.732]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:20.732]   INPUT: before script -- GetDeviceState=23447319 (keyboard=0, mouse=23399927, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:20.732]   INPUT:   device 0 SysMouse     state=23399928   data=0        lastCb=20
+[15:42:20.732]   INPUT:   device 1 SysKeyboard  state=47391      data=0        lastCb=0
+[15:42:20.732]   INPUT: mouse move dx=-88 dy=0 dz=0 over 250ms (step 3/1/1 per 8ms)
+[15:42:21.197]   INPUT: after script -- GetDeviceState=23447505 (keyboard=0, mouse=23400020, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:21.197]   INPUT:   device 0 SysMouse     state=23400021   data=0        lastCb=20
+[15:42:21.197]   INPUT:   device 1 SysKeyboard  state=47484      data=0        lastCb=0
+[15:42:25.458]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:25.458]   INPUT: before script -- GetDeviceState=23449201 (keyboard=0, mouse=23400868, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:25.458]   INPUT:   device 0 SysMouse     state=23400869   data=0        lastCb=20
+[15:42:25.458]   INPUT:   device 1 SysKeyboard  state=48332      data=0        lastCb=0
+[15:42:25.459]   POS player map=(425.23, 98.87, -0.22) yaw=-94.1  eng=(425.23, -0.22, -98.87) at=(-0.072, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:42:25.459]   POS camera map=(425.15, 102.04, 2.81) yaw=-94.1 pitch=-18.0  eng at=(-0.068, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:42:25.459]   INPUT: after script -- GetDeviceState=23449201 (keyboard=0, mouse=23400868, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:25.459]   INPUT:   device 0 SysMouse     state=23400869   data=0        lastCb=20
+[15:42:25.459]   INPUT:   device 1 SysKeyboard  state=48332      data=0        lastCb=0
+[15:42:29.219]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:29.219]   INPUT: before script -- GetDeviceState=23450705 (keyboard=0, mouse=23401620, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:29.219]   INPUT:   device 0 SysMouse     state=23401621   data=0        lastCb=20
+[15:42:29.219]   INPUT:   device 1 SysKeyboard  state=49084      data=0        lastCb=0
+[15:42:29.220]   POS player map=(424.76, 92.37, -0.22) yaw=-94.1  eng=(424.76, -0.22, -92.37) at=(-0.072, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:42:29.220]   POS camera map=(424.69, 95.53, 2.80) yaw=-94.1 pitch=-18.0  eng at=(-0.068, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:42:29.221]   INPUT: after script -- GetDeviceState=23450705 (keyboard=0, mouse=23401620, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:29.221]   INPUT:   device 0 SysMouse     state=23401621   data=0        lastCb=20
+[15:42:29.221]   INPUT:   device 1 SysKeyboard  state=49084      data=0        lastCb=0
+[15:42:32.981]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:32.981]   INPUT: before script -- GetDeviceState=23452209 (keyboard=0, mouse=23402372, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:32.981]   INPUT:   device 0 SysMouse     state=23402373   data=0        lastCb=20
+[15:42:32.981]   INPUT:   device 1 SysKeyboard  state=49836      data=0        lastCb=0
+[15:42:32.982]   POS player map=(424.27, 85.64, -0.30) yaw=-94.1  eng=(424.27, -0.30, -85.64) at=(-0.072, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:42:32.982]   POS camera map=(424.20, 88.81, 2.73) yaw=-94.1 pitch=-18.0  eng at=(-0.068, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:42:32.982]   INPUT: after script -- GetDeviceState=23452209 (keyboard=0, mouse=23402372, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:32.982]   INPUT:   device 0 SysMouse     state=23402373   data=0        lastCb=20
+[15:42:32.982]   INPUT:   device 1 SysKeyboard  state=49836      data=0        lastCb=0
+[15:42:36.740]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:36.740]   INPUT: before script -- GetDeviceState=23453712 (keyboard=0, mouse=23403123, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:36.740]   INPUT:   device 0 SysMouse     state=23403124   data=0        lastCb=20
+[15:42:36.740]   INPUT:   device 1 SysKeyboard  state=50588      data=0        lastCb=0
+[15:42:36.741]   POS player map=(423.79, 78.96, -0.31) yaw=-94.1  eng=(423.79, -0.31, -78.96) at=(-0.072, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:42:36.741]   POS camera map=(423.71, 82.13, 2.72) yaw=-94.1 pitch=-18.0  eng at=(-0.068, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:42:36.741]   INPUT: after script -- GetDeviceState=23453713 (keyboard=0, mouse=23403124, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:36.741]   INPUT:   device 0 SysMouse     state=23403125   data=0        lastCb=20
+[15:42:36.741]   INPUT:   device 1 SysKeyboard  state=50588      data=0        lastCb=0
+[15:42:40.501]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:40.501]   INPUT: before script -- GetDeviceState=23455216 (keyboard=0, mouse=23403875, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:40.501]   INPUT:   device 0 SysMouse     state=23403876   data=0        lastCb=20
+[15:42:40.501]   INPUT:   device 1 SysKeyboard  state=51340      data=0        lastCb=0
+[15:42:40.502]   POS player map=(423.32, 72.43, -0.23) yaw=-94.1  eng=(423.32, -0.23, -72.43) at=(-0.072, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:42:40.502]   POS camera map=(423.24, 75.60, 2.79) yaw=-94.1 pitch=-18.0  eng at=(-0.068, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:42:40.502]   INPUT: after script -- GetDeviceState=23455216 (keyboard=0, mouse=23403875, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:40.502]   INPUT:   device 0 SysMouse     state=23403876   data=0        lastCb=20
+[15:42:40.502]   INPUT:   device 1 SysKeyboard  state=51340      data=0        lastCb=0
+[15:42:44.262]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:44.262]   INPUT: before script -- GetDeviceState=23456721 (keyboard=0, mouse=23404628, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:44.262]   INPUT:   device 0 SysMouse     state=23404629   data=0        lastCb=20
+[15:42:44.262]   INPUT:   device 1 SysKeyboard  state=52092      data=0        lastCb=0
+[15:42:44.263]   POS player map=(422.83, 65.69, -0.20) yaw=-94.1  eng=(422.83, -0.20, -65.69) at=(-0.072, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:42:44.263]   POS camera map=(422.76, 68.86, 2.82) yaw=-94.1 pitch=-18.0  eng at=(-0.068, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:42:44.263]   INPUT: after script -- GetDeviceState=23456721 (keyboard=0, mouse=23404628, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:44.263]   INPUT:   device 0 SysMouse     state=23404629   data=0        lastCb=20
+[15:42:44.263]   INPUT:   device 1 SysKeyboard  state=52092      data=0        lastCb=0
+[15:42:44.765]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:44.765]   INPUT: before script -- GetDeviceState=23456922 (keyboard=0, mouse=23404728, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:44.765]   INPUT:   device 0 SysMouse     state=23404729   data=0        lastCb=20
+[15:42:44.765]   INPUT:   device 1 SysKeyboard  state=52193      data=0        lastCb=0
+[15:42:44.765]   INPUT: mouse move dx=4 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:42:44.824]   INPUT: after script -- GetDeviceState=23456945 (keyboard=0, mouse=23404740, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:44.824]   INPUT:   device 0 SysMouse     state=23404741   data=0        lastCb=20
+[15:42:44.824]   INPUT:   device 1 SysKeyboard  state=52204      data=0        lastCb=0
+[15:42:46.718]   DRMLOG #6 hit 5: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x0860D2D0 esi=0x0019F98C
+[15:42:48.836]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:48.836]   INPUT: before script -- GetDeviceState=23458550 (keyboard=0, mouse=23405542, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:48.836]   INPUT:   device 0 SysMouse     state=23405543   data=0        lastCb=20
+[15:42:48.836]   INPUT:   device 1 SysKeyboard  state=53007      data=0        lastCb=0
+[15:42:48.837]   POS player map=(422.17, 58.91, -0.20) yaw=-95.5  eng=(422.17, -0.20, -58.91) at=(-0.096, 0.000, 0.995)  [player=08C51110 frame=08C44464]
+[15:42:48.837]   POS camera map=(422.17, 62.07, 2.82) yaw=-95.5 pitch=-18.0  eng at=(-0.091, -0.309, 0.947)  [camera=07334568 frame=07332E18]
+[15:42:48.837]   INPUT: after script -- GetDeviceState=23458550 (keyboard=0, mouse=23405542, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:48.837]   INPUT:   device 0 SysMouse     state=23405543   data=0        lastCb=20
+[15:42:48.837]   INPUT:   device 1 SysKeyboard  state=53007      data=0        lastCb=0
+[15:42:52.597]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:42:52.597]   INPUT: before script -- GetDeviceState=23460054 (keyboard=0, mouse=23406294, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:52.597]   INPUT:   device 0 SysMouse     state=23406295   data=0        lastCb=20
+[15:42:52.597]   INPUT:   device 1 SysKeyboard  state=53759      data=0        lastCb=0
+[15:42:52.598]   POS player map=(421.55, 52.41, -0.20) yaw=-95.5  eng=(421.55, -0.20, -52.41) at=(-0.096, 0.000, 0.995)  [player=08C51110 frame=08C44464]
+[15:42:52.598]   POS camera map=(421.38, 53.80, 2.25) yaw=-95.5 pitch=-18.0  eng at=(-0.091, -0.309, 0.947)  [camera=07334568 frame=07332E18]
+[15:42:52.598]   INPUT: after script -- GetDeviceState=23460055 (keyboard=0, mouse=23406295, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:42:52.598]   INPUT:   device 0 SysMouse     state=23406296   data=0        lastCb=20
+[15:42:52.598]   INPUT:   device 1 SysKeyboard  state=53759      data=0        lastCb=0
+[15:43:20.671]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:20.671]   INPUT: before script -- GetDeviceState=23471282 (keyboard=0, mouse=23411908, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:20.671]   INPUT:   device 0 SysMouse     state=23411909   data=0        lastCb=20
+[15:43:20.671]   INPUT:   device 1 SysKeyboard  state=59373      data=0        lastCb=0
+[15:43:20.672]   POS player map=(421.53, 52.23, -0.20) yaw=-95.5  eng=(421.53, -0.20, -52.23) at=(-0.096, 0.000, 0.995)  [player=08C51110 frame=08C44464]
+[15:43:20.672]   POS camera map=(421.36, 53.63, 2.25) yaw=-95.5 pitch=-18.0  eng at=(-0.091, -0.309, 0.947)  [camera=07334568 frame=07332E18]
+[15:43:20.672]   INPUT: after script -- GetDeviceState=23471283 (keyboard=0, mouse=23411909, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:20.672]   INPUT:   device 0 SysMouse     state=23411910   data=0        lastCb=20
+[15:43:20.672]   INPUT:   device 1 SysKeyboard  state=59373      data=0        lastCb=0
+[15:43:21.175]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:21.175]   INPUT: before script -- GetDeviceState=23471483 (keyboard=0, mouse=23412009, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:21.175]   INPUT:   device 0 SysMouse     state=23412010   data=0        lastCb=20
+[15:43:21.175]   INPUT:   device 1 SysKeyboard  state=59473      data=0        lastCb=0
+[15:43:21.175]   INPUT: mouse move dx=-9 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:43:21.308]   INPUT: after script -- GetDeviceState=23471537 (keyboard=0, mouse=23412036, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:21.308]   INPUT:   device 0 SysMouse     state=23412037   data=0        lastCb=20
+[15:43:21.308]   INPUT:   device 1 SysKeyboard  state=59500      data=0        lastCb=0
+[15:43:22.318]   DRMLOG #6 hit 6: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085314A0 esi=0x0019F98C
+[15:43:22.813]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:22.813]   INPUT: before script -- GetDeviceState=23472137 (keyboard=0, mouse=23412336, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:22.813]   INPUT:   device 0 SysMouse     state=23412337   data=0        lastCb=20
+[15:43:22.813]   INPUT:   device 1 SysKeyboard  state=59800      data=0        lastCb=0
+[15:43:22.814]   POS player map=(421.53, 51.60, -0.20) yaw=-92.4  eng=(421.53, -0.20, -51.60) at=(-0.042, 0.000, 0.999)  [player=08C51110 frame=08C44464]
+[15:43:22.814]   POS camera map=(421.29, 52.98, 2.25) yaw=-92.4 pitch=-18.0  eng at=(-0.040, -0.309, 0.950)  [camera=07334568 frame=07332E18]
+[15:43:22.814]   INPUT: after script -- GetDeviceState=23472138 (keyboard=0, mouse=23412336, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:22.814]   INPUT:   device 0 SysMouse     state=23412337   data=0        lastCb=20
+[15:43:22.814]   INPUT:   device 1 SysKeyboard  state=59801      data=0        lastCb=0
+[15:43:27.322]   DRMLOG #6 hit 7: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085314A0 esi=0x0019F98C
+[15:43:32.322]   DRMLOG #6 hit 8: IsBadWritePtr @0x0047D05C [Help Text Crash] arg0=0x0019F98C arg1=0x00000004 -> ret=0x00000000  | eax=0x00000001 ecx=0x00000256 edx=0x00000128 ebx=0x085314A0 esi=0x0019F98C
+[15:43:52.637]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:52.637]   INPUT: before script -- GetDeviceState=23484065 (keyboard=0, mouse=23418300, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:52.637]   INPUT:   device 0 SysMouse     state=23418301   data=0        lastCb=20
+[15:43:52.637]   INPUT:   device 1 SysKeyboard  state=65764      data=0        lastCb=0
+[15:43:52.638]   POS player map=(421.53, 51.60, -0.20) yaw=-92.4  eng=(421.53, -0.20, -51.60) at=(-0.042, 0.000, 0.999)  [player=08C51110 frame=08C44464]
+[15:43:52.638]   POS camera map=(421.29, 52.98, 2.25) yaw=-92.4 pitch=-18.0  eng at=(-0.040, -0.309, 0.950)  [camera=07334568 frame=07332E18]
+[15:43:52.638]   INPUT: after script -- GetDeviceState=23484066 (keyboard=0, mouse=23418300, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:52.638]   INPUT:   device 0 SysMouse     state=23418301   data=0        lastCb=20
+[15:43:52.638]   INPUT:   device 1 SysKeyboard  state=65765      data=0        lastCb=0
+[15:43:53.140]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:53.140]   INPUT: before script -- GetDeviceState=23484266 (keyboard=0, mouse=23418400, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:53.140]   INPUT:   device 0 SysMouse     state=23418401   data=0        lastCb=20
+[15:43:53.140]   INPUT:   device 1 SysKeyboard  state=65865      data=0        lastCb=0
+[15:43:53.140]   INPUT: mouse move dx=444 dy=0 dz=0 over 250ms (step 15/1/1 per 8ms)
+[15:43:53.608]   INPUT: after script -- GetDeviceState=23484453 (keyboard=0, mouse=23418494, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:53.608]   INPUT:   device 0 SysMouse     state=23418495   data=0        lastCb=20
+[15:43:53.608]   INPUT:   device 1 SysKeyboard  state=65958      data=0        lastCb=0
+[15:43:55.612]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:55.612]   INPUT: before script -- GetDeviceState=23485254 (keyboard=0, mouse=23418894, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:55.612]   INPUT:   device 0 SysMouse     state=23418895   data=0        lastCb=20
+[15:43:55.612]   INPUT:   device 1 SysKeyboard  state=66359      data=0        lastCb=0
+[15:43:55.613]   POS player map=(420.70, 53.17, -0.20) yaw=115.2  eng=(420.70, -0.20, -53.17) at=(-0.426, 0.000, -0.905)  [player=08C51110 frame=08C44464]
+[15:43:55.613]   POS camera map=(421.56, 52.05, 2.25) yaw=115.2 pitch=-18.0  eng at=(-0.405, -0.309, -0.860)  [camera=07334568 frame=07332E18]
+[15:43:55.613]   INPUT: after script -- GetDeviceState=23485255 (keyboard=0, mouse=23418895, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:55.613]   INPUT:   device 0 SysMouse     state=23418896   data=0        lastCb=20
+[15:43:55.613]   INPUT:   device 1 SysKeyboard  state=66359      data=0        lastCb=0
+[15:43:59.372]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:43:59.372]   INPUT: before script -- GetDeviceState=23486758 (keyboard=0, mouse=23419646, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:59.372]   INPUT:   device 0 SysMouse     state=23419647   data=0        lastCb=20
+[15:43:59.372]   INPUT:   device 1 SysKeyboard  state=67111      data=0        lastCb=0
+[15:43:59.373]   POS player map=(417.72, 59.33, -0.09) yaw=115.2  eng=(417.72, -0.09, -59.33) at=(-0.426, 0.000, -0.905)  [player=08C51110 frame=08C44464]
+[15:43:59.373]   POS camera map=(419.33, 56.61, 2.93) yaw=115.2 pitch=-18.0  eng at=(-0.405, -0.309, -0.860)  [camera=07334568 frame=07332E18]
+[15:43:59.373]   INPUT: after script -- GetDeviceState=23486758 (keyboard=0, mouse=23419646, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:43:59.373]   INPUT:   device 0 SysMouse     state=23419647   data=0        lastCb=20
+[15:43:59.373]   INPUT:   device 1 SysKeyboard  state=67111      data=0        lastCb=0
+[15:44:03.132]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:03.132]   INPUT: before script -- GetDeviceState=23488262 (keyboard=0, mouse=23420398, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:03.132]   INPUT:   device 0 SysMouse     state=23420399   data=0        lastCb=20
+[15:44:03.132]   INPUT:   device 1 SysKeyboard  state=67863      data=0        lastCb=0
+[15:44:03.133]   POS player map=(418.84, 61.73, -0.09) yaw=115.2  eng=(418.84, -0.09, -61.73) at=(-0.426, 0.000, -0.905)  [player=08C51110 frame=08C44464]
+[15:44:03.133]   POS camera map=(420.45, 59.00, 2.93) yaw=115.2 pitch=-18.0  eng at=(-0.405, -0.309, -0.860)  [camera=07334568 frame=07332E18]
+[15:44:03.133]   INPUT: after script -- GetDeviceState=23488262 (keyboard=0, mouse=23420398, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:03.133]   INPUT:   device 0 SysMouse     state=23420399   data=0        lastCb=20
+[15:44:03.133]   INPUT:   device 1 SysKeyboard  state=67863      data=0        lastCb=0
+[15:44:03.635]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:03.635]   INPUT: before script -- GetDeviceState=23488463 (keyboard=0, mouse=23420499, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:03.635]   INPUT:   device 0 SysMouse     state=23420500   data=0        lastCb=20
+[15:44:03.635]   INPUT:   device 1 SysKeyboard  state=67963      data=0        lastCb=0
+[15:44:03.635]   INPUT: mouse move dx=-13 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:44:03.824]   INPUT: after script -- GetDeviceState=23488539 (keyboard=0, mouse=23420537, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:03.824]   INPUT:   device 0 SysMouse     state=23420538   data=0        lastCb=20
+[15:44:03.824]   INPUT:   device 1 SysKeyboard  state=68001      data=0        lastCb=0
+[15:44:07.834]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:07.834]   INPUT: before script -- GetDeviceState=23490142 (keyboard=0, mouse=23421338, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:07.834]   INPUT:   device 0 SysMouse     state=23421339   data=0        lastCb=20
+[15:44:07.834]   INPUT:   device 1 SysKeyboard  state=68803      data=0        lastCb=0
+[15:44:07.835]   POS player map=(418.47, 63.83, -0.11) yaw=119.7  eng=(418.47, -0.11, -63.83) at=(-0.495, 0.000, -0.869)  [player=08C51110 frame=08C44464]
+[15:44:07.835]   POS camera map=(420.29, 61.24, 2.91) yaw=119.7 pitch=-18.0  eng at=(-0.471, -0.309, -0.826)  [camera=07334568 frame=07332E18]
+[15:44:07.835]   INPUT: after script -- GetDeviceState=23490142 (keyboard=0, mouse=23421338, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:07.835]   INPUT:   device 0 SysMouse     state=23421339   data=0        lastCb=20
+[15:44:07.835]   INPUT:   device 1 SysKeyboard  state=68803      data=0        lastCb=0
+[15:44:08.337]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:08.337]   INPUT: before script -- GetDeviceState=23490343 (keyboard=0, mouse=23421439, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:08.337]   INPUT:   device 0 SysMouse     state=23421440   data=0        lastCb=20
+[15:44:08.337]   INPUT:   device 1 SysKeyboard  state=68903      data=0        lastCb=0
+[15:44:08.337]   INPUT: mouse move dx=-5 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:44:08.407]   INPUT: after script -- GetDeviceState=23490371 (keyboard=0, mouse=23421453, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:08.407]   INPUT:   device 0 SysMouse     state=23421454   data=0        lastCb=20
+[15:44:08.407]   INPUT:   device 1 SysKeyboard  state=68917      data=0        lastCb=0
+[15:44:12.417]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:12.417]   INPUT: before script -- GetDeviceState=23491975 (keyboard=0, mouse=23422255, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:12.417]   INPUT:   device 0 SysMouse     state=23422256   data=0        lastCb=20
+[15:44:12.417]   INPUT:   device 1 SysKeyboard  state=69719      data=0        lastCb=0
+[15:44:12.418]   POS player map=(418.47, 63.83, -0.11) yaw=121.4  eng=(418.47, -0.11, -63.83) at=(-0.521, 0.000, -0.853)  [player=08C51110 frame=08C44464]
+[15:44:12.418]   POS camera map=(420.37, 61.29, 2.91) yaw=121.4 pitch=-18.0  eng at=(-0.496, -0.309, -0.812)  [camera=07334568 frame=07332E18]
+[15:44:12.418]   INPUT: after script -- GetDeviceState=23491975 (keyboard=0, mouse=23422255, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:12.418]   INPUT:   device 0 SysMouse     state=23422256   data=0        lastCb=20
+[15:44:12.418]   INPUT:   device 1 SysKeyboard  state=69720      data=0        lastCb=0
+[15:44:16.177]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:16.177]   INPUT: before script -- GetDeviceState=23493479 (keyboard=0, mouse=23423007, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:16.177]   INPUT:   device 0 SysMouse     state=23423008   data=0        lastCb=20
+[15:44:16.177]   INPUT:   device 1 SysKeyboard  state=70471      data=0        lastCb=0
+[15:44:16.178]   POS player map=(418.47, 63.83, -0.11) yaw=121.4  eng=(418.47, -0.11, -63.83) at=(-0.521, 0.000, -0.853)  [player=08C51110 frame=08C44464]
+[15:44:16.178]   POS camera map=(420.37, 61.29, 2.91) yaw=121.4 pitch=-18.0  eng at=(-0.496, -0.309, -0.812)  [camera=07334568 frame=07332E18]
+[15:44:16.178]   INPUT: after script -- GetDeviceState=23493479 (keyboard=0, mouse=23423007, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:16.178]   INPUT:   device 0 SysMouse     state=23423008   data=0        lastCb=20
+[15:44:16.178]   INPUT:   device 1 SysKeyboard  state=70471      data=0        lastCb=0
+[15:44:19.476]   DRMLOG #11 hit 1: GetLastError @0x004D7E7A [Broken Level Initialization 1] -> ret=0x00000026  | eax=0x00000023 ecx=0x00000000 edx=0x00000001 ebx=0x00000002 esi=0x00735EC4
+[15:44:51.266]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:51.266]   INPUT: before script -- GetDeviceState=23507511 (keyboard=0, mouse=23430023, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:51.266]   INPUT:   device 0 SysMouse     state=23430024   data=0        lastCb=20
+[15:44:51.266]   INPUT:   device 1 SysKeyboard  state=77487      data=0        lastCb=0
+[15:44:51.267]   POS player map=(418.47, 63.83, -0.11) yaw=121.4  eng=(418.47, -0.11, -63.83) at=(-0.521, 0.000, -0.853)  [player=08C51110 frame=08C44464]
+[15:44:51.267]   POS camera map=(420.37, 61.29, 2.91) yaw=121.4 pitch=-18.0  eng at=(-0.496, -0.309, -0.812)  [camera=07334568 frame=07332E18]
+[15:44:51.267]   INPUT: after script -- GetDeviceState=23507511 (keyboard=0, mouse=23430023, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:51.267]   INPUT:   device 0 SysMouse     state=23430024   data=0        lastCb=20
+[15:44:51.267]   INPUT:   device 1 SysKeyboard  state=77487      data=0        lastCb=0
+[15:44:51.767]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:51.767]   INPUT: before script -- GetDeviceState=23507711 (keyboard=0, mouse=23430123, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:51.767]   INPUT:   device 0 SysMouse     state=23430124   data=0        lastCb=20
+[15:44:51.767]   INPUT:   device 1 SysKeyboard  state=77587      data=0        lastCb=0
+[15:44:51.767]   INPUT: mouse move dx=-446 dy=0 dz=0 over 250ms (step 15/1/1 per 8ms)
+[15:44:52.233]   INPUT: after script -- GetDeviceState=23507898 (keyboard=0, mouse=23430216, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:52.233]   INPUT:   device 0 SysMouse     state=23430217   data=0        lastCb=20
+[15:44:52.233]   INPUT:   device 1 SysKeyboard  state=77681      data=0        lastCb=0
+[15:44:54.237]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:54.237]   INPUT: before script -- GetDeviceState=23508700 (keyboard=0, mouse=23430617, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:54.237]   INPUT:   device 0 SysMouse     state=23430618   data=0        lastCb=20
+[15:44:54.237]   INPUT:   device 1 SysKeyboard  state=78082      data=0        lastCb=0
+[15:44:54.238]   POS player map=(418.85, 62.10, -0.09) yaw=-85.5  eng=(418.85, -0.09, -62.10) at=(0.078, 0.000, 0.997)  [player=08C51110 frame=08C44464]
+[15:44:54.238]   POS camera map=(418.40, 64.06, 2.55) yaw=-85.5 pitch=-18.0  eng at=(0.074, -0.309, 0.948)  [camera=07334568 frame=07332E18]
+[15:44:54.238]   INPUT: after script -- GetDeviceState=23508700 (keyboard=0, mouse=23430617, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:54.238]   INPUT:   device 0 SysMouse     state=23430618   data=0        lastCb=20
+[15:44:54.238]   INPUT:   device 1 SysKeyboard  state=78082      data=0        lastCb=0
+[15:44:54.739]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:54.739]   INPUT: before script -- GetDeviceState=23508900 (keyboard=0, mouse=23430717, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:54.739]   INPUT:   device 0 SysMouse     state=23430718   data=0        lastCb=20
+[15:44:54.739]   INPUT:   device 1 SysKeyboard  state=78182      data=0        lastCb=0
+[15:44:54.739]   INPUT: mouse move dx=3 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:44:54.782]   INPUT: after script -- GetDeviceState=23508917 (keyboard=0, mouse=23430726, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:54.782]   INPUT:   device 0 SysMouse     state=23430727   data=0        lastCb=20
+[15:44:54.782]   INPUT:   device 1 SysKeyboard  state=78190      data=0        lastCb=0
+[15:44:58.790]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:44:58.790]   INPUT: before script -- GetDeviceState=23510520 (keyboard=0, mouse=23431527, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:58.790]   INPUT:   device 0 SysMouse     state=23431528   data=0        lastCb=20
+[15:44:58.790]   INPUT:   device 1 SysKeyboard  state=78992      data=0        lastCb=0
+[15:44:58.791]   POS player map=(419.29, 55.29, -0.20) yaw=-86.6  eng=(419.29, -0.20, -55.29) at=(0.060, 0.000, 0.998)  [player=08C51110 frame=08C44464]
+[15:44:58.791]   POS camera map=(418.80, 58.42, 2.82) yaw=-86.6 pitch=-18.0  eng at=(0.057, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:44:58.791]   INPUT: after script -- GetDeviceState=23510521 (keyboard=0, mouse=23431528, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:44:58.791]   INPUT:   device 0 SysMouse     state=23431529   data=0        lastCb=20
+[15:44:58.791]   INPUT:   device 1 SysKeyboard  state=78992      data=0        lastCb=0
+[15:45:02.550]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:02.550]   INPUT: before script -- GetDeviceState=23512024 (keyboard=0, mouse=23432279, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:02.550]   INPUT:   device 0 SysMouse     state=23432280   data=0        lastCb=20
+[15:45:02.550]   INPUT:   device 1 SysKeyboard  state=79744      data=0        lastCb=0
+[15:45:02.551]   POS player map=(419.42, 52.84, -0.20) yaw=-86.6  eng=(419.42, -0.20, -52.84) at=(0.060, 0.000, 0.998)  [player=08C51110 frame=08C44464]
+[15:45:02.551]   POS camera map=(419.00, 54.89, 2.47) yaw=-86.6 pitch=-18.0  eng at=(0.057, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:45:02.551]   INPUT: after script -- GetDeviceState=23512025 (keyboard=0, mouse=23432280, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:02.551]   INPUT:   device 0 SysMouse     state=23432281   data=0        lastCb=20
+[15:45:02.551]   INPUT:   device 1 SysKeyboard  state=79744      data=0        lastCb=0
+[15:45:06.309]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:06.309]   INPUT: before script -- GetDeviceState=23513528 (keyboard=0, mouse=23433031, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:06.309]   INPUT:   device 0 SysMouse     state=23433032   data=0        lastCb=20
+[15:45:06.309]   INPUT:   device 1 SysKeyboard  state=80496      data=0        lastCb=0
+[15:45:06.310]   POS player map=(419.39, 52.84, -0.20) yaw=-86.6  eng=(419.39, -0.20, -52.84) at=(0.060, 0.000, 0.998)  [player=08C51110 frame=08C44464]
+[15:45:06.310]   POS camera map=(418.96, 54.92, 2.48) yaw=-86.6 pitch=-18.0  eng at=(0.057, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:45:06.310]   INPUT: after script -- GetDeviceState=23513528 (keyboard=0, mouse=23433031, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:06.310]   INPUT:   device 0 SysMouse     state=23433032   data=0        lastCb=20
+[15:45:06.310]   INPUT:   device 1 SysKeyboard  state=80496      data=0        lastCb=0
+[15:45:10.069]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:10.069]   INPUT: before script -- GetDeviceState=23515031 (keyboard=0, mouse=23433783, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:10.069]   INPUT:   device 0 SysMouse     state=23433784   data=0        lastCb=20
+[15:45:10.069]   INPUT:   device 1 SysKeyboard  state=81247      data=0        lastCb=0
+[15:45:10.070]   POS player map=(419.34, 52.83, -0.20) yaw=-86.6  eng=(419.34, -0.20, -52.83) at=(0.060, 0.000, 0.998)  [player=08C51110 frame=08C44464]
+[15:45:10.070]   POS camera map=(418.91, 54.98, 2.51) yaw=-86.6 pitch=-18.0  eng at=(0.057, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:45:10.070]   INPUT: after script -- GetDeviceState=23515031 (keyboard=0, mouse=23433783, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:10.070]   INPUT:   device 0 SysMouse     state=23433784   data=0        lastCb=20
+[15:45:10.070]   INPUT:   device 1 SysKeyboard  state=81247      data=0        lastCb=0
+[15:45:10.571]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:10.571]   INPUT: before script -- GetDeviceState=23515232 (keyboard=0, mouse=23433883, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:10.571]   INPUT:   device 0 SysMouse     state=23433884   data=0        lastCb=20
+[15:45:10.571]   INPUT:   device 1 SysKeyboard  state=81348      data=0        lastCb=0
+[15:45:10.572]   POS player map=(419.32, 52.83, -0.20) yaw=-86.6  eng=(419.32, -0.20, -52.83) at=(0.060, 0.000, 0.998)  [player=08C51110 frame=08C44464]
+[15:45:10.572]   POS camera map=(418.88, 55.01, 2.52) yaw=-86.6 pitch=-18.0  eng at=(0.057, -0.309, 0.949)  [camera=07334568 frame=07332E18]
+[15:45:10.572]   INPUT: after script -- GetDeviceState=23515232 (keyboard=0, mouse=23433883, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:10.572]   INPUT:   device 0 SysMouse     state=23433884   data=0        lastCb=20
+[15:45:10.572]   INPUT:   device 1 SysKeyboard  state=81348      data=0        lastCb=0
+[15:45:11.074]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:11.074]   INPUT: before script -- GetDeviceState=23515433 (keyboard=0, mouse=23433984, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:11.074]   INPUT:   device 0 SysMouse     state=23433985   data=0        lastCb=20
+[15:45:11.074]   INPUT:   device 1 SysKeyboard  state=81448      data=0        lastCb=0
+[15:45:11.074]   INPUT: mouse move dx=201 dy=0 dz=0 over 250ms (step 7/1/1 per 8ms)
+[15:45:11.531]   INPUT: after script -- GetDeviceState=23515615 (keyboard=0, mouse=23434075, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:11.531]   INPUT:   device 0 SysMouse     state=23434076   data=0        lastCb=20
+[15:45:11.531]   INPUT:   device 1 SysKeyboard  state=81539      data=0        lastCb=0
+[15:45:13.285]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:13.285]   INPUT: before script -- GetDeviceState=23516316 (keyboard=0, mouse=23434425, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:13.285]   INPUT:   device 0 SysMouse     state=23434426   data=0        lastCb=20
+[15:45:13.285]   INPUT:   device 1 SysKeyboard  state=81890      data=0        lastCb=0
+[15:45:13.286]   POS player map=(417.57, 52.59, -0.20) yaw=-155.5  eng=(417.57, -0.20, -52.59) at=(-0.910, 0.000, 0.414)  [player=08C51110 frame=08C44464]
+[15:45:13.286]   POS camera map=(420.32, 54.17, 2.82) yaw=-155.5 pitch=-18.0  eng at=(-0.866, -0.309, 0.394)  [camera=07334568 frame=07332E18]
+[15:45:13.286]   INPUT: after script -- GetDeviceState=23516317 (keyboard=0, mouse=23434426, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:13.286]   INPUT:   device 0 SysMouse     state=23434427   data=0        lastCb=20
+[15:45:13.286]   INPUT:   device 1 SysKeyboard  state=81890      data=0        lastCb=0
+[15:45:13.788]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:13.788]   INPUT: before script -- GetDeviceState=23516517 (keyboard=0, mouse=23434526, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:13.788]   INPUT:   device 0 SysMouse     state=23434527   data=0        lastCb=20
+[15:45:13.788]   INPUT:   device 1 SysKeyboard  state=81990      data=0        lastCb=0
+[15:45:13.788]   INPUT: mouse move dx=-5 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:45:13.857]   INPUT: after script -- GetDeviceState=23516545 (keyboard=0, mouse=23434540, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:13.857]   INPUT:   device 0 SysMouse     state=23434541   data=0        lastCb=20
+[15:45:13.857]   INPUT:   device 1 SysKeyboard  state=82004      data=0        lastCb=0
+[15:45:17.867]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:17.867]   INPUT: before script -- GetDeviceState=23518149 (keyboard=0, mouse=23435342, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:17.867]   INPUT:   device 0 SysMouse     state=23435343   data=0        lastCb=20
+[15:45:17.867]   INPUT:   device 1 SysKeyboard  state=82806      data=0        lastCb=0
+[15:45:17.868]   POS player map=(414.47, 52.03, -0.09) yaw=-153.8  eng=(414.47, -0.09, -52.03) at=(-0.897, 0.000, 0.441)  [player=08C51110 frame=08C44464]
+[15:45:17.868]   POS camera map=(417.17, 53.69, 2.93) yaw=-153.8 pitch=-18.0  eng at=(-0.854, -0.309, 0.419)  [camera=07334568 frame=07332E18]
+[15:45:17.868]   INPUT: after script -- GetDeviceState=23518149 (keyboard=0, mouse=23435342, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:17.868]   INPUT:   device 0 SysMouse     state=23435343   data=0        lastCb=20
+[15:45:17.868]   INPUT:   device 1 SysKeyboard  state=82806      data=0        lastCb=0
+[15:45:18.370]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:18.370]   INPUT: before script -- GetDeviceState=23518350 (keyboard=0, mouse=23435442, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:18.370]   INPUT:   device 0 SysMouse     state=23435443   data=0        lastCb=20
+[15:45:18.370]   INPUT:   device 1 SysKeyboard  state=82907      data=0        lastCb=0
+[15:45:18.370]   INPUT: mouse move dx=-8 dy=0 dz=0 over 250ms (step 1/1/1 per 8ms)
+[15:45:18.482]   INPUT: after script -- GetDeviceState=23518395 (keyboard=0, mouse=23435465, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:18.482]   INPUT:   device 0 SysMouse     state=23435466   data=0        lastCb=20
+[15:45:18.482]   INPUT:   device 1 SysKeyboard  state=82929      data=0        lastCb=0
+[15:45:22.491]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:22.491]   INPUT: before script -- GetDeviceState=23519995 (keyboard=0, mouse=23436265, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:22.491]   INPUT:   device 0 SysMouse     state=23436266   data=0        lastCb=20
+[15:45:22.491]   INPUT:   device 1 SysKeyboard  state=83729      data=0        lastCb=0
+[15:45:22.492]   POS player map=(414.47, 52.03, -0.09) yaw=-151.1  eng=(414.47, -0.09, -52.03) at=(-0.875, 0.000, 0.484)  [player=08C51110 frame=08C44464]
+[15:45:22.492]   POS camera map=(417.09, 53.82, 2.93) yaw=-151.1 pitch=-18.0  eng at=(-0.833, -0.309, 0.460)  [camera=07334568 frame=07332E18]
+[15:45:22.492]   INPUT: after script -- GetDeviceState=23519996 (keyboard=0, mouse=23436265, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:22.492]   INPUT:   device 0 SysMouse     state=23436266   data=0        lastCb=20
+[15:45:22.492]   INPUT:   device 1 SysKeyboard  state=83730      data=0        lastCb=0
+[15:45:26.252]   INPUT: running script D:\Program Files (x86)\Steam\steamapps\common\Manhunt\manhunt_vr_input.txt
+[15:45:26.252]   INPUT: before script -- GetDeviceState=23521496 (keyboard=0, mouse=23437015, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:26.252]   INPUT:   device 0 SysMouse     state=23437016   data=0        lastCb=20
+[15:45:26.252]   INPUT:   device 1 SysKeyboard  state=84480      data=0        lastCb=0
+[15:45:26.253]   POS player map=(414.48, 52.03, -0.09) yaw=-151.1  eng=(414.48, -0.09, -52.03) at=(-0.875, 0.000, 0.484)  [player=08C51110 frame=08C44464]
+[15:45:26.253]   POS camera map=(417.09, 53.82, 2.93) yaw=-151.1 pitch=-18.0  eng at=(-0.833, -0.309, 0.460)  [camera=07334568 frame=07332E18]
+[15:45:26.253]   INPUT: after script -- GetDeviceState=23521496 (keyboard=0, mouse=23437015, other=0), GetDeviceData=0, devices=2, distinct vtables=2
+[15:45:26.253]   INPUT:   device 0 SysMouse     state=23437016   data=0        lastCb=20
+[15:45:26.253]   INPUT:   device 1 SysKeyboard  state=84480      data=0        lastCb=0

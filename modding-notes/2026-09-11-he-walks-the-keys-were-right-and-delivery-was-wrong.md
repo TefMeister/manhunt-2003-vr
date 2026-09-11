@@ -99,6 +99,30 @@ of the sixteen sites have now been seen in gameplay.
 | Character + camera | ✅ **NEW: movement, strafing, running, item pickup** by posted key messages; camera by synthetic mouse |
 | Self-close | (see the status board entry for how this session ended) |
 
+## 6. Later the same afternoon: the shortcut crash solved, and steering by coordinates
+
+Six more launches, all mine, all closed cleanly. Dossier §11d-quinquies and §11i.
+
+- **The shortcut start crashes on both levels; the menu start never has.** BORN AGAIN by
+  `SKIP_MENU` dies the same way Derelict did. Main-menu PLAY always starts BORN AGAIN whatever
+  `START_LEVEL` says, and the one save is at scene 1 (it loads fine), so the second level cannot be
+  reached from the menu yet.
+- **Root cause, found by the reader and confirmed live:** on a shortcut start the level's folder
+  name is copied before the game has read its level list, so it comes out blank. The world never
+  loads, the load is retried every frame, and memory runs out. The crash-time log line read
+  `cur="" loaderName=""` `[verified-live 2026-09-11, n=1]`.
+- **A fix for the name** (opt-in flag file) stops the crash: the level's script runs normally —
+  but the screen stays black apart from the tutorial text. One more thing the menu sets up is still
+  missing. With the reader.
+- **A fix for players, on by default:** files the game cannot find in a level's size table now
+  load at their real size instead of grabbing 12 MB each. A normal start on that build played
+  normally. It removes a possible memory-fragmentation crash at level changes `[hypothesis]`.
+- **`POS`: the proxy now reports where Cash is and which way he faces**, read from the game's
+  memory. It matched the level file's start point exactly, and a small steering script walked him to
+  the plastic bag by map coordinates alone and picked it up. Walls get in the way of straight lines,
+  so the next step is the level's own route network (with the reader).
+- **Posted `Enter` and `Esc` work in the menus too** (Enter loaded the save).
+
 ## Not established
 
 - Whether the doors/gates stick, whether the item swap still crashes, and whether saving works.
