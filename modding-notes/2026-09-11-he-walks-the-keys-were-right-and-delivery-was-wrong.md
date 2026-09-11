@@ -28,9 +28,15 @@ table. `[verified-live 2026-09-11, n=1]`
   identical to both 2026-09-10 runs. Those runs had dropped splines first, which made the two crashes
   look connected. Today nothing was dropped and the crash did not change by a byte, so **"dropped
   splines cause `0x0061166A`" is `[disproved 2026-09-11]`**.
-- The same level through the menu ran for most of an hour today. This is a fault only on the
-  debug shortcut `SKIP_MENU`, most likely something the frontend creates that the shortcut skips —
-  `[hypothesis]`. With the menu now drivable, it drops to a `[PD]` row and is with the reader.
+- ~~The same level through the menu ran for most of an hour today, so this is a fault only on the
+  debug shortcut.~~ **Withdrawn the same afternoon: it was never the same level.** `START_LEVEL 1` is
+  **Derelict** (the second level); the menu runs were all BORN AGAIN (`Jury_Turf`, index 0). The
+  reader then traced the crash (dossier §11d-quater): on every level start, the PC-named files miss
+  the level's size table and each gets a 12 MB buffer; the load of Derelict fails its first attempt
+  for a still-unknown reason and is retried every frame with nothing freed, until a 12 MB request
+  returns NULL and the game writes the file to address `0x40`. The menu route calls the same start
+  function, so **whether Derelict loads through the menu is now the question that matters for an
+  ordinary play-through**.
 
 `settings.txt` was restored to `SKIP_MENU 0` / `START_LEVEL 0` straight after, with the game closed.
 
