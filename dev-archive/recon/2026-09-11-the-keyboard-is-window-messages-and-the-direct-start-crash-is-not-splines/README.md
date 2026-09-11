@@ -54,3 +54,13 @@ folder).
 | `t3-newbuild-menu-play-gameplay.png` | Normal start on the TOCSIZE build: gameplay as usual. |
 | `nav-arrived-at-bag-by-coordinates.png` | Steered to `Bag_(CT)` by map coordinates alone; "Plastic Bag" picked up. |
 | `load-game-only-save-is-scene-1.png` | The only save: SCENE 1 BORN AGAIN, in progress, Hardcore, 25 Aug 2026. |
+
+## Later additions (same afternoon)
+
+| File | What it is |
+| --- | --- |
+| `log-10-checkpoint-fix-still-black.txt` | Build `cc8aa567`, SKIP_MENU + level-name fix + checkpoint reset: both fixes fire (`was -2, set to -1`), screen still black. |
+| `follow.ps1` | ⭐ Follows an A* route over the level's AI path graph (`route.py` in `staging`), waypoint by waypoint with `nav.ps1`. |
+| `route-arrived-at-jt-gate-shut.png` | The route delivered Cash to `JT_Gate_(D)01`; the gate is shut and does not swing. |
+| `tutorial-cutaway-hunter-beside-the-gate.png` | Tutorial cut-away: a hunter steps out of the dark doorway beside the gate. |
+| `checkpoint-fix-still-black.png` | The checkpoint reset did not cure the direct-start black screen. |
