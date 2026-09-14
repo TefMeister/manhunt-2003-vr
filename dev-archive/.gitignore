@@ -14,3 +14,17 @@
 # Local scratch
 /tmp/
 *.log
+
+# ...EXCEPT recon evidence, which IS the finding rather than scratch.
+#
+# Added 2026-09-14 across the estate. The blanket log rule above was
+# silently swallowing recon captures: `git add` on an ignored file succeeds
+# with no error and no output, so a session that believed it had saved its
+# evidence got no signal that it had not. On dead-space-2-vr that cost the
+# sole proof of the camera finding, and two other repos had already patched
+# themselves without the lesson spreading.
+#
+# Text logs only. Dumps and binaries stay ignored ON PURPOSE - a memory dump
+# can be hundreds of MB and would break the repo or carry game content. When
+# evidence is too big to commit, say so loudly in the write-up instead.
+!recon/**/*.log
