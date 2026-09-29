@@ -1338,3 +1338,7 @@ that the Ignore Control repair holds. Sites seen live in gameplay so far: #1, #4
   null-dependent read did work (crash gone, game reached a taskbar icon for the first time) but the
   NULL simply propagated to the next consumer. When a null pointer has many consumers, fix the
   producer.
+
+## Inbox folds, 2026-09-29
+
+**2026-09-29 (`/gr`, folded): widen for the headset through `CScene::ms_viewWinScale` (`0x00715CDC`), not by re-calling `0x00475BC0`.** Fire-Head's widescreen fix replaces a call at `0x00475BF5` inside `0x00475BC0` and uses `ms_viewWinScale` as the game's own additive view-window widening; `CScene::m_viewWindowOriginal` (`0x00715C98`) is the saved window the end-of-frame restore uses, and `CCamera::m_viewWindow` / `m_aspectRatio` sit at `0x007A1650` / `0x007A164C` `[inferred-static 2026-09-29]`. A per-eye change made after `0x00475BC0` must not reach that saved window. Topic: `external-research/topics/2026-09-29-the-widescreen-fix-names-the-view-window-levers-the-per-eye-plan-needs.md`.
