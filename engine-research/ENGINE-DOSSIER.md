@@ -1295,6 +1295,17 @@ tested 24–34 minutes after "Ignore Control" fired** (13:47 → 14:11–14:21) 
 exact moment the unpatched check would have bitten. That is the first live evidence
 that the Ignore Control repair holds. Sites seen live in gameplay so far: #1, #4, #5, #6, #11.
 
+## 11n. ⭐ 2026-09-29 (/lm reader, static) — PASS 1 CAN RUN TWICE PER FRAME, ONCE PER EYE
+
+*Folded from `inbox/2026-09-29-lm-reader-pass1-per-eye-vet.md`; scripts `staging/manhunt-2003-vr/offline-analysis/pass1_vet.py`, `pass1_tree.py`, `vtables.py`. All `[inferred-static]` unless tagged.*
+
+- **Verdict:** pass 1 (`0x00475F9D`..`0x0047609D`) can run twice per frame as it is. Every call traced 6 levels deep (entity vtable +0x30 render, +0x34 lighting, +0x50 skeleton sync): no timer, audio, input or file API; the clock `[0x00756270]` and timestep `[0x00756284]` are only read; the frame counter `[0x0069B540]` is bumped before the range (`0x00475EE4`).
+- The one state change, animation catch-up for entities unseen last frame (`0x00497D20`), is guarded by the entity's +0x4C frame stamp: once per frame however often the pass runs. Nothing may clear +0x4C between eyes. The render counter `[0x00715B88]++` (in `0x00475890`) is REQUIRED: it lets eye 2 redraw entities.
+- Optional eye-2 guards: skip the LOD pick (`0x00474FC7`, `0x00475197`; a boundary object could swap models twice, `[hypothesis]`) and the debug-triangle blink (`0x0047602A`). Harmless: star twinkle / entity flash random numbers drawn twice.
+- **Camera between eyes (the real work):** nothing in pass 1 computes the camera; `RwCameraBeginUpdate` (`0x00475969`→`0x00641CE0`) reads the frame and view window. Per eye: (1) move the camera frame (`[cam+4]` +0x10 matrix, +0x40 position; RenderWare x flip applies, see §11m) and mark it dirty (`0x00618440`); (2) view window `0x00626360`, view offset `0x006260F0`; (3) re-call the frame sync `0x006218F0` (the game calls it once, at `0x00475F98`), or eye 2 culls sectors against the stale camera; (4) rebuild or widen the game's entity frustum at `0x007A15A4` (TheCamera+0x5F8; built at the end of `0x00475BC0` by `0x004DB780`/`0x004DB730`/`0x004DBC20`/`0x004DC240`), or characters vanish at the edges with a headset FOV.
+- **Do NOT** re-call `0x00475BC0` (its saved view window is restored at `0x0047624C`, shrinking the view every frame), nor re-enter before `0x00475F9D` (`0x005CB260` takes the timestep, probably weather `[hypothesis]`; `0x0043B140` walks all entities). After eye 2, restore the centre camera and sync again for pass 2, HUD and logic.
+- Pass 2 (`0x004760A3`..`0x0047612F`, effects/coronas) not yet vetted. **Cheap live check:** run pass 1 twice with an identical camera: picture, walking speed, hunter animation and the rate of `[0x00756270]` must be unchanged.
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
