@@ -1034,6 +1034,8 @@ then **partly disproved live** the same evening.
 
 ## 11m. The rest of the reader's evening drops, in brief (2026-09-11)
 
+**⭐ 2026-09-29 LIVE: `[0x00715B94]` IS the render camera.** The view implied by its RwFrame (right/up/at/pos at +0x10/+0x20/+0x30/+0x40) equals the D3DTS_VIEW the proxy last saw, to 0.0000, with RenderWare's x flip (right vector negated) — still, and after a mouse turn `[verified-live 2026-09-29, n=2]`. Tool: `dev-archive/tools/mh_camcheck.py`. Note: `modding-notes/2026-09-29-menus-window-and-the-render-camera.md`.
+
 - **The level walkthrough** — the level script carries its own **source code** (`MHSC` → `DBUG` →
   `SRCE` chunks in `jury_turf.mls`), so objectives, locks and all 20 trigger volumes are read, not
   guessed. Full ordered checklist with coordinates: `modding-notes/2026-09-11c-...`. Key facts:
