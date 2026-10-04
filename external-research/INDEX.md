@@ -1,6 +1,8 @@
 # Research index
 
-**Last `/gr` pass: 2026-09-29 (estate sweep) — CHECK-IN.** Inbox empty. Read the widescreen fix against the reader's per-eye plan: it hooks inside 0x00475BC0 and names the additive widening ms_viewWinScale (0x00715CDC), a clean lever for a headset FOV.
+**Last `/gr` pass: 2026-10-04 (estate sweep, second pass) — CHECK-IN.** Inbox empty; board `OPEN` rows read: the entity-data fix and the play-test, both our own launches. Nothing new.
+
+_Previous: **Last `/gr` pass: 2026-09-29 (estate sweep) — CHECK-IN.** Inbox empty. Read the widescreen fix against the reader's per-eye plan: it hooks inside 0x00475BC0 and names the additive widening ms_viewWinScale (0x00715CDC), a clean lever for a headset FOV._
 
 _Previous: Last `/gr` pass: 2026-09-23 (estate sweep) — CHECK-IN.** Checked phunkaeg's *VR Modding Playbook*: it lists this project's own public notes as a studied source; its only other RenderWare entry is an Android GTA San Andreas port. Nothing new.
 
