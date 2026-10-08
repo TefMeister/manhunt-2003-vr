@@ -1310,6 +1310,15 @@ that the Ignore Control repair holds. Sites seen live in gameplay so far: #1, #4
   - **Live check:** unit twice, same camera, no guards → corona spin and marker fade visibly double; with guards → identical to one run.
 - Pass 2 (`0x004760A3`..`0x0047612F`, effects/coronas) vetted (above). **Cheap live check:** run pass 1 twice with an identical camera: picture, walking speed, hunter animation and the rate of `[0x00756270]` must be unchanged.
 
+## 11o. The per-eye unit, built (2026-10-08, `/pd`, not run)
+
+`staging/.../proxy-d3d8/src/eyeunit.c`, build `fa2c030d8fdc` `[compile-verified 2026-10-08]`, opt-in
+(`manhunt_vr_eyeunit`). Jumps at `0x00475F9D` (`55 E8 ED F8 FF FF`) and `0x00476134` (`59 55 8B 0D 9C 5B 71 00`) run
+the §11n unit twice per frame with the same camera; eye-2 guards and the rain skip as §11n lists. Stack depth is equal
+at both ends and no code outside jumps into either patched span (whole-image scan) `[inferred-static 2026-10-08]`. The
+source without it rebuilds to the previously installed `051c3f93de47` `[verified-numerically 2026-10-08]`. Live check and
+outcome table: `modding-notes/2026-10-08-pd-the-per-eye-unit-same-camera.md`.
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
