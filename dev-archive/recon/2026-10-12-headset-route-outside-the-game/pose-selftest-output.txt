@@ -1,0 +1,14 @@
+PASS  1  head turned left 90: forward points left
+PASS  2  start pose: tilted up 20 and turned 30 -> turned 30 only
+PASS  3a relative turn = the extra 10 degrees
+PASS  3b relative position = the offset turned by those 10 degrees
+PASS  4  no turn, no move: the centre matrix unchanged
+PASS  5a head left 90: forward = old screen-left axis, screen-left axis = old backward, up unchanged
+PASS  5b head up 30: forward gains +0.5 of up
+PASS  6a 32 mm to the right -> 32 mm along -right (screen right)
+PASS  6b 10 cm forward -> 10 cm along at
+PASS  7  left eye, no turn = the old fixed-separation left eye
+PASS  8a axes stay at right angles
+PASS  8b axes keep their lengths (right 2, at 1)
+PASS  8c a 25 degree head turn turns forward by 25 degrees
+ALL PASS (0 failed)
