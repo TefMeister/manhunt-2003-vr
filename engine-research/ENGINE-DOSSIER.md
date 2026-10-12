@@ -1600,3 +1600,10 @@ through diag(-1, 1, -1) (`EyeCam_HeadMatrix`); the stored frame carries the pose
 Self-test 13/13 `[verified-numerically 2026-10-12]`; test program + simulator, head turned 30: read back 30.0 degrees
 `[measured 2026-10-12, n=1]`. Turn direction in the game `[hypothesis]`. Installed `2b076953c7c1`.
 Note: `modding-notes/2026-10-12-pd-the-world-turns-with-the-head.md`.
+
+## 2026-10-12 (`/pd`, dev PC, no launch): correction, no sideways squeeze
+Supersedes the "about 1.4x squeeze" remark in the 2026-10-12 lens note. In projection mode the view window IS the
+lens, and RenderWare maps the view window onto the drawn area whatever its shape, so the shape is right
+`[inferred-static 2026-10-12]`. A 400x600 half has ~71% as much detail across as up/down with the simulator lens
+(94% at 640x720). A larger video mode would help; 800x600 is the only mode offered (§4).
+Note: `modding-notes/2026-10-12-pd-no-squeeze-only-less-sharp-sideways.md`.
