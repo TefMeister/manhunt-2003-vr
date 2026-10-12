@@ -1351,3 +1351,77 @@ outcome table: `modding-notes/2026-10-08-pd-the-per-eye-unit-same-camera.md`.
 ## Inbox folds, 2026-09-29
 
 **2026-09-29 (`/gr`, folded): widen for the headset through `CScene::ms_viewWinScale` (`0x00715CDC`), not by re-calling `0x00475BC0`.** Fire-Head's widescreen fix replaces a call at `0x00475BF5` inside `0x00475BC0` and uses `ms_viewWinScale` as the game's own additive view-window widening; `CScene::m_viewWindowOriginal` (`0x00715C98`) is the saved window the end-of-frame restore uses, and `CCamera::m_viewWindow` / `m_aspectRatio` sit at `0x007A1650` / `0x007A164C` `[inferred-static 2026-09-29]`. A per-eye change made after `0x00475BC0` must not reach that saved window. Topic: `external-research/topics/2026-09-29-the-widescreen-fix-names-the-view-window-levers-the-per-eye-plan-needs.md`.
+
+## 4s. Screen effects to switch off in VR (2026-10-12, reader, static; folded from inbox)
+
+Standing rule 2026-10-12: in VR every screen-painted effect goes off. All `[inferred-static 2026-10-12]` unless marked.
+
+### The two big switches are the game's own menu options
+
+Options → display menu (`VIDSET`) lists **NOISE FX**, **CAMERA FX**, RATIO and two more. They live in a settings
+block at `0x007D6B14` (menu code `0x00603290`, labels drawn from `0x006034BC`):
+
+| Option (GXT key) | Variable | Getter | What it switches |
+| --- | --- | --- | --- |
+| NOISE FX (`NOISEFX`) | `[0x007D6B14]` | `0x005DA9B0` | the camcorder **grain/noise overlay**: `0x005F7A50` returns at once when it is 0; it draws texture `noise` (`[0x007D37D4]`), called only from the HUD/overlay pass `0x005EF900` (at `0x005EFA50`) |
+| CAMERA FX (`CAMFX`) | `[0x007D6B30]` | `0x005DA9E0` | (a) the whole **"FX mode" post-process** (below), re-decided every frame at `0x005E9146`..`0x005E9180`: `[0x007CF0F0]` = 1 only if this is on AND `0x005EA2C0` says the camera state allows it; (b) a camera-FX branch inside `0x0058DBC0` (TheCamera post-draw, called at `0x0047613C`), at `0x0058E0C0` |
+
+**So the cheapest VR switch is to force both to 0** (write `[0x007D6B14]` and `[0x007D6B30]` = 0 once a level is
+running, or just set both to OFF in the menu). Writing `[0x007CF0F0]` directly does not stick: the per-frame code at
+`0x005E916D`/`0x005E9180` overwrites it. Whether the menu values are kept in the profile/save is not checked
+`[hypothesis]`.
+
+`settings.txt` has `FX_MODE 1` ("FX mode ON at program start"); it is parsed into `[0x007D4E88]` at `0x005FCE9E`, and
+**nothing else reads that address** — it looks like a dead PS2-era switch. Do not rely on it.
+
+### "FX mode" — one post-process function holds most of the screen effects
+
+`0x005F31E0`, called once per frame at `0x0047615D` (straight after the per-eye unit), gated by `[0x007CF0F0]`,
+`[0x007CF084]` == 0 and `[0x007D4DAC]`. Its pre-pass `0x005F57B0` (called at `0x004758F1`, i.e. INSIDE the per-eye
+unit) swaps the camera onto an FX render texture; `0x005F58A0` (at `0x00476142`) swaps it back and composites.
+Debug-menu entries (registered at `0x005E3420`..`0x005E3BB3`) name the parts:
+
+| Effect | Variable | Notes |
+| --- | --- | --- |
+| soft multi-tap blur / "AA" (the smeary camcorder softness) | `FX mode AA` `[0x007CF0F4]`, radius `[0x007CF0F8]` | 4 or 8 offset copies in a circle (`0x005F3260`..`0x005F3353`) |
+| night vision | `[0x007CF0FC]`, colours `0x007CF100`..`0x007CF10C` | set by game code at `0x00597FF4` |
+| **colour tint ("ArtFilter")** per weather: indoors/cloudy/rainy/foggy/clear | on `[0x007CF110]`, radius `0x007CF164`.., RGB `0x007CF178`..`0x007CF1B0` | level data keys `ARTFILTER_*`, `ARTFILTERRAD_*` |
+| **raster lines** (camcorder scanlines) | `[0x007CF1C4]` | drawn at `0x005F56BE` (`0x005FA6F0`), set by `0x00598044` |
+| "drug" effect (wobble) | `[0x007CF1E8]` | turned on by game code at `0x004B2E15` and `0x0058F86D` |
+| whole-scene colour/alpha | `FX scene R/G/B/A` `0x007CF1D8`..`0x007CF1E4` | |
+| two timed pulse effects (ramps with counters) | `[0x007CF1F0]` (count `0x007CF200`), `[0x007CF214]` (count `0x007CF224`) | ramped by `0x005E8A90`..; meaning not named `[hypothesis: damage/execution pulses]` |
+| full-screen fade/flash quad in the composite | `[0x007CF308]` | inside `0x005F58A0` |
+
+**One switch for all of the above in code: skip the call at `0x0047615D`** (5 bytes) **and** the pre-pass call at
+`0x004758F1` — but turning CAMERA FX off does both the right way, so prefer that.
+
+⚠️ **This is also what blacked out the eye-unit live check today**: the pre-pass inside the unit ran twice and saved
+the FX texture as the "real" buffer. Fixed in the eye unit (`eyeunit.c`, 2026-10-12); turning CAMERA FX off would
+also have avoided it.
+
+### The rest
+
+| Effect | Where | Switch idea | Sure? |
+| --- | --- | --- | --- |
+| **Screen fade rectangle** | `[0x00715CFC]` alpha, drawn by `0x00476A00` (called at `0x0047623A`, after the HUD) | leave on (fades to black are cuts, not a painted effect) or clamp to 0 | fairly |
+| **Damage-direction marker** (on-screen hit indicator) | texture `damagedir` `[0x007D37E4]`, used at `0x005DB58A` (HUD code) | HUD element: decide with the HUD work | likely |
+| Player damage map / `damageplayer` | texture `[0x007D3888]` used at `0x0049C697`; debug flag `[0x007AE94C]` | probably the health/damage HUD figure, not a screen tint | `[hypothesis]` |
+| Lens flare / light coronas | "Init the light flare FX" (`0x00473DA5`, `0x004748AE`); coronas drawn in pass 2 (`0x0059C330`, `0x005FB330`) | world-placed sprites, project per eye; keep unless they look flat | likely |
+| Blood | textures `blood*` (`[0x007D38EC]` at `0x00484953`) | world decals/particles, not a screen effect | likely |
+| Camera shake / handheld wobble | no "shake" string; the CAMERA FX branch in `0x0058DBC0` and the "drug" wobble are the candidates | CAMERA FX off | `[hypothesis]` |
+| Motion blur, depth of field, vignette | no separate pass found; the FX-mode multi-tap blur is the only blur | covered by CAMERA FX off | fairly |
+| Slow motion | `[0x007D3518]` (debug) | timing, not a screen effect | — |
+
+### What a live check should do (FLAT)
+
+Set NOISE FX and CAMERA FX to OFF in the menu and look: grain gone, softness/tint/scanlines gone. Then the proxy can
+force both at level start for VR.
+
+## 11p. The per-eye unit: black screen found and fixed (2026-10-12, `/lm`, dev PC, 14 launches)
+
+Note: `modding-notes/2026-10-12-lm-the-per-eye-unit-draws-a-black-screen.md`; evidence `dev-archive/recon/2026-10-12-eyeunit-live-check/`.
+- `manhunt_vr_eyeunit` (world unit `0x00475F9D..0x00476134` run twice per frame) left the screen black from level start, HUD and pause menu included, no crash `[verified-live 2026-10-12, n=2 old build]`.
+- **Cause:** on one frame at level start the camcorder FX mode is on; the FX pre-pass `0x005F57B0` (called at `0x004758F1`, inside the unit) saves the camera's frame buffer / z buffer / view window (cam+0x60/+0x64/+0x68) and points the camera at its FX texture; the matching restore (`0x005F58A0`, at `0x00476142`) runs once after the unit, so eye 2's pre-pass had saved the FX texture as "real" and the camera never came back `[inferred-static 2026-10-12]`. **Fix:** save those three at eye 1 start, put them back at eye 2 start. Proven live by the first log line: `differed 1`, `put back 1`, FX mode on at that frame; picture 8/8 with the put-back, black 3/3 with `manhunt_vr_eyeunit_noputback` `[verified-live 2026-10-12]`. The guards are not involved (picture 2/2 with `noguards`).
+- Eye unit with the fix: eye 1 = eye 2 runs (~950-990 per 5 s on the dev PC), game clock unchanged at 1000/s.
+- **The clock `0x00756270` is a uint32 millisecond counter**, not a float `[measured 2026-10-12]`; the log now reads it right.
+- The per-eye CAMERA (moving each eye) is drafted in `staging/.../src/eyecam.c` (flag `manhunt_vr_eyecam`, not built in yet).
