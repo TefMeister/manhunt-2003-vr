@@ -1425,3 +1425,5 @@ Note: `modding-notes/2026-10-12-lm-the-per-eye-unit-draws-a-black-screen.md`; ev
 - Eye unit with the fix: eye 1 = eye 2 runs (~950-990 per 5 s on the dev PC), game clock unchanged at 1000/s.
 - **The clock `0x00756270` is a uint32 millisecond counter**, not a float `[measured 2026-10-12]`; the log now reads it right.
 - The per-eye CAMERA (moving each eye) is drafted in `staging/.../src/eyecam.c` (flag `manhunt_vr_eyecam`, not built in yet).
+- **Per-eye camera works live** (`eyecam.c`, flag `manhunt_vr_eyecam` = separation in mm; build `a9c89cbb4459`): at 1000 mm the log reads left +0.5 / right -0.5 along the camera's right vector both after the game's sync and at the end of each eye's draw, centre restored exactly; the on-screen (last-drawn, right) eye sits 0.5 m right with correct parallax, no black screen, HUD normal `[verified-live 2026-10-12, n=1]`. World units ≈ metres `[hypothesis]`.
+- **§4s checked live:** writing 0 to NOISE FX `[0x007D6B14]` and CAMERA FX `[0x007D6B30]` in a running level removes grain and the camcorder softness; 1 restores them `[verified-live 2026-10-12, n=1]`.
