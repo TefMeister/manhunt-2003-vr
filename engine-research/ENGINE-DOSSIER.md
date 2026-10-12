@@ -1394,6 +1394,79 @@ Not deployed, not run.
   equal the unpacked image; the vtable slot must point into `.text`; KILL refuses the player, non-characters
   and the already dead. SETPOS logs the position 0.3 s and 1.5 s later and flags a snap-back.
 
+### 11r. Music volume and each eye into its own half (reader, 2026-10-12; folded from the inbox)
+
+**Live result, same day:** with `manhunt_vr_eyeunit` + `manhunt_vr_eyecam` (1000) + `manhunt_vr_eyesplit` on build `abe668c7d22e`, the screen shows two correctly shaped pictures side by side, the left camera shifted left, no grain, HUD across the whole screen, still and after a mouse turn; the log counts 4921 left and 4921 right halves `[verified-live 2026-10-12, n=1]`. Music: `Settings.dat` 0x13C set to 0 with the game closed; after a full run and quit the file still holds 0 `[verified-numerically 2026-10-12, n=1]` (whether it is actually silent is unheard). Evidence: `dev-archive/recon/2026-10-12-eyesplit-side-by-side/`.
+
+From: the static reader beside the 2026-10-12 `/lm` session (dev PC). Nothing launched, attached or deployed; no git
+run. `Settings.dat` was only read. All `[inferred-static 2026-10-12]` unless tagged.
+
+## 1. Settings.dat layout and the music volume
+
+- The writer `0x00606130` (path object `0x0073965C` = `\Settings.dat`) writes three raw blocks, no header or checksum:
+  file `0x000..0x12F` = memory `0x00710BF4` (0x130 B); **file `0x130..0x18F` = memory `0x007D6AF0` (0x60 B)**;
+  file `0x190..0x2BF` = memory `0x00710D24` (0x130 B). Total 0x2C0 = 704 B, matching the file. Reader: `0x00605E50`.
+  So **file offset = memory address − `0x007D6AF0` + `0x130`** in the middle block.
+- The audio options menu (`AUDSET`, code around `0x00602ED0`) lists, against `edi = 0x007D6AF4`:
+  `MUSVOL` → `[edi+8]`; `SFXVOL` → `[edi+4]`; `SUBTIT` → `[edi]`.
+
+| Setting | Memory | **File offset** | Value read 2026-10-12 |
+| --- | --- | --- | --- |
+| Subtitles (0/1) | `0x007D6AF4` | `0x134` | 1 |
+| SFX volume | `0x007D6AF8` | `0x138` | 14 |
+| **MUSIC volume** | **`0x007D6AFC`** | **`0x13C`** | **14** |
+| NOISE FX | `0x007D6B14` | `0x154` | 1 |
+| CAMERA FX | `0x007D6B30` | `0x170` | 1 |
+| invert look (`0x00460490` flips the sign) | `0x007D6B38` | `0x178` | 0 |
+| mouse sensitivity X / Y (input code `0x004920A7` / `0x004920DB`) | `0x007D6B40` / `0x007D6B44` | `0x180` / `0x184` | 10 / 10 |
+| (unnamed; menu `0x00603AA5`) | `0x007D6B48` | `0x188` | 6 |
+
+  The 10/10/6 at `0x180` are therefore NOT audio.
+- **Range: 0..15** (slider max `[0x007C8A18]` = 16 steps, set at `0x005D52D4`). Applied in `0x0044B0D0`:
+  mixer value = v / 15 × 127 → `0x00456190` → mixer `0x006C7680` byte +1 (`0x006C7681`), read by the music
+  stream code at `0x005A674E`. **0 = silent.** SFX goes to byte +0 the same way.
+- **Muting while it runs**: `POKEB 7D6AFC 0` changes the setting, which the game then writes to Settings.dat on exit;
+  the mixer only picks it up when `0x0044B0D0` runs again (next launch or leaving the audio menu, `[hypothesis]` for
+  when exactly). `POKEB 6C7681 0` mutes the mixer's music byte at once, for this run only. Both addresses are in
+  `.data`, so POKEB allows them.
+
+## 2. Each eye into its own half of the back buffer (draft, not run)
+
+- RenderWare's D3D8 `RwCameraBeginUpdate` (`0x00641CE0`) sets the render target (device +0x7C, `0x00641F12/26`)
+  and then, at `0x006428FC`, `IDirect3DDevice8::SetViewport` (slot 40) from the frame-buffer raster's offset
+  (+0x1C/+0x1E shorts) and size (+0x0C/+0x10), MinZ 0, MaxZ 1. The world camera's begin-update runs inside the
+  per-eye unit (`0x00475890` → `0x00475969`), after eyeunit.c's `eu_begin`.
+- **Design (`src/eyesplit.c`, flag `manhunt_vr_eyesplit`, needs `manhunt_vr_eyeunit`; add `manhunt_vr_eyecam` for
+  two different eyes):**
+  - A SetViewport hook. While eye 1 runs, a FULL-back-buffer viewport becomes the left half; while eye 2 runs, the
+    right half. Any other viewport, such as shadow or FX render textures with their own cameras, passes through.
+    At each eye's start its half is also set at once, so an early Clear only touches that half. After eye 2 the
+    full viewport is set again, so the HUD and menus are unchanged.
+  - The view window's width is halved per eye so each half has the right shape. The flag text `squeeze` keeps the
+    game's full field of view, squeezed. The centre window is put back after eye 2, with `_rwFrameSyncDirty`
+    `0x006218F0` after each change.
+  - **NOISE FX `[0x007D6B14]` and CAMERA FX `[0x007D6B30]` are forced to 0** at every eye-1 start and frame end.
+    This follows the standing rule, and it also stops the FX pre-pass from drawing its render texture through the
+    half viewport. ⚠️ These are the player's menu settings, saved to Settings.dat (`0x154` / `0x170`) on exit, so
+    they stay OFF afterwards.
+  - Expected side effect: eyeunit.c's raster put-back sees eye 2 start with a different view window every frame and
+    puts the centre one back. The buffers are the same, so this is harmless, and "put back" ≈ frames in its log.
+- **Build** `[compile-verified 2026-10-12]`: committed staging `8052597` (rebuilds to `a9c89cbb4459`, the live
+  eyecam build) plus `eyesplit-wiring-2026-10-12.patch` (eyeunit.c: 3 calls; proxy.c: 1 hook line; build.sh) plus
+  `src/eyesplit.c`. Result: `build/d3d8.eyesplit-abe668c7.dll`, 286,208 B, SHA-256
+  `abe668c7d22ed3f4811f13ca22dd8b45af373280d83767bdc65d52804c96a3d3`. Two builds gave the same hash, and
+  eyesplit.c is clean at `-Wextra`. The new self-test `tests/eyesplit_selftest.c` passes 14/14 (which viewports
+  count as full, the halves, odd widths, the flag text). The eyecam and drmlog self-tests still pass. Does NOT
+  include the SETPOS/KILL wiring. Both patches touch the same CreateDevice lines in proxy.c, so apply the second
+  by hand.
+- **What a flat live check should show** (`manhunt_vr_eyeunit` + `manhunt_vr_eyecam` holding `1000` +
+  `manhunt_vr_eyesplit`):
+  - Two pictures side by side, with the left one's camera 1 m to the left of the right one's.
+  - Each picture the right shape, HUD over the whole screen, no grain or softness.
+  - EYESPLIT log: left ≈ right ≈ frames, and "passed through" counts the shadow/FX passes.
+  - **If one half is black:** a Clear inside the unit after the other eye drew `[hypothesis]`.
+  - **If both pictures are full width:** the world camera's begin-update is not inside the unit after all.
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
