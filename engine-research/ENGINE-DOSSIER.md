@@ -1319,6 +1319,81 @@ at both ends and no code outside jumps into either patched span (whole-image sca
 source without it rebuilds to the previously installed `051c3f93de47` `[verified-numerically 2026-10-08]`. Live check and
 outcome table: `modding-notes/2026-10-08-pd-the-per-eye-unit-same-camera.md`.
 
+### 11q. Teleport, kill and the save-point pickup (reader, 2026-10-12; folded from the inbox)
+
+From: the static reader helper beside the 2026-10-12 `/lm` session (dev PC). Nothing launched, attached or
+deployed; no git run. Sources: `manhunt_module_unpacked.bin` (capstone), the Jury_Turf level script's own
+source (`MHSC` → `DBUG` → `SRCE` chunks of `levels/jury_turf/scripts/jury_turf.mls`, re-extracted to a scratch
+folder, not committed). All `[inferred-static]` unless tagged.
+
+## 1. Moving an entity: the script's MoveEntity
+
+- Script builtin **`0x7C` = MoveEntity** (follows `GetEntity('hCarPark1')` in `trig_14`'s bytecode).
+  Builtin jump table: `jmp [ecx*4 + 0x006728E4]` at `0x0047A111`, index = id − 0x76 (ids 0x76..0x14B).
+  The ids 0x47..0x53 use a second table at `0x00672890` (`0x0047A028`).
+- VM case `0x0047A7DA`: pops the flag (ignored), the vector (ENGINE coords), the entity; then
+  **`entity->vtbl[0x3C](&vec, 1)`** (`__thiscall`, `ret 8`), and if the entity is the player,
+  **`0x0049A660(player)`** (`__thiscall`, no args; refreshes the player's nav cell `+0x198`/`+0x19C` and
+  `+0x180..+0x18C`).
+- `vtbl[0x3C]` is SetPosition. Base `0x00434DB0`: writes the RwFrame position (`[[ent+0x80]+4]+0x40`),
+  then syncs the **physics object at `ent+0xA8`** (its `vtbl+0x34`, and `+0x24` when the flag is set) and
+  marks the frame dirty (`0x00618440`). Character version `0x004AAD70` adds velocity/state resets and
+  `ent+0xA8`→`+0x88 = 0`; hunter class `0x004ED430` also pushes overlapping characters apart.
+  **So writing the frame's `+0x40` by hand skips the physics sync; expect it to be undone next frame
+  `[hypothesis]`.** (POKEB cannot do it anyway: it only writes `.data`/`.bss`.)
+- Vtables with slot `+0x3C` = `0x004ED430` and `+0x64` = `0x004ECD10`: `0x0069B150`, `0x00791550`,
+  `0x00791814` (n=110, hunters); `0x00734028` (n=109) has `+0x3C` = `0x004AAD70` (player candidate).
+
+## 2. Killing a character the way the script does
+
+- Script builtin **`0x12E` = SetDamage** (VM case `0x0047AAD7`) = **`0x00431480(ent, float)`**, `__thiscall`,
+  one float on the stack, `ret 4`; it is really SetHealth.
+  - Returns at once if health `+0x14` ≤ 0.0 already.
+  - If the new value ≤ 0.0001 (`[0x0069B348]`): `+0x14 = −1.0`, then the die virtual `vtbl[0x64]`.
+  - Hunters' die `0x004ECD10`: `+0x760 = 0x1B` (dead), AI shut-off through `+0x67C`/`+0x680`, then the
+    character die `0x004A1EC0` (death animation selection etc.).
+- 21 call sites reach `0x00431480`, character combat code among them (`0x004A0A44`, `0x004A0F16`,
+  `0x004A10BC`), so a script kill and a combat kill share the die path. Where `OnDeath` is posted was **not
+  traced** (the event name strings at `0x00719D04..` have no direct pointer references); that it fires for
+  a SetHealth(0) kill is `[hypothesis]`, checkable live (below).
+- **Do not poke health to 0 by hand**: the state stays alive, `IsEntityAlive` stays TRUE, and a later
+  proper kill returns early because health is already ≤ 0.
+
+## 3. The car-park gate counter (script source)
+
+- `hCarPark1` and `hCarPark2` each have `OnDeath`: `thecarpark := thecarpark + 1` (a `level_var`), then
+  `runscript('player','DEAD1')` at 1 (HEAR text after 2 s, once) and `'DEAD2'` at 2 (3 s later
+  `UnLockEntity('Gen_E_L_MeshGLeft_(D)06')` plus a short camera cut).
+- **Live tell for "the kill counted"**: HEAR text about 2 s after the first; the rusty-gate camera cut about
+  3 s after the second.
+
+## 4. Save points have no script condition
+
+- `Gen_Save_Point` pickups (class init `0x004D0B20` / `0x004D0EF0`, name compare against `0x00738F58`)
+  set `+0x178 = 1`. Per frame (`0x004D1B40..`) any touching entity on the entity lists whose type is
+  `0x20F` (the player test `0x00431B00`) with health > 0 sets `+0x178 = 2`; after a short timed fade
+  (`0x004D22CC..`) the pickup removes itself (`vtbl+0x64`), shows the text and calls `0x004D2400`
+  (the save). **Nothing checks doors, hunters or objectives.**
+- The level script only asks whether the save point still exists: with `Gen_Save_Point02` gone (a load
+  from save 2), D06 is **not** locked, `Rusty_Gate`, `Trigger_14`, `Trigger_18` are not created, and any
+  living `hCarPark1/2` are put into the hunting pack (`jury_turf` level script, the `Expansion` setup).
+
+## 5. Build
+
+`staging/manhunt-2003-vr/proxy-d3d8/src/teleport.c` + `teleport-wiring-2026-10-12.patch` (3 small edits:
+`input.c`, `proxy.c`, `build.sh`); built from staging HEAD `8052597` + the patch:
+`build/d3d8.teleport-79931cf5.dll`, 289,280 B, SHA-256 `79931cf5b486dd824064b3535597bf1c40966315dcdc1ed4fe7d69ee36112857`
+`[compile-verified 2026-10-12]` (two builds, same hash; `teleport.c` clean at `-Wextra`; the generated
+`__thiscall` calls checked in the object code: `ecx` = entity, callee-popped args). Self-tests still pass.
+Not deployed, not run.
+
+- `SETPOS <mapX> <mapY> <mapZ>` and `KILL <name>` are queued by the script thread and run inside a new
+  `IDirect3DDevice8::Present` vtable hook (slot 15), i.e. between frames on the render thread, which is
+  taken to be the game-logic thread `[hypothesis]` (the log prints both thread ids).
+- Guards: app state `[0x00755E4C]` == 4; pointers readable; code bytes at `0x00431480` and `0x0049A660`
+  equal the unpacked image; the vtable slot must point into `.text`; KILL refuses the player, non-characters
+  and the already dead. SETPOS logs the position 0.3 s and 1.5 s later and flags a snap-back.
+
 ## 12. Open risks toward the North Star
 - <what could still block VR + head tracking>
 - **✅ RESOLVED (2026-08-26): the post-`CreateDevice` crash — root cause was the WINDOW SIZE.**
