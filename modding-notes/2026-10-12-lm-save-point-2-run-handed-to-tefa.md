@@ -25,8 +25,8 @@ Recording: `E:\OBS gameplay videos\manhunt-2003-vr\save-point-2-test_2026-10-12_
 `SETPOS x y z` and `KILL <name>` (`staging/.../src/teleport.c`, wiring as a separate patch;
 `d3d8.teleport-79931cf5.dll`) use the game's own MoveEntity path and SetHealth `0x00431480`, so a
 kill goes through the normal death path. The save-point pickup checks only "the player touches it
-with health above 0", not the gate `[inferred-static]`. Detail: the reader's inbox drop
-`engine-research/inbox/2026-10-12-lm-reader-teleport-kill-savepoint.md`.
+with health above 0", not the gate `[inferred-static]`. Detail: dossier §11q (was the reader's inbox drop
+`engine-research/inbox/2026-10-12-lm-reader-teleport-kill-savepoint.md`).
 
 ## Not established
 
