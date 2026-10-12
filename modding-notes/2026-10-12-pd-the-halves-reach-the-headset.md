@@ -25,7 +25,9 @@ D3D11 device), ported from Alan Wake's `aw_xr.c` (the 32-bit bridge that reached
   submitted; the simulator showed **red in the left eye, blue in the right** `[measured 2026-10-12, n=1]`. The split
   itself (halves, row padding, whole-to-both) passes its own check. Evidence:
   `dev-archive/recon/2026-10-12-headset-route-outside-the-game/`.
-- Builds reproducibly: `d3d8.dll` `af2be54a8e6f` installed (was `abe668c7d22e`, kept on E:) `[compile-verified 2026-10-12]`.
+- The headset loop was then split into small steps (the Inspector flagged one long, deeply nested function); the
+  same test ran again with the same result.
+- Builds reproducibly: `d3d8.dll` `807a8a230910` installed (was `abe668c7d22e`, kept on E:) `[compile-verified 2026-10-12]`.
 
 ## Not established
 
