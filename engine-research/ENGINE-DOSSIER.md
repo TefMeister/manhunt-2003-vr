@@ -1575,3 +1575,11 @@ Note: `modding-notes/2026-10-12-lm-the-per-eye-unit-draws-a-black-screen.md`; ev
 - The per-eye CAMERA (moving each eye) is drafted in `staging/.../src/eyecam.c` (flag `manhunt_vr_eyecam`, not built in yet).
 - **Per-eye camera works live** (`eyecam.c`, flag `manhunt_vr_eyecam` = separation in mm; build `a9c89cbb4459`): at 1000 mm the log reads left +0.5 / right -0.5 along the camera's right vector both after the game's sync and at the end of each eye's draw, centre restored exactly; the on-screen (last-drawn, right) eye sits 0.5 m right with correct parallax, no black screen, HUD normal `[verified-live 2026-10-12, n=1]`. World units ≈ metres `[hypothesis]`.
 - **§4s checked live:** writing 0 to NOISE FX `[0x007D6B14]` and CAMERA FX `[0x007D6B30]` in a running level removes grain and the camcorder softness; 1 restores them `[verified-live 2026-10-12, n=1]`.
+
+## 2026-10-12 (`/pd`, dev PC, no launch): the two halves reach the headset (outside the game)
+`mhxr.c` (DirectX 8 side) + `mhxr_xr.c` (OpenXR on our own D3D11 device), from Alan Wake's 32-bit bridge: off unless
+`manhunt_vr_openxr` (line 1 = runtime json); lockable back buffer asked at CreateDevice/Reset (CopyRects fallback); each
+Present split into left/right halves per eyesplit; one world-locked screen per eye. In a 32-bit test program with a real
+D3D8 device and the 32-bit simulator: lockable read WORKS, 400x600 halves, session running, left red / right blue
+`[measured 2026-10-12, n=1]`. Not run in the game. Installed `af2be54a8e6f` + 32-bit loader.
+Note: `modding-notes/2026-10-12-pd-the-halves-reach-the-headset.md`.

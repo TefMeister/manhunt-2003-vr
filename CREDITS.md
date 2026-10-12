@@ -26,6 +26,8 @@ notes, and tools we wrote ourselves.
 | Capstone — the disassembler used to read the unpacked image offline | Capstone contributors | https://www.capstone-engine.org/ |
 | Frida — live instrumentation used to identify the vtable owner, the polled input devices, and the transform path, without relaunching the game | Ole André V. Ravnås & Frida contributors, supported by NowSecure | https://frida.re/ |
 | llvm-mingw — the 32-bit toolchain the proxy is built with | Martin Storsjö & contributors | https://github.com/mstorsjo/llvm-mingw |
+| OpenXR headers and loader (Apache-2.0 OR MIT) | The Khronos Group | https://github.com/KhronosGroup/OpenXR-SDK |
+| OpenXR Simulator — headset-free testing on the dev PC | webhead2oo9 | https://github.com/webhead2oo9/OpenXR-Simulator |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)
