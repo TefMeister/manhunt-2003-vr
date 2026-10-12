@@ -1,0 +1,6 @@
+  log:  OPENXR: projection views with the headset's own lens per eye (manhunt_vr_openxr_projection)
+  log:  OPENXR: session running
+  log:  OPENXR: two 400x600 eye swapchains, format 91
+  log:  OPENXR: lenses: left eye tan -1.376 0.839 -1.390 0.965, right eye -0.839 1.376 -1.390 0.965 (left, right, down, up)
+lens handed to the game side: left eye tan -1.376 0.839 -1.390 0.965
+RESULT: split ok; capture lines 2, session running 1, headset-frame lines 2 - the whole route works outside the game

@@ -1583,3 +1583,11 @@ Present split into left/right halves per eyesplit; one world-locked screen per e
 D3D8 device and the 32-bit simulator: lockable read WORKS, 400x600 halves, session running, left red / right blue
 `[measured 2026-10-12, n=1]`. Not run in the game. Installed `807a8a230910` + 32-bit loader.
 Note: `modding-notes/2026-10-12-pd-the-halves-reach-the-headset.md`.
+
+## 2026-10-12 (`/pd`, dev PC, no launch): each eye drawn with the headset's lens
+Flag `manhunt_vr_openxr_projection`: `mhxr_xr.c` reads both eyes' pose + lens once (`xrLocateViews` at the first
+positioned frame); `eyesplit.c` sets view window = half the lens width/height in tangents and view offset = the lens
+centre (both put back after eye 2); the halves are one projection layer at the start pose. Test program + simulator:
+each eye filled, left red / right blue `[measured 2026-10-12, n=1]`. RenderWare view-offset sign `[hypothesis]`
+(`ES_FOV_OFFSET_*_SIGN`). Not run in the game. Installed `fc56feab8b19`.
+Note: `modding-notes/2026-10-12-pd-each-eye-gets-the-headsets-lens.md`.
