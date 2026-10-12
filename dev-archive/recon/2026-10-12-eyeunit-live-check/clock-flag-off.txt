@@ -1,0 +1,5 @@
+clock 104211  per second 999.3871
+clock 109216  per second 1000.8966
+clock 114213  per second 999.2083
+clock 119219  per second 1001.0824
+clock 124220  per second 1000.1151
