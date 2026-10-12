@@ -1591,3 +1591,12 @@ centre (both put back after eye 2); the halves are one projection layer at the s
 each eye filled, left red / right blue `[measured 2026-10-12, n=1]`. RenderWare view-offset sign `[hypothesis]`
 (`ES_FOV_OFFSET_*_SIGN`). Not run in the game. Installed `fc56feab8b19`.
 Note: `modding-notes/2026-10-12-pd-each-eye-gets-the-headsets-lens.md`.
+
+## 2026-10-12 (`/pd`, dev PC, no launch): head tracking
+Projection mode + eyecam: the headset thread publishes both eyes' poses relative to a yaw-only start pose
+(`mhxr_pose.c`); eyecam takes them once at eye 1's start and builds each eye camera as the centre camera turned and
+moved by the eye pose, mapping OpenXR head space to RenderWare camera axes (right = screen left, up, at = forward)
+through diag(-1, 1, -1) (`EyeCam_HeadMatrix`); the stored frame carries the pose it was drawn from and is shown at it.
+Self-test 13/13 `[verified-numerically 2026-10-12]`; test program + simulator, head turned 30: read back 30.0 degrees
+`[measured 2026-10-12, n=1]`. Turn direction in the game `[hypothesis]`. Installed `2b076953c7c1`.
+Note: `modding-notes/2026-10-12-pd-the-world-turns-with-the-head.md`.
