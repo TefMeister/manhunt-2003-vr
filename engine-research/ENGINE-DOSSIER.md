@@ -1581,5 +1581,5 @@ Note: `modding-notes/2026-10-12-lm-the-per-eye-unit-draws-a-black-screen.md`; ev
 `manhunt_vr_openxr` (line 1 = runtime json); lockable back buffer asked at CreateDevice/Reset (CopyRects fallback); each
 Present split into left/right halves per eyesplit; one world-locked screen per eye. In a 32-bit test program with a real
 D3D8 device and the 32-bit simulator: lockable read WORKS, 400x600 halves, session running, left red / right blue
-`[measured 2026-10-12, n=1]`. Not run in the game. Installed `af2be54a8e6f` + 32-bit loader.
+`[measured 2026-10-12, n=1]`. Not run in the game. Installed `807a8a230910` + 32-bit loader.
 Note: `modding-notes/2026-10-12-pd-the-halves-reach-the-headset.md`.
