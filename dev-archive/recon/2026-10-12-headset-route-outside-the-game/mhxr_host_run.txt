@@ -1,0 +1,15 @@
+split: PASS (left half to the left eye, right half to the right; padding skipped; whole picture to both)
+  log:  OPENXR: ON - back buffer made lockable for the headset copy
+  log:  OPENXR: Present and Reset hooked; headset thread started (each eye's half to its own screen)
+  log:  OPENXR: runtime for this game only: D:\claude video game stuff\tools\OpenXR-Simulator\openxr_simulator-32.json
+  log:  OPENXR: reading the back buffer directly (lockable): WORKS
+  log:  OPENXR: capturing 400x600 eye pictures (side by side halves)
+  log:  OPENXR: 1 game frames captured (lockable back buffer), 0 failures
+  log:  OPENXR: xrCreateInstance ...
+  log:  OPENXR: session created; waiting for the runtime to start it
+  log:  OPENXR: session running
+  log:  OPENXR: two 400x600 eye swapchains, format 91
+  log:  OPENXR: screens placed at head height 1.70 m
+  log:  OPENXR: 1 headset frames submitted
+RESULT: split ok; capture lines 2, session running 1, headset-frame lines 1 - the whole route works outside the game
+exit=0
