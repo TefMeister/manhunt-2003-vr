@@ -1607,3 +1607,31 @@ lens, and RenderWare maps the view window onto the drawn area whatever its shape
 `[inferred-static 2026-10-12]`. A 400x600 half has ~71% as much detail across as up/down with the simulator lens
 (94% at 640x720). A larger video mode would help; 800x600 is the only mode offered (§4).
 Note: `modding-notes/2026-10-12-pd-no-squeeze-only-less-sharp-sideways.md`.
+
+## 11s. The game in the headset simulator; video modes (2026-10-14, `/lm`, dev PC, five launches; reader folded from inbox)
+
+- **The route works in the game** `[verified-live 2026-10-14, n=1]`: lockable back buffer, session running, each eye
+  filled in the 32-bit simulator; head 30 left slides the scene right, head 20 up looks up (the signs in
+  `EyeCam_HeadMatrix` are right). Note: `modding-notes/2026-10-14-lm-the-game-in-the-headset-simulator.md`.
+- **Hand Freeze breaks 32-bit OpenXR** `[verified-live 2026-10-14, n=1]`: its implicit layer is registered in HKCU
+  (no 32/64-bit split) and is 64-bit only; the 32-bit loader fails `xrCreateInstance` with -32. The proxy now sets
+  `DISABLE_HAND_FREEZE_LAYER=1` for itself. Loader debug output goes to `manhunt_vr_xrloader_log.txt`.
+- **The first captured frame has the wrong size** (408x639 or 648x759, before WINDOW FIT); the headset thread now
+  remakes its swapchains when the size changes. Before that fix only one headset frame was ever shown.
+- **The HUD is drawn once over the full back buffer**, after both eyes, so it lands split across them (radar left,
+  health right) `[verified-live 2026-10-14, n=1]`.
+- **Video modes (reader)** — supersedes "the mode list offers 800x600 only" (2026-10-12 note):
+  - The proxy's recon lists 21 modes on the dev PC (0 = desktop windowed; 4 = 800x600; 8 = 1280x720; 16 = 1600x900;
+    19 = 1920x1080) `[measured 2026-10-14, n=2]`. Numbers differ per graphics card.
+  - RenderWare builds its table at `0x640680` (into `[0x824470]`, count `[0x824464]`): entry 0 from
+    `GetAdapterDisplayMode`, the rest from `EnumAdapterModes`, merged by size and format. Device-system requests 5/6/7
+    (`0x6126E0`/`0x612710`/`0x612770`), D3D8 handler `0x63F260`; the chosen mode is copied at `0x63F27C`
+    `[inferred-static 2026-10-14]`. A proxy hook on IDirect3D8 slots 6/7 could add modes.
+  - Registry `Video\Mode` = RenderWare mode index; `Video\Index` = the launcher combo's position (combo filled at
+    `0x4BEE40` with fullscreen modes of at least 640x480; OK at `0x4BF6E0`) `[inferred-static 2026-10-14]`. Closes
+    §4's "Index meaning untraced".
+  - 2D is sized from the camera raster: `ms_scrn` (`0x7D3440/44`) from the frame-buffer raster at `0x5E247B`; scales
+    width/640 and height/480 `[inferred-static]`. RenderWare checks the camera raster fits the client
+    (`0x65F0C7`, bypass `js` at `0x65F0D2`) `[inferred-static]`.
+  - **Set on the dev PC: Mode 8, Index 7 = 1280x720.** Window 1280x720, each eye 640x720, menu route unchanged
+    `[verified-live 2026-10-14, n=1]`. Every 16:9 mode gives 94% detail across vs up/down (800x600: 71%).

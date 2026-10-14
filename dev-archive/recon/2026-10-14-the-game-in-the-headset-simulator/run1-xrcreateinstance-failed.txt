@@ -1,0 +1,22 @@
+[17:40:15.703]   OPENXR: projection views with the headset's own lens per eye (manhunt_vr_openxr_projection)
+[17:40:15.703]   OPENXR: ON - back buffer made lockable for the headset copy
+[17:40:16.031]   OPENXR: Present and Reset hooked; headset thread started (each eye's half to its own screen)
+[17:40:16.031]   OPENXR: runtime for this game only: D:\claude video game stuff\tools\OpenXR-Simulator\openxr_simulator-32.json
+[17:40:16.043]   OPENXR: xrCreateInstance ...
+[17:40:16.326]   OPENXR: xrCreateInstance failed: no 32-bit D3D11 runtime
+[17:40:16.405]   OPENXR: reading the back buffer directly (lockable): WORKS
+[17:40:16.405]   OPENXR: capturing 408x639 eye pictures (side by side halves)
+[17:40:16.406]   OPENXR: 1 game frames captured (lockable back buffer), 0 failures
+[17:40:23.431]   OPENXR: capturing 400x600 eye pictures (side by side halves)
+[17:41:23.359]   OPENXR: 1801 game frames captured (lockable back buffer), 0 failures
+[17:41:39.344]   OPENXR: 3601 game frames captured (lockable back buffer), 0 failures
+[17:41:55.019]   OPENXR: 5401 game frames captured (lockable back buffer), 0 failures
+[17:42:10.052]   OPENXR: 7201 game frames captured (lockable back buffer), 0 failures
+[17:42:24.892]   OPENXR: 9001 game frames captured (lockable back buffer), 0 failures
+[17:42:39.704]   OPENXR: 10801 game frames captured (lockable back buffer), 0 failures
+[17:42:54.482]   OPENXR: 12601 game frames captured (lockable back buffer), 0 failures
+[17:43:09.459]   OPENXR: 14401 game frames captured (lockable back buffer), 0 failures
+[17:43:25.016]   OPENXR: 16201 game frames captured (lockable back buffer), 0 failures
+[17:43:37.332]   OPENXR: 18001 game frames captured (lockable back buffer), 0 failures
+[17:43:48.352]   OPENXR: 19801 game frames captured (lockable back buffer), 0 failures
+[17:43:58.304]   OPENXR: 21601 game frames captured (lockable back buffer), 0 failures

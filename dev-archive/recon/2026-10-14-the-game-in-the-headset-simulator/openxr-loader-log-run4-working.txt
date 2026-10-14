@@ -1,0 +1,11 @@
+Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Entering loader trampoline
+Info [GENERAL |  | OpenXR-Loader] : RuntimeManifestFile::FindManifestFiles - using environment variable override runtime file D:\claude video game stuff\tools\OpenXR-Simulator\openxr_simulator-32.json
+Info [GENERAL |  | OpenXR-Loader] : RuntimeManifestFile::CreateIfValid - attempting to load D:\claude video game stuff\tools\OpenXR-Simulator\openxr_simulator-32.json
+Info [GENERAL | xrCreateInstance | OpenXR-Loader] : RuntimeInterface::LoadRuntime succeeded loading runtime defined in manifest file D:\claude video game stuff\tools\OpenXR-Simulator\openxr_simulator-32.json using interface version 1 and OpenXR API version 1.0
+Info [GENERAL |  | OpenXR-Loader] : Implicit layer <home>\AppData\Local\Programs\HandFreeze\hand_freeze_layer.json is disabled
+Warning [GENERAL |  | OpenXR-Loader] : ReadLayerDataFilesInRegistry - failed to read registry location \ApiLayers\Explicit in either HKEY_LOCAL_MACHINE or HKEY_CURRENT_USER
+Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Entering LoaderInstance::CreateInstance
+Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Entering loader terminator
+Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Completed loader terminator
+Info [GENERAL | xrCreateInstance | OpenXR-Loader] : LoaderInstance::CreateInstance succeeded with 0 layers enabled and runtime interface - created instance = 0x0000000000000001
+Verbose [GENERAL | xrCreateInstance | OpenXR-Loader] : Completed loader trampoline
