@@ -3,9 +3,8 @@
 A VR conversion mod for **Manhunt** (2003) — the goal is stereo rendering and
 6DOF head tracking, built on the game's **RenderWare** engine foundation.
 
-> **Status: work in progress — nothing playable released yet, no code written
-> yet.** This folder holds releases only; watch it if you want to know
-> the moment there is something to try.
+> **Status: work in progress, nothing playable released yet.** The game reaches a headset simulator
+> with one picture per eye, and head tracking turns the view the right way. The real headset is next.
 
 ## What this will be
 
