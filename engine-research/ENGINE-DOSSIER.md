@@ -1635,3 +1635,18 @@ Note: `modding-notes/2026-10-12-pd-no-squeeze-only-less-sharp-sideways.md`.
     (`0x65F0C7`, bypass `js` at `0x65F0D2`) `[inferred-static]`.
   - **Set on the dev PC: Mode 8, Index 7 = 1280x720.** Window 1280x720, each eye 640x720, menu route unchanged
     `[verified-live 2026-10-14, n=1]`. Every 16:9 mode gives 94% detail across vs up/down (800x600: 71%).
+
+## 11t. The HUD into both eyes (2026-10-15, `/pd`, dev PC, no launch)
+
+- **All RenderWare 2D goes through four engine entries** `[inferred-static 2026-10-15]`: RwEngineInstance
+  (`[0x0082279C]`) + 0x10 is the open RwDevice; +0x28 Im2D line, +0x2C triangle, +0x30 primitive, +0x34 indexed,
+  copied at start-up from the driver table `0x007EB824` (`rep movsd` at `0x0063F54C`) = `0x00659680`, `0x00659880`,
+  `0x00659AD0`, `0x00659D40`. +0x20/+0x24 are RenderStateSet/Get (175/41 call sites). A HUD call (`0x005F9A7B`)
+  passes (type, vertices, count), cdecl. Vertices: 28 bytes `{x, y, z, rhw, colour, u, v}`, back-buffer pixels,
+  format `0x144`, drawn from a dynamic vertex buffer, so the viewport cannot move them.
+- Calls through `[0x0082279C]` + 0x120/+0x134 are engine helpers, not the D3D device (`[0x00824448]`).
+- **Built** (`src/hud2.c`, flag `manhunt_vr_hud2`, needs eyesplit): from the end of eye 2 to Present each 2D call
+  is drawn twice, shrunk about the centre into each half (default 50 %, optional shift); full-screen primitives
+  once, unchanged. Self-test 21/21 `[verified-numerically 2026-10-15]`; not run. Installed `dacd2fa22cfd`.
+- The committed source no longer rebuilds to `f289f9cfb7a9`: the toolchain folder now links to llvm-mingw 20260908
+  `[measured 2026-10-15]`. Note: `modding-notes/2026-10-15-pd-the-hud-into-both-eyes.md`.
