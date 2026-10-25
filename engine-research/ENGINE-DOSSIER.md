@@ -1650,3 +1650,5 @@ Note: `modding-notes/2026-10-12-pd-no-squeeze-only-less-sharp-sideways.md`.
   once, unchanged. Self-test 21/21 `[verified-numerically 2026-10-15]`; not run. Installed `dacd2fa22cfd`.
 - The committed source no longer rebuilds to `f289f9cfb7a9`: the toolchain folder now links to llvm-mingw 20260908
   `[measured 2026-10-15]`. Note: `modding-notes/2026-10-15-pd-the-hud-into-both-eyes.md`.
+
+**2026-10-25, first real headset (Quest 3, asymmetric lens): the per-eye view offset sign in `eyesplit.c` was wrong.** RenderWare's view offset with the frame's right pointing to screen LEFT needs the x sign negated (`flipx` in `manhunt_vr_eyesplit`): the eyes went from far apart with no depth to "much better" `[verified-live 2026-10-25, n=1]`; a smaller gap remains, cause open. The simulator's symmetric lens can never show this; test with the Quest 3 tangents (left -1.192 0.839 -1.036 0.675).
