@@ -1,6 +1,8 @@
 # Research index
 
-**Last `/gr` pass: 2026-10-11 (estate sweep) — CHECK-IN.** Inbox empty. One search for a public fix for broken or crashing saves (the entity-data row) found only general loading advice already covered (PCGamingWiki, MHNoDRM). Nothing new.
+**Last `/gr` pass: 2026-10-26 (estate sweep) — CHECK-IN.** Inbox empty. For the remaining eye gap: librw shows RenderWare's view offset also moves the eye (off-axis shift, window held at 1 unit), about 0.35 units extra gap with the Quest 3 lens; one topic, pointer sent to the dossier inbox.
+
+_Previous: **Last `/gr` pass: 2026-10-11 (estate sweep) — CHECK-IN.** Inbox empty. One search for a public fix for broken or crashing saves (the entity-data row) found only general loading advice already covered (PCGamingWiki, MHNoDRM). Nothing new._
 
 _Previous: **Last `/gr` pass: 2026-10-04 (estate sweep, second pass) — CHECK-IN.** Inbox empty; board `OPEN` rows read: the entity-data fix and the play-test, both our own launches. Nothing new._
 
@@ -30,6 +32,7 @@ write-up in `topics/`. Status tags:
 
 | Date | Topic | Status | Summary |
 | --- | --- | --- | --- |
+| 2026-10-26 | [RenderWare's view offset is not a pure lens shift: it also moves the eye](topics/2026-10-26-renderware-view-offset-also-moves-the-eye.md) | 🆕 | For the remaining eye gap: in librw the view offset shifts the picture AND moves the eye by the same amount (window held at 1 unit). With the Quest 3 lens centres (±0.1765) that is about 0.35 units of extra eye gap. Check: the x translation term of each eye's projection. |
 | 2026-09-29 | [The widescreen fix names the view-window levers the per-eye plan needs](topics/2026-09-29-the-widescreen-fix-names-the-view-window-levers-the-per-eye-plan-needs.md) | 🆕 | For the Fable per-eye build (dossier §11n). |
 | 2026-09-02 | [Fire-Head's widescreen fix names Manhunt's camera globals — and the screen struct that holds the `RwCamera` pointer](topics/2026-09-02-fire-heads-widescreen-fix-names-the-camera-globals-and-the-screen-struct-that-holds-the-rwcamera.md) | 🆕 new | The fix's single source file reads `CCamera::m_viewWindow` `0x7A1650` / `m_aspectRatio` `0x7A164C`, snapshots `CScene::m_viewWindowOriginal` `0x715C98`, and redirects the three view-window set sites `0x475BF5`/`0x476A80`/`0x476AA0` — so the projection is decided in the exe as a RenderWare view window (`tan(fov/2)`), which is what the dossier's `FOVX+/-` strings drive. `CFrontend::ms_scrn` `0x7D3440` is `{w,h,1/w,1/h,sx,sy,HudStretch,pCamera,pFrameBuffer,pZBuffer}`, putting the **`RwCamera*` at `0x7D345C`**: per-eye = shifted view window + translated `RwFrame` before `RwCameraBeginUpdate`. Same build family as the 16/16 MHNoDRM match; three log lines confirm it. |
 | 2026-09-01 | [RenderWare VR prior art, and why `librw` does not help either](topics/2026-09-01-renderware-vr-prior-art-and-why-librw-does-not-help-either.md) | 🆕 new | **Vice City VR** is a real 6DoF OpenXR conversion of a RenderWare title — and a **source port** (`reVC` + `librw`, pipeline replaced with D3D12), so it hooks nothing and lends no technique; its `reVC` lineage is also under a publisher takedown (HTTP 451). New here: **`librw` supports D3D8 as a *file format* but renders only through D3D9/OpenGL** — Manhunt's D3D8 layer is exactly what it does not reimplement. `SetTransform` stays the only path. Also reframes §6: the RenderWare camera parameter is a **2D view window**, not an FOV angle, so the exe's `CFovX`/`FovY` debug strings are Rockstar's layer above it. |
