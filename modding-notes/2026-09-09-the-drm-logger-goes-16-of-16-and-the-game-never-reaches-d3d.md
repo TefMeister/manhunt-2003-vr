@@ -1,6 +1,6 @@
 # The DRM logger goes 16/16 first try — and the game never reaches D3D at all
 
-**2026-09-09, home PC (`RTX`), `/lm`, ONE LAUNCH.** Steam appid 12130. Exited on `WM_CLOSE`, no kill.
+**2026-09-09, home PC, `/lm`, ONE LAUNCH.** Steam appid 12130. Exited on `WM_CLOSE`, no kill.
 Evidence: `dev-archive/recon/2026-09-09-drm-16-of-16-and-the-game-never-reaches-d3d/`.
 
 The board promised **three answers from one launch**. It delivered **one of them outright, and a new

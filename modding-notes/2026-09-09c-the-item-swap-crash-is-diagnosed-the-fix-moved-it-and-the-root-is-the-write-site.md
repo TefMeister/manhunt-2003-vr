@@ -1,6 +1,6 @@
 # The item-swap crash is diagnosed, the fix moved it, and the root is the write-site
 
-**2026-09-09, home PC (`RTX`), `/lm`.** Three launches by Tefa tonight; I read the proxy's own
+**2026-09-09, home PC, `/lm`.** Three launches by Tefa tonight; I read the proxy's own
 logs and dumps and touched nothing while they played. It crashed on item swap twice, once before
 and once after a fix, so **the live lane is parked**, as agreed beforehand. This note is the
 resume point. Evidence: `dev-archive/recon/2026-09-09c-the-item-swap-crash/` (crash 1) and

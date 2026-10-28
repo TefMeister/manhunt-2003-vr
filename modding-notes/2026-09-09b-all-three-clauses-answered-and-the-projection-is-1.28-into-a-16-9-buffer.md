@@ -5,7 +5,7 @@
 **withdrawn**: Tefa launched Manhunt themselves at 22:36 on the same machine and it came up and
 played. Everything else in that note stands, including the 16/16 DRM result.
 
-**2026-09-09, home PC (`RTX`), `/lm`.** The second run was **launched and played by Tefa**, not by
+**2026-09-09, home PC, `/lm`.** The second run was **launched and played by Tefa**, not by
 me; I read the proxy log while they played and touched nothing. Evidence:
 `dev-archive/recon/2026-09-09b-the-mode-table-the-stride-check-and-the-1.28-aspect/`.
 
