@@ -1651,4 +1651,35 @@ Note: `modding-notes/2026-10-12-pd-no-squeeze-only-less-sharp-sideways.md`.
 - The committed source no longer rebuilds to `f289f9cfb7a9`: the toolchain folder now links to llvm-mingw 20260908
   `[measured 2026-10-15]`. Note: `modding-notes/2026-10-15-pd-the-hud-into-both-eyes.md`.
 
-**2026-10-25, first real headset (Quest 3, asymmetric lens): the per-eye view offset sign in `eyesplit.c` was wrong.** RenderWare's view offset with the frame's right pointing to screen LEFT needs the x sign negated (`flipx` in `manhunt_vr_eyesplit`): the eyes went from far apart with no depth to "much better" `[verified-live 2026-10-25, n=1]`; a smaller gap remains, cause open. The simulator's symmetric lens can never show this; test with the Quest 3 tangents (left -1.192 0.839 -1.036 0.675).
+**2026-10-25, first real headset (Quest 3, asymmetric lens): the per-eye view offset sign in `eyesplit.c` was wrong.** RenderWare's view offset with the frame's right pointing to screen LEFT needs the x sign negated (`flipx` in `manhunt_vr_eyesplit`): the eyes went from far apart with no depth to "much better" `[verified-live 2026-10-25, n=1]`; a smaller gap remains (cause found 2026-10-29, below). ~~The simulator's symmetric lens can never show this~~ (corrected by /sr, 2026-10-26): the 32-bit OpenXR Simulator fork carries a measured Quest 3 asymmetric profile and it is its default; a PC that once picked a symmetric preset keeps it (`asymmetric_fov` in its settings file), and the MCP tool `set_headset_profile quest3` switches it (restart the game after) `[inferred-static 2026-10-26]`. Which profile each PC's simulator is on is not checked. Test with the Quest 3 tangents (left -1.192 0.839 -1.036 0.675).
+
+**2026-10-29, the view offset moves the eye, not only the picture (`/pd`, dev PC, no launch).** First read in librw
+by `/gr` (2026-10-26, `[reported]`), then in this game's own camera begin-update `0x00641CE0` (unpacked image)
+`[inferred-static 2026-10-29]`:
+- View = inverse of the camera frame's LTM (`0x006184C0` then `0x00619880`) with its x column negated (four `fchs`
+  at `0x00641D23..6E`). Projection (stack matrix, D3D row vectors): `_11 = [cam+0x70]` (1/view window x),
+  `_31 = [cam+0x78]*[cam+0x70]`, `_41 = -that`; the same for y with `+0x74` / `+0x7C`; then `D3DTS_PROJECTION`.
+- So a camera-space point lands at `x' = ((x - ox)/z + ox)/vw.x`: the centre of projection is camera-space
+  `(ox, oy, 0)`, i.e. world `pos - ox*right + oy*up`, and the picture's centre is the direction `(-ox, -oy)` (camera x
+  = screen right, y = screen up).
+- Two consequences. (1) Signs: the lens centre `((l+r)/2, (d+u)/2)` needs `ox = -(l+r)/2`, `oy = -(d+u)/2`: both
+  signs -1. The x half is what the worn `flipx` already did `[verified-live 2026-10-25, n=1]`; **the y half was still
+  the wrong way** (the picture's centre about 0.18 tangent up instead of down, the same in both eyes). (2) With the
+  Quest 3 lens centres (+-0.1765 across) each eye slid **17.65 cm toward the other**: the eyes crossed by about 0.30 m
+  in total, the "two Cash, a head's width apart" of the second wear.
+- Fix (staging `93c3576`, build `91036228b137`): signs default to -1; after `eyesplit.c` sets each eye's offset,
+  `eyecam.c` (`EyeCam_UndoOffsetShift`) moves that eye's frame by `ox*right - oy*up` and re-syncs and re-culls, so the
+  eye stays where the head pose put it and the picture keeps the lens shift. Words in `manhunt_vr_eyesplit`: `flipx`
+  / `flipy` now change nothing, `oldx` / `oldy` bring back +1, `noeyefix` leaves the eye move in.
+- Checked: `tests/lensoffset_selftest.c` rebuilds the game's view and projection as read above and runs the shipped
+  per-eye functions for both eyes of a Quest 3 lens with the camera turned 30 degrees: one ray from the head-pose eye
+  lands on one spot (2 m and 50 m), the lens's four edges land at +-1, the eyes end 0.0570 apart, left on the left; it
+  fails without the frame move (each eye 0.1765 off) and with the old signs `[verified-numerically 2026-10-29]`.
+  Whether the remaining picture matches in the headset is not seen yet. The units question (1 unit = 1 m) does not
+  enter this fix: the move is in the camera's own units, exactly what the projection uses.
+- Note: `modding-notes/2026-10-29-pd-the-lens-offset-moves-the-eye.md`.
+
+**2026-10-26, the jitter recorder has never counted a camera write here (`/gd`).** All six Manhunt BeG0nE logs
+(2026-10-12 to 10-25) read 0.0 camera writes a second in every mode, while pictures and pose reads count normally, so
+every Manhunt jitter verdict says "rate fault" whatever the picture does `[measured 2026-10-12..25, n=6 logs]`. The
+"98 % same pose while turning" of 2026-10-14 17:51 (2 turning seconds) is the simulator moving the head in jumps.
