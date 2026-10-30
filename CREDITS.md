@@ -28,6 +28,7 @@ notes, and tools we wrote ourselves.
 | llvm-mingw — the 32-bit toolchain the proxy is built with | Martin Storsjö & contributors | https://github.com/mstorsjo/llvm-mingw |
 | OpenXR headers and loader (Apache-2.0 OR MIT) | The Khronos Group | https://github.com/KhronosGroup/OpenXR-SDK |
 | OpenXR Simulator — headset-free testing on the dev PC | webhead2oo9 | https://github.com/webhead2oo9/OpenXR-Simulator |
+| Manhunt.PluginMH — its first-person mode showed which game switches keep the look mode on while walking; we studied the mechanism and wrote our own | ermaccer | https://github.com/ermaccer/Manhunt.PluginMH |
 
 Development on this project is AI-assisted: much of the research, code, and
 documentation was produced with **Claude (Anthropic)** (https://claude.com)

@@ -1,0 +1,48 @@
+# 2026-10-30: walking in first person, and Cash's arm follows our numbers
+
+Home PC, one flat launch (no headset), the game driven by the session. Tefa asked two things: can Manhunt be played in
+first person, even glitchy, and is there already a way to take control of Cash's hands?
+
+## First person: yes, and it walks
+
+Manhunt has its own first-person look (the X key), but it is a look only: Cash stands still, and moving drops it.
+ermaccer's PluginMH (github.com/ermaccer/Manhunt.PluginMH) turns that look into a walkable first person with a handful of
+game switches. We read its source to learn which ones, checked every spot in our own running game first (it is the same
+build: the byte check PluginMH uses, `66 8B 44 24` at `0x63BC93`, matches, and its player pointer `0x715B9C` is ours),
+and wrote our own memory patcher (`dev-archive/recon/2026-10-30-first-person/fp_live.py`):
+
+| Spot | What it is | Change |
+| --- | --- | --- |
+| `0x4622DC` | the call that ends the look mode (thiscall, no stack arguments) | NOPped |
+| `0x46053D`, `0x460545` | `mov edi,0x40000` / `cmp edi,0x40000`: the look-flag test that cancels it on a move | both 0 |
+| `0x4AB54D` | `fsubr [ebx+0x370]; fst st(4)`: the arm turn | skipped for the player only (a small cave) |
+| `0x4628B2` | the X key's call to StartLookAround `0x462060` | NOPped AFTER pressing X, so X no longer leaves it |
+
+Result `[verified-live 2026-10-30, flat, n=1]`: X, then the lock, then W walked Cash 2.9 m forward, A 1.9 m sideways,
+and a mouse turn and a look down all worked, the camera staying in his eyes throughout. As shipped, the same W
+dropped the look and walked him in the normal over-the-shoulder view (checked first). Cash's own body is NOT drawn in
+this view: looking down shows only the ground.
+
+## The hands: the lever exists
+
+The game's bone finder `0x49D070` reads RenderWare's standard skeleton (RpHAnim): hierarchy
+`[[player+0x80] + [0x713760] + 8]`, 65 bones, flags `0x2000` (the matrices are world matrices), node table +0x10
+(16 bytes: id, index, flags, frame). The arms by bone id:
+
+| Side (first one listed) | Bones (index: id) |
+| --- | --- |
+| arm A | 12: 1039 shoulder, 13: 1020 upper arm, 14: 1021 forearm, 15: 1004 hand, 16-26 fingers, 27: 2222 (attach point?) |
+| arm B | 30: 1093 shoulder, 31: 1074 upper arm, 32: 1075 forearm, 33: 1058 hand, 34-44 fingers, 45: 2003 |
+| head / spine | 1001 head, 1040 neck, 1094-1096 spine; legs 1002/1019/1024 and 1056/1073/1078 |
+
+Test: for 5 s, every fresh game value in arm A's matrix table (bones 13-28) was lifted 0.40 m, from outside the
+game (so it races the game's own update). In four pictures the hand that hung at Cash's hip is gone and the shoulder
+bulges: the drawn arm follows the table `[verified-live 2026-10-30, flat, n=1 run, 4 frames]`. Which side arm A is
+(left or right) is not settled yet: it was the arm on the screen's left, seen from behind.
+
+## What this means for VR
+
+- First person: the same switches can go into our proxy as a switch file and be applied at load.
+- Hands: write the arm bones from inside the proxy, after the game's animation update and before the draw (no race),
+  from the VR controllers with a two-bone solve (shoulder, elbow, wrist).
+- The body must be drawn in first person for the hands to show: find what hides it in the look mode.
