@@ -46,3 +46,13 @@ bulges: the drawn arm follows the table `[verified-live 2026-10-30, flat, n=1 ru
 - Hands: write the arm bones from inside the proxy, after the game's animation update and before the draw (no race),
   from the VR controllers with a two-bone solve (shoulder, elbow, wrist).
 - The body must be drawn in first person for the hands to show: find what hides it in the look mode.
+
+## Later the same day: first person is a switch in the mod
+
+`manhunt_vr_firstperson` beside the game turns it on (staging `src/firstperson.c`, build `7e83844740f1`, installed on
+the home PC with the six headset switch files). The mod makes the four changes itself, checking each spot first, and
+presses X for the player once he is in control, so a level simply starts in first person. Two flat launches: the X came
+by itself 1.4 s after control both times; walking, a second X, turning and strafing all stayed in first person. Write
+`manual` into the file to press X yourself instead. A new launch route loads save slot 1 unattended (156 s, most of it
+the opening scene).
+
