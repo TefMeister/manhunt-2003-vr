@@ -1715,4 +1715,16 @@ every Manhunt jitter verdict says "rate fault" whatever the picture does `[measu
 - **Driving for tests:** `dev-archive/recon/2026-10-30-executions/walk.py` saves the shortest path over the level's AI
   graph (gates inserted as waypoints) and walks it with W held, steering by small mouse turns from memory reads;
   `stalk.py` sneaks up and holds attack. Start to hDummy: 93 m, stops at the tutorial cutaway, then a kill in 20 tries.
+- **The view turns with the head during a kill** `[verified-live 2026-10-30, flat, n=1 kill, clip]`: `src/killcam.c`
+  (staging `7770c7d`, build `3c78ab0754f6`) redirects the frame sync call at `0x475F98` (`call 0x6218F0`); while
+  player+0x8B4 is set and the hold timer player+0x96C reads 1.49 (0 -> 1.49 over the 1.5 s attack hold, 1.49 held through
+  the animation until the pointer clears `[measured 2026-10-30, killprobe]`), the camera's modelling matrix is rewritten
+  as C0 * H0^T * H(t) (axes kept constant in the head bone's frame) and pos = head + (cam0 - head0) * H0^T * H(t), then
+  RwFrameUpdateObjects `0x618440` marks it dirty for the sync. Measured first: in the look mode the camera already sits
+  0.30 m ahead / 0.12 m above bone 1001 and follows it (0.7 m during the kill); the head's rest lean is 23 deg forward,
+  which is why the DELTA is used, not the bone's pose. Head bone axes at rest: right ~ world up (tilted), up ~ camera
+  right, at ~ backward; RwMatrix rows are orthonormalised with at = right x up (matches the game's own at). Clip:
+  the view swings up (moon) as the head goes back, down to the body, levels again; the horizon ROLLS with the head.
+  In VR position only by default (headset turns; word `killturn` turns too, `nokillcam` off). [0x755E4C] reads 4 in
+  normal first-person play, so the execution camera's `cmp ..., 4` is "is the gameplay camera on".
 

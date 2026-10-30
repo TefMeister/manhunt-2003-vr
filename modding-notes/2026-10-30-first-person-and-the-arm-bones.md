@@ -65,3 +65,14 @@ hunter, crept up behind him, and the kill happened with the view in his eyes, tw
 build. What it does not show yet: the kill itself. The view stays level and Cash is not drawn, so the hunter simply
 drops. Next: the view on Cash's head during a kill, and his body drawn.
 
+## Night: the view turns with Cash's head during a kill (Fable)
+
+Measured first: in first person the camera already rides the head bone (0.30 m ahead, 0.12 m up) and moved 70 cm with
+his lunge; what never changed was the direction. The head bone leans 23 degrees forward even standing, so copying its
+tilt would look at the ground. So the new part (`killcam.c`) turns the view by exactly how much the head has turned
+since the kill began, and swings the eye offset with it. One recorded flat run, launch to the tutorial hunter's
+execution, by itself: during the kill the view swings up to the moon as Cash throws his head back, drops to the body,
+and levels out. The horizon rolls with his head, dramatic flat, probably too much for VR, where by default only the
+position follows and the headset does the turning. Clip: `D:/MEGA transfer/Videos/manhunt-2003-vr/first-person-sneak-kill_2026-10-30_13-14-16.mp4`.
+Still missing: Cash's own body and arms in first person, so the hands doing the kill are not seen.
+
