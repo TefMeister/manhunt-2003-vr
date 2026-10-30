@@ -1683,3 +1683,18 @@ by `/gr` (2026-10-26, `[reported]`), then in this game's own camera begin-update
 (2026-10-12 to 10-25) read 0.0 camera writes a second in every mode, while pictures and pose reads count normally, so
 every Manhunt jitter verdict says "rate fault" whatever the picture does `[measured 2026-10-12..25, n=6 logs]`. The
 "98 % same pose while turning" of 2026-10-14 17:51 (2 turning seconds) is the simulator moving the head in jumps.
+
+## 11u. Walkable first person, and the arm bones (2026-10-30, home PC, flat, one launch)
+
+- **First person** `[verified-live 2026-10-30, flat, n=1]`: the game's look mode (X, StartLookAround `0x462060`, flag
+  player+0x844 bit `0x40000`) kept on while walking by NOPping `0x4622DC` (ends it) and zeroing the immediates at
+  `0x46053D` / `0x460545` (the flag test that cancels it on a move); `0x4AB54D` (arm turn, `fsubr [ebx+0x370]`) skipped
+  for the player; `0x4628B2` (X's call to StartLookAround) NOPped after entering. Mechanism from ermaccer's PluginMH,
+  checked byte for byte here; our patcher `dev-archive/recon/2026-10-30-first-person/fp_live.py`. The player's body is
+  not drawn in this view `[verified-live 2026-10-30, n=1]`.
+- **Skeleton** `[verified-live 2026-10-30, n=1]`: bone finder `0x49D070` → RpHAnim hierarchy
+  `[[player+0x80] + [0x713760] + 8]`; 65 bones; flags `0x2000`; matrices (+8) are world matrices the skin is drawn from:
+  lifting arm bones 13-28 (ids 1020 upper arm .. 2222) by 0.4 m from outside moved the drawn arm. Bone id table:
+  `modding-notes/2026-10-30-first-person-and-the-arm-bones.md`. Per-bone RwFrames at player+0x308 for some bones only.
+- **Player position** read as `[[player+0x80]+4]+0x40` (unchanged from §POS).
+
