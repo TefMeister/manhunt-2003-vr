@@ -1727,4 +1727,14 @@ every Manhunt jitter verdict says "rate fault" whatever the picture does `[measu
   the view swings up (moon) as the head goes back, down to the body, levels again; the horizon ROLLS with the head.
   In VR position only by default (headset turns; word `killturn` turns too, `nokillcam` off). [0x755E4C] reads 4 in
   normal first-person play, so the execution camera's `cmp ..., 4` is "is the gameplay camera on".
+- **Headset start pose** `[verified-live 2026-10-30, headset, n=2 launches]`: `xr_head` anchored on the first position
+  with VALID set; Virtual Desktop reports y = -1.168 m there, before TRACKED, so the relative head pose ran 1.17 m
+  high and the view sat that far above Cash's eyes. Fix (staging `c8cb3e6`): TRACKED required; `MhXr_Recenter` (first
+  auto X of a level, and the `RECENTER` input line). Live lever meanwhile: `g_h0p` in the DLL's .data (found by
+  scanning for the yaw-only start pose; build 3c78ab: RVA 0x54e38), `dev-archive/recon/2026-10-30-executions/vrheight.py`.
+- **The view's pull-back**: eyecam applies the relative head position in the camera's own frame (+z OpenXR = backward
+  along the centre's at), so `rp.z += 0.30` sits the view 30 cm behind the game's eye point; Tefa chose 30 live
+  (20 not felt, 50 plainly back) `[reported 2026-10-30]`. `MX_VIEW_BACK_M`, `manhunt_vr_viewback` (cm).
+- **Cash IS drawn in first person in the headset** (Tefa: looking straight down shows his whole body), unlike the flat
+  look mode, where nothing of him draws `[reported 2026-10-30]`: the hide is in the flat look's draw path, not in VR's.
 

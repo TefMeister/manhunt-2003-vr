@@ -76,3 +76,12 @@ and levels out. The horizon rolls with his head, dramatic flat, probably too muc
 position follows and the headset does the turning. Clip: `D:/MEGA transfer/Videos/manhunt-2003-vr/first-person-sneak-kill_2026-10-30_13-14-16.mp4`.
 Still missing: Cash's own body and arms in first person, so the hands doing the kill are not seen.
 
+## Afternoon: worn, and two faults fixed while Tefa stayed in the headset
+
+Tefa wore it: "I'm a camera above Cash's head." The mod had remembered where the headset was when the game started,
+and on two launches running that reading was 1.17 m too low (taken before the headset was tracked), so the view sat
+1.17 m above Cash's eyes. Fixed live by moving the remembered spot, then for good: the mod waits until the headset is
+tracked and takes the reading again at the start of each level. Then "the camera is a good distance in front of
+Cash": pulled back 10 cm at a time, with Tefa saying what they saw; 30 cm sits right, now the default. Good news
+from the headset: Cash's body is drawn there when looking down, so the "body hidden" job is a flat-screen one only.
+
