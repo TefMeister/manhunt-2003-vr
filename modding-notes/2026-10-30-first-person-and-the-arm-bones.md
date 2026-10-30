@@ -56,3 +56,12 @@ by itself 1.4 s after control both times; walking, a second X, turning and straf
 `manual` into the file to press X yourself instead. A new launch route loads save slot 1 unattended (156 s, most of it
 the opening scene).
 
+## Evening: the sneak kills stay in first person
+
+Tefa asked whether the executions could play out in first person instead of as a cinematic. ermaccer's PluginMH has a
+setting that skips the execution camera; ours does the same in `firstperson.c` (on by default with first person; the
+word `execcam` in the switch file keeps the cinematic). Cash walked a saved shortest path to the tutorial's dummy
+hunter, crept up behind him, and the kill happened with the view in his eyes, twice, the second time with the mod's own
+build. What it does not show yet: the kill itself. The view stays level and Cash is not drawn, so the hunter simply
+drops. Next: the view on Cash's head during a kill, and his body drawn.
+
