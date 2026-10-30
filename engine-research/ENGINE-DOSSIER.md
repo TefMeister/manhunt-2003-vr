@@ -1697,4 +1697,11 @@ every Manhunt jitter verdict says "rate fault" whatever the picture does `[measu
   lifting arm bones 13-28 (ids 1020 upper arm .. 2222) by 0.4 m from outside moved the drawn arm. Bone id table:
   `modding-notes/2026-10-30-first-person-and-the-arm-bones.md`. Per-bone RwFrames at player+0x308 for some bones only.
 - **Player position** read as `[[player+0x80]+4]+0x40` (unchanged from §POS).
+- **Built into the proxy the same day** (staging `a52b9a5`/`2224eb6`, `src/firstperson.c`, switch file
+  `manhunt_vr_firstperson`, text `manual` = no auto X; build `7e83844740f1`; self-test 20/20). X's call at `0x4628B2` now
+  goes to a piece that enters StartLookAround only while player+0x7E8 is 0, so X gets in and a second X does nothing; a
+  thread presses X once the player is in control. **player+0x7E8 (PluginMH's m_bCameraLookAround) follows the view**:
+  0 in the cutscene and before X, 1 from X on, still 1 while the 0x40000 bit dropped on the walk; **[0x00725710]** read 0
+  through the opening scene, 1 in control `[verified-live 2026-10-30, flat, n=2 launches]` (the auto X fired 1.4 s after
+  control both times; walk 4 m, a second X, a turn and a strafe all stayed in first person, n=1).
 
