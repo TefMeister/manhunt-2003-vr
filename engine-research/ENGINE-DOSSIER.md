@@ -1704,4 +1704,15 @@ every Manhunt jitter verdict says "rate fault" whatever the picture does `[measu
   0 in the cutscene and before X, 1 from X on, still 1 while the 0x40000 bit dropped on the walk; **[0x00725710]** read 0
   through the opening scene, 1 in control `[verified-live 2026-10-30, flat, n=2 launches]` (the auto X fired 1.4 s after
   control both times; walk 4 m, a second X, a turn and a strafe all stayed in first person, n=1).
+- **Sneak kills in first person** `[verified-live 2026-10-30, flat, n=2 kills: one by memory writes, one by the proxy build
+  d9f32e858c5b]`: at `0x59032B` (`cmp dword [0x755E4C], 4`, then `jne 0x590A80` at `0x590332`) a piece goes to
+  `0x590A80` while player+0x8B4 (the hunter marked for execution; PluginMH's GetHunterAboutToBeExecuted) is set, skipping
+  the execution camera. The tutorial hunter hDummy was executed from behind with the view in Cash's eyes throughout, the
+  game's green "ready" markers shown in first person, no crash. The kill itself is not seen: the view stays level, Cash
+  is not drawn, the hunter drops out of view. ⚠️ player+0x8B4 is set as soon as a hunter is in reach from behind, not
+  only during the kill. ⚠️ First live try crashed (c000001d at `0x590A83`): our jnz was 2 bytes short; the self-test
+  now checks both jumps. Not tested: whether the look mode alone would have kept the cinematic away.
+- **Driving for tests:** `dev-archive/recon/2026-10-30-executions/walk.py` saves the shortest path over the level's AI
+  graph (gates inserted as waypoints) and walks it with W held, steering by small mouse turns from memory reads;
+  `stalk.py` sneaks up and holds attack. Start to hDummy: 93 m, stops at the tutorial cutaway, then a kill in 20 tries.
 
