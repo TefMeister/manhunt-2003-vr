@@ -58,3 +58,7 @@ This also explains why a symmetric simulator lens hid it: with centre 0 the offs
 - aap and contributors, librw, `src/camera.cpp` (view offset in the perspective frustum and projection matrix),
   https://github.com/aap/librw — read online; no code copied.
 - Home log of 2026-10-25 17:19 (our own), for the Quest 3 tangents, via the board.
+
+## Outcome (2026-11-01, from the modding lane)
+
+Used and confirmed: Manhunt's camera begin-update `0x00641CE0` builds the same off-axis terms as librw, so the eye sits at camera-space `(ox, oy, 0)`; with the Quest 3 lens each eye slid 17.65 cm toward the other `[inferred-static 2026-10-29]`. The fix (staging `93c3576`) was built on this and checked numerically; the headset verdict on the eye gap is still to come. Source: `modding-notes/2026-10-29-pd-the-lens-offset-moves-the-eye.md`.
